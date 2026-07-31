@@ -5,6 +5,7 @@ import com.mutuo.superreforge.config.SuperReforgeConfig;
 import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.registry.ModDataComponents;
 import com.mutuo.superreforge.registry.ModRegistries;
+import com.mutuo.superreforge.network.ModNetwork;
 import com.mutuo.superreforge.item.VanillaAttributeApplicator;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -34,6 +35,7 @@ public final class SuperReforge {
     public SuperReforge(IEventBus modBus, ModContainer modContainer) {
         ModDataComponents.register(modBus);
         ModRegistries.register(modBus);
+        ModNetwork.register(modBus);
         DefinitionManager.register();
         VanillaAttributeApplicator.register();
         modContainer.registerConfig(ModConfig.Type.SERVER, SuperReforgeConfig.SERVER_SPEC);

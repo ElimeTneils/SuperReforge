@@ -11,11 +11,19 @@ import com.mutuo.superreforge.reforge.ReforgeTransaction;
 import com.mutuo.superreforge.registry.ModBlockEntities;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -93,6 +101,11 @@ public final class ReforgerBlockEntity extends BlockEntity implements MenuProvid
         return menuData;
     }
 
+    /** 客户端渲染器只读访问同步后的动画状态。 */
+    public Optional<PendingReforge> pending() {
+        return Optional.ofNullable(pending);
+    }
+
     public boolean startReforge(ServerPlayer player) {
         if (pending != null || level == null) {
             lastFailure = ReforgeFailure.BUSY;
@@ -138,13 +151,40 @@ public final class ReforgerBlockEntity extends BlockEntity implements MenuProvid
         if (entity.pending == null) {
             return;
         }
+        int before = entity.pending.remainingTicks();
         entity.pending = entity.pending.tick();
+        int impactTick = entity.pending.totalTicks() / 2;
+        if (before > impactTick && entity.pending.remainingTicks() <= impactTick
+                && level instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                    ParticleTypes.LAVA,
+                    pos.getX() + 0.5,
+                    pos.getY() + 0.72,
+                    pos.getZ() + 0.5,
+                    14,
+                    0.22,
+                    0.10,
+                    0.22,
+                    0.02);
+            level.playSound(null, pos, SoundEvents.ANVIL_LAND, SoundSource.BLOCKS, 0.85F, 1.12F);
+        }
         if (entity.pending.ready()) {
             entity.inventory.setStackInSlot(TARGET_SLOT, entity.pending.result());
             entity.pending = null;
         }
         entity.setChanged();
         level.sendBlockUpdated(pos, state, state, 3);
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     /** 破坏方块时 pending 结果和普通库存只会各掉落一次。 */

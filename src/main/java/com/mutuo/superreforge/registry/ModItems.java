@@ -19,6 +19,9 @@ public final class ModItems {
             ITEMS.registerSimpleItem("refined_reforge_stone", new Item.Properties());
     public static final DeferredItem<Item> SUPREME_REFORGE_STONE =
             ITEMS.registerSimpleItem("supreme_reforge_stone", new Item.Properties().fireResistant());
+    /** 方块实体渲染使用的独立 3D 锻锤，不加入默认配方或创造栏。 */
+    public static final DeferredItem<Item> FORGE_HAMMER =
+            ITEMS.registerSimpleItem("forge_hammer", new Item.Properties().stacksTo(1));
 
     private ModItems() {}
 
