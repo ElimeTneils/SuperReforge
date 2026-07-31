@@ -2,6 +2,7 @@ package com.mutuo.superreforge;
 
 import com.mojang.logging.LogUtils;
 import com.mutuo.superreforge.config.SuperReforgeConfig;
+import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.registry.ModDataComponents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -30,6 +31,7 @@ public final class SuperReforge {
      */
     public SuperReforge(IEventBus modBus, ModContainer modContainer) {
         ModDataComponents.register(modBus);
+        DefinitionManager.register();
         modContainer.registerConfig(ModConfig.Type.SERVER, SuperReforgeConfig.SERVER_SPEC);
         LOGGER.info("Super Reforge bootstrap initialized");
     }
