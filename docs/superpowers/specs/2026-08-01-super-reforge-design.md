@@ -201,7 +201,7 @@ invalid_modifier_policy = "REMOVE"
 
 ### 6.1 等级文件
 
-文件：`data/example/superreforge/levels/legendary.json`  
+文件：`data/example/superreforge/levels/legendary.json`
 资源 ID：`example:legendary`
 
 ```jsonc
@@ -222,7 +222,7 @@ invalid_modifier_policy = "REMOVE"
 
 ### 6.2 物品标签
 
-文件：`data/example/tags/item/reforgeable/swords.json`  
+文件：`data/example/tags/item/reforgeable/swords.json`
 标签 ID：`#example:reforgeable/swords`
 
 ```jsonc
@@ -245,7 +245,7 @@ invalid_modifier_policy = "REMOVE"
 
 ### 6.3 物品类型
 
-文件：`data/example/superreforge/item_types/sword.json`  
+文件：`data/example/superreforge/item_types/sword.json`
 资源 ID：`example:sword`
 
 ```jsonc
@@ -273,7 +273,7 @@ invalid_modifier_policy = "REMOVE"
 
 ### 6.4 武器词条
 
-文件：`data/example/superreforge/modifiers/legendary_blade.json`  
+文件：`data/example/superreforge/modifiers/legendary_blade.json`
 词条 ID：`example:legendary_blade`
 
 ```jsonc
@@ -342,7 +342,7 @@ invalid_modifier_policy = "REMOVE"
 
 ### 6.5 Curios 通用类型
 
-内置文件：`data/superreforge/superreforge/item_types/curio.json`  
+内置文件：`data/superreforge/superreforge/item_types/curio.json`
 类型 ID：`superreforge:curio`
 
 ```jsonc
