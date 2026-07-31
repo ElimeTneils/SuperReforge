@@ -1,5 +1,6 @@
 # Local brainstorming companion files; not part of the mod.
 .superpowers/
+.worktrees/
 
 # Gradle and IDE output (used after implementation begins).
 .gradle/
