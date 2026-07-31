@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.mutuo.superreforge.definition.AttributeOperation;
 import com.mutuo.superreforge.definition.SlotTarget;
+import java.util.List;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.resources.ResourceLocation;
@@ -30,5 +32,22 @@ final class VanillaAttributeApplicatorTest {
                 ResourceLocation.fromNamespaceAndPath(
                         "superreforge", "effect/example/legendary/blade/attack_speed_bonus"),
                 VanillaAttributeApplicator.stableModifierId(modifier, "Attack Speed Bonus"));
+    }
+
+    @Test
+    void tooltipPolicyHidesOnlyDisabledEffectsUnlessGlobalDisplayIsOff() {
+        var modifierId = ResourceLocation.fromNamespaceAndPath("example", "mixed");
+        var visible = new ResolvedEffect(
+                "visible", ResourceLocation.withDefaultNamespace("generic.attack_damage"), 1,
+                AttributeOperation.ADD_VALUE, List.of(SlotTarget.MAINHAND), true);
+        var hidden = new ResolvedEffect(
+                "hidden", ResourceLocation.withDefaultNamespace("generic.attack_speed"), 1,
+                AttributeOperation.ADD_VALUE, List.of(SlotTarget.MAINHAND), false);
+        var modifier = new ResolvedModifier(modifierId, Component.literal("混合"), List.of(visible, hidden));
+
+        assertEquals(
+                List.of(VanillaAttributeApplicator.stableModifierId(modifierId, "hidden")),
+                VanillaAttributeApplicator.hiddenEffectIds(modifier, true));
+        assertEquals(2, VanillaAttributeApplicator.hiddenEffectIds(modifier, false).size());
     }
 }

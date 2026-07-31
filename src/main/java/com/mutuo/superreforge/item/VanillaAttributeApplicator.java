@@ -4,12 +4,15 @@ import com.mutuo.superreforge.SuperReforge;
 import com.mutuo.superreforge.definition.AttributeOperation;
 import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.definition.SlotTarget;
+import com.mutuo.superreforge.config.SuperReforgeConfig;
+import java.util.List;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.neoforged.neoforge.client.event.GatherSkippedAttributeTooltipsEvent;
 
 /** 把已解析 effect 注入原版 Attribute 查询；本模组自身不注册任何 Attribute。 */
 public final class VanillaAttributeApplicator {
@@ -17,6 +20,22 @@ public final class VanillaAttributeApplicator {
 
     public static void register() {
         NeoForge.EVENT_BUS.addListener(VanillaAttributeApplicator::onItemAttributes);
+        NeoForge.EVENT_BUS.addListener(VanillaAttributeApplicator::onSkippedAttributeTooltips);
+    }
+
+    /** NeoForge 和 Curios 都读取此跳过事件，因此一套逻辑同时控制两类 Attribute 行。 */
+    private static void onSkippedAttributeTooltips(GatherSkippedAttributeTooltipsEvent event) {
+        ModifierResolver.resolve(event.getStack(), DefinitionManager.snapshot()).ifPresent(modifier ->
+                hiddenEffectIds(modifier, SuperReforgeConfig.snapshot().showAttributeLines())
+                        .forEach(event::skipId));
+    }
+
+    /** 纯策略函数：全局关闭时隐藏全部效果，否则只隐藏 show_in_tooltip=false 的效果。 */
+    public static List<ResourceLocation> hiddenEffectIds(ResolvedModifier modifier, boolean globalDisplayEnabled) {
+        return modifier.effects().stream()
+                .filter(effect -> !globalDisplayEnabled || !effect.showInTooltip())
+                .map(effect -> stableModifierId(modifier.id(), effect.id()))
+                .toList();
     }
 
     private static void onItemAttributes(ItemAttributeModifierEvent event) {

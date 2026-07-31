@@ -75,6 +75,40 @@ final class ReforgeTransactionTest {
         assertTrue(quote.cost().experience() > 0);
     }
 
+    @Test
+    void creativeFreePreparationKeepsTheCatalystStack() {
+        ItemStack target = new ItemStack(Items.DIAMOND_SWORD);
+        ItemStack catalyst = new ItemStack(Items.DIAMOND, 5);
+        ReforgeQuote quote = ReforgeTransaction.quote(
+                        target, catalyst, snapshot(), GlobalSettings.DEFAULTS, Optional.empty())
+                .quote()
+                .orElseThrow();
+
+        PreparedReforge prepared = ReforgeTransaction.prepare(target, catalyst, quote, 99L, false);
+
+        assertEquals(5, prepared.catalystRemainder().getCount());
+        assertEquals(5, catalyst.getCount(), "纯准备阶段不得修改原输入");
+    }
+
+    @Test
+    void paymentFreeQuoteNeedsACatalystTypeButNotItsFullCost() {
+        ItemStack target = new ItemStack(Items.DIAMOND_SWORD);
+        ItemStack catalyst = new ItemStack(Items.DIAMOND, 1);
+
+        ReforgeQuote quote = ReforgeTransaction.quote(
+                        target,
+                        catalyst,
+                        snapshot(),
+                        GlobalSettings.DEFAULTS,
+                        Optional.empty(),
+                        false)
+                .quote()
+                .orElseThrow();
+
+        assertEquals(0, quote.cost().materialCount());
+        assertEquals(0, quote.cost().experience());
+    }
+
     private static DefinitionSnapshot snapshot() {
         ItemSelector sword = ItemSelector.item(ResourceLocation.withDefaultNamespace("diamond_sword"));
         CatalystDefinition catalyst = new CatalystDefinition(

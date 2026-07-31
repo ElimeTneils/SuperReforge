@@ -112,18 +112,19 @@ public final class ReforgerBlockEntity extends BlockEntity implements MenuProvid
             return false;
         }
         GlobalSettings settings = SuperReforgeConfig.snapshot();
+        boolean paymentRequired = !player.isCreative() || settings.creativePlayersPay();
         var quoteResult = ReforgeTransaction.quote(
                 inventory.getStackInSlot(TARGET_SLOT),
                 inventory.getStackInSlot(CATALYST_SLOT),
                 DefinitionManager.snapshot(),
                 settings,
-                ProgressService.highestActive(player.getServer()));
+                ProgressService.highestActive(player.getServer()),
+                paymentRequired);
         if (quoteResult.quote().isEmpty()) {
             lastFailure = quoteResult.failure().orElse(ReforgeFailure.STALE_STATE);
             return false;
         }
         var quote = quoteResult.quote().orElseThrow();
-        boolean paymentRequired = !player.isCreative() || settings.creativePlayersPay();
         if (paymentRequired
                 && !ExperienceService.canPay(player, quote.cost().experience(), settings.experienceMode())) {
             lastFailure = ReforgeFailure.EXPERIENCE;
@@ -134,7 +135,8 @@ public final class ReforgerBlockEntity extends BlockEntity implements MenuProvid
                 inventory.getStackInSlot(TARGET_SLOT),
                 inventory.getStackInSlot(CATALYST_SLOT),
                 quote,
-                player.getRandom().nextLong());
+                player.getRandom().nextLong(),
+                paymentRequired);
         inventory.setStackInSlot(TARGET_SLOT, ItemStack.EMPTY);
         inventory.setStackInSlot(CATALYST_SLOT, prepared.catalystRemainder());
         if (paymentRequired) {

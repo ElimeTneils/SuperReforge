@@ -45,6 +45,13 @@ final class CostServiceTest {
 
     private static GlobalSettings settings(boolean xpEnabled) {
         return new GlobalSettings(
-                xpEnabled, ExperienceMode.LEVELS, false, true, 20, false, MissingDefinitionPolicy.REMOVE);
+                xpEnabled,
+                ExperienceMode.LEVELS,
+                false,
+                ResourceLocation.fromNamespaceAndPath("superreforge", "common_reforge_stone"),
+                true,
+                20,
+                false,
+                MissingDefinitionPolicy.REMOVE);
     }
 }

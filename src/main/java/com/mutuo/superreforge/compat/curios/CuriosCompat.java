@@ -4,7 +4,9 @@ import com.mutuo.superreforge.SuperReforge;
 import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.definition.SlotTarget;
 import com.mutuo.superreforge.item.ModifierResolver;
+import com.mutuo.superreforge.item.ModifierLifecycle;
 import com.mutuo.superreforge.item.VanillaAttributeApplicator;
+import com.mutuo.superreforge.config.SuperReforgeConfig;
 import com.mutuo.superreforge.reforge.SelectorHooks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -40,6 +42,13 @@ public final class CuriosCompat {
     private static void onCurioAttributes(CurioAttributeModifierEvent event) {
         if (event.getSlotContext().cosmetic()) {
             return;
+        }
+        if (!event.getSlotContext().entity().level().isClientSide) {
+            ModifierLifecycle.reconcile(
+                    event.getItemStack(),
+                    DefinitionManager.snapshot(),
+                    SuperReforgeConfig.snapshot(),
+                    event.getSlotContext().entity().getRandom().nextLong());
         }
         ModifierResolver.resolve(event.getItemStack(), DefinitionManager.snapshot()).ifPresent(modifier -> {
             for (var effect : modifier.effects()) {

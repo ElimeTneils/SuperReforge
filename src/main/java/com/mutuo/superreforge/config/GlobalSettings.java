@@ -1,5 +1,7 @@
 package com.mutuo.superreforge.config;
 
+import net.minecraft.resources.ResourceLocation;
+
 /**
  * 全局设置的不可变快照。
  *
@@ -10,6 +12,7 @@ public record GlobalSettings(
         boolean experienceEnabled,
         ExperienceMode experienceMode,
         boolean automaticInitialModifier,
+        ResourceLocation automaticCatalyst,
         boolean showAttributeLines,
         int animationTicks,
         boolean creativePlayersPay,
@@ -19,6 +22,7 @@ public record GlobalSettings(
             true,
             ExperienceMode.LEVELS,
             false,
+            ResourceLocation.fromNamespaceAndPath("superreforge", "common_reforge_stone"),
             true,
             20,
             false,
@@ -26,6 +30,9 @@ public record GlobalSettings(
 
     /** 防止动画为零或负数而导致待揭晓事务永远无法正确推进。 */
     public GlobalSettings {
+        if (automaticCatalyst == null) {
+            throw new IllegalArgumentException("automaticCatalyst 不能为空");
+        }
         if (animationTicks < 1) {
             throw new IllegalArgumentException("animationTicks 必须至少为 1");
         }

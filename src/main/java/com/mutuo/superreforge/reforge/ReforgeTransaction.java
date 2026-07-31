@@ -20,6 +20,19 @@ public final class ReforgeTransaction {
             DefinitionSnapshot snapshot,
             GlobalSettings settings,
             Optional<ProgressStage> highestStage) {
+        return quote(target, catalystStack, snapshot, settings, highestStage, true);
+    }
+
+    /**
+     * paymentRequired=false 用于全局配置允许的创造模式免费重铸；仍要求放入一种有效媒介来选择概率池。
+     */
+    public static ReforgeQuoteResult quote(
+            ItemStack target,
+            ItemStack catalystStack,
+            DefinitionSnapshot snapshot,
+            GlobalSettings settings,
+            Optional<ProgressStage> highestStage,
+            boolean paymentRequired) {
         if (target.isEmpty()) {
             return ReforgeQuoteResult.failure(ReforgeFailure.TARGET_EMPTY);
         }
@@ -39,8 +52,10 @@ public final class ReforgeTransaction {
         }
 
         var entry = catalystEntry.orElseThrow();
-        Cost cost = CostService.quote(entry.getValue(), settings, highestStage);
-        if (catalystStack.getCount() < cost.materialCount()) {
+        Cost cost = paymentRequired
+                ? CostService.quote(entry.getValue(), settings, highestStage)
+                : new Cost(0, 0);
+        if (paymentRequired && catalystStack.getCount() < cost.materialCount()) {
             return ReforgeQuoteResult.failure(ReforgeFailure.MATERIAL_COUNT);
         }
         ReforgeData existing = target.get(ModDataComponents.REFORGE_DATA.get());
@@ -62,13 +77,27 @@ public final class ReforgeTransaction {
      */
     public static PreparedReforge prepare(
             ItemStack target, ItemStack catalystStack, ReforgeQuote quote, long seed) {
+        return prepare(target, catalystStack, quote, seed, true);
+    }
+
+    /**
+     * 构造结果并按 consumeMaterial 决定是否扣媒介；创造免费配置通过该参数复用同一事务路径。
+     */
+    public static PreparedReforge prepare(
+            ItemStack target,
+            ItemStack catalystStack,
+            ReforgeQuote quote,
+            long seed,
+            boolean consumeMaterial) {
         RollResult rolled = RollEngine.roll(quote.candidates(), seed);
         ItemStack result = target.copyWithCount(1);
         result.set(
                 ModDataComponents.REFORGE_DATA.get(),
                 new ReforgeData(rolled.modifierId(), rolled.seed(), ReforgeData.CURRENT_SCHEMA));
         ItemStack remainder = catalystStack.copy();
-        remainder.shrink(quote.cost().materialCount());
+        if (consumeMaterial) {
+            remainder.shrink(quote.cost().materialCount());
+        }
         return new PreparedReforge(result, remainder);
     }
 }

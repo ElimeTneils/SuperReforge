@@ -65,12 +65,15 @@ public final class ReforgerMenu extends AbstractContainerMenu {
             return;
         }
         var snapshot = DefinitionManager.snapshot();
+        var settings = SuperReforgeConfig.snapshot();
+        boolean paymentRequired = !serverPlayer.isCreative() || settings.creativePlayersPay();
         var result = ReforgeTransaction.quote(
                 blockEntity.inventory().getStackInSlot(ReforgerBlockEntity.TARGET_SLOT),
                 blockEntity.inventory().getStackInSlot(ReforgerBlockEntity.CATALYST_SLOT),
                 snapshot,
-                SuperReforgeConfig.snapshot(),
-                ProgressService.highestActive(serverPlayer.getServer()));
+                settings,
+                ProgressService.highestActive(serverPlayer.getServer()),
+                paymentRequired);
         ReforgePreviewPayload preview = ReforgePreviewPayload.from(containerId, result, snapshot);
         if (!preview.equals(lastPreview)) {
             lastPreview = preview;

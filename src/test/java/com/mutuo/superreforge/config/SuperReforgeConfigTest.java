@@ -15,6 +15,7 @@ final class SuperReforgeConfigTest {
         assertTrue(defaults.experienceEnabled());
         assertEquals(ExperienceMode.LEVELS, defaults.experienceMode());
         assertFalse(defaults.automaticInitialModifier());
+        assertEquals("superreforge:common_reforge_stone", defaults.automaticCatalyst().toString());
         assertTrue(defaults.showAttributeLines());
         assertEquals(20, defaults.animationTicks());
         assertEquals(MissingDefinitionPolicy.REMOVE, defaults.missingDefinitionPolicy());
