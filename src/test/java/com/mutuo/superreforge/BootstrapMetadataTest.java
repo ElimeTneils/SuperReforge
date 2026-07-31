@@ -37,4 +37,16 @@ final class BootstrapMetadataTest {
     void testsRunOnJavaTwentyOneOrNewer() {
         assertTrue(Runtime.version().feature() >= 21, "Super Reforge 必须使用 Java 21 或更高版本构建");
     }
+
+    @Test
+    void kubeJsPluginIsConditionedOnTheOptionalMod() throws IOException {
+        String plugins;
+        try (var stream = BootstrapMetadataTest.class.getClassLoader().getResourceAsStream("kubejs.plugins.txt")) {
+            assertTrue(stream != null, "JAR 根目录必须包含 KubeJS 条件插件清单");
+            plugins = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+
+        assertTrue(plugins.contains(
+                "com.mutuo.superreforge.compat.kubejs.SuperReforgeKubeJSPlugin kubejs"));
+    }
 }

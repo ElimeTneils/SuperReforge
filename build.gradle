@@ -28,7 +28,13 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    // Curios 官方 Maven；仅用于编译 optional bridge，成品不会捆绑 Curios。
+    maven { url = 'https://maven.theillusivec4.top/' }
+    // KubeJS 官方 Maven；限制 group，防止意外从这里解析其他依赖。
+    maven {
+        url = 'https://maven.latvian.dev/releases'
+        content { includeGroup 'dev.latvian.mods' }
+    }
 }
 
 base {
@@ -126,6 +132,10 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // 这两项是编译期接口，均不传递、不打包；玩家可只装其中一个或两个都不装。
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    compileOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

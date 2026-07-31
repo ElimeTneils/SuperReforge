@@ -1,0 +1,2 @@
+# KubeJS 会先检查行尾的 kubejs mod ID，再尝试加载此类；因此依赖未安装时完全安全。
+com.mutuo.superreforge.compat.kubejs.SuperReforgeKubeJSPlugin kubejs

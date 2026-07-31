@@ -63,7 +63,12 @@ public final class VanillaAttributeApplicator {
         };
     }
 
-    private static ResourceLocation stableModifierId(ResourceLocation modifierId, String effectId) {
+    /**
+     * 为每个“词条 ID + 效果 ID”生成稳定资源位置。
+     *
+     * <p>公开此纯函数是为了让 Curios 可选兼容层复用完全相同的去重规则；它不会注册 Attribute。
+     */
+    public static ResourceLocation stableModifierId(ResourceLocation modifierId, String effectId) {
         String safeEffect = effectId.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_");
         return ResourceLocation.fromNamespaceAndPath(
                 SuperReforge.MOD_ID,

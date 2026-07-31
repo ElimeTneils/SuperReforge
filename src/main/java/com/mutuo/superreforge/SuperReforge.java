@@ -9,6 +9,7 @@ import com.mutuo.superreforge.network.ModNetwork;
 import com.mutuo.superreforge.item.VanillaAttributeApplicator;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
@@ -38,7 +39,24 @@ public final class SuperReforge {
         ModNetwork.register(modBus);
         DefinitionManager.register();
         VanillaAttributeApplicator.register();
+        loadOptionalCompat("curios", "com.mutuo.superreforge.compat.curios.CuriosCompat");
         modContainer.registerConfig(ModConfig.Type.SERVER, SuperReforgeConfig.SERVER_SPEC);
         LOGGER.info("Super Reforge bootstrap initialized");
+    }
+
+    /**
+     * 只有依赖真实存在时才按字符串加载兼容类，避免 JVM 在无 Curios 环境解析其方法签名。
+     */
+    private static void loadOptionalCompat(String modId, String className) {
+        if (!ModList.get().isLoaded(modId)) {
+            LOGGER.info("Optional integration {} is not installed; its bridge stays inactive", modId);
+            return;
+        }
+        try {
+            Class.forName(className).getMethod("initialize").invoke(null);
+            LOGGER.info("Optional integration {} initialized", modId);
+        } catch (ReflectiveOperationException | LinkageError error) {
+            throw new IllegalStateException("无法初始化可选兼容层 " + modId + "：" + className, error);
+        }
     }
 }

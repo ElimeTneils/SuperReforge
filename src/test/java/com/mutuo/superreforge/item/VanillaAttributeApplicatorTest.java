@@ -6,6 +6,7 @@ import com.mutuo.superreforge.definition.AttributeOperation;
 import com.mutuo.superreforge.definition.SlotTarget;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 /** 防止 JSON 运算或槽位被接到错误的原版枚举。 */
@@ -19,5 +20,15 @@ final class VanillaAttributeApplicatorTest {
         assertEquals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL,
                 VanillaAttributeApplicator.operation(AttributeOperation.ADD_MULTIPLIED_TOTAL));
         assertEquals(EquipmentSlotGroup.MAINHAND, VanillaAttributeApplicator.slot(SlotTarget.MAINHAND));
+    }
+
+    @Test
+    void buildsTheSameStableEffectIdForVanillaAndCuriosBridges() {
+        var modifier = ResourceLocation.fromNamespaceAndPath("example", "legendary/blade");
+
+        assertEquals(
+                ResourceLocation.fromNamespaceAndPath(
+                        "superreforge", "effect/example/legendary/blade/attack_speed_bonus"),
+                VanillaAttributeApplicator.stableModifierId(modifier, "Attack Speed Bonus"));
     }
 }
