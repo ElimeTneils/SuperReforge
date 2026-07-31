@@ -1,0 +1,5 @@
+{
+  "_comment": "等级数字完全由数据包自定义；媒介用 ID 引用它。",
+  "rank": 2,
+  "name": {"translate": "level.superreforge.common", "fallback": "普通", "color": "white"}
+}

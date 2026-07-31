@@ -1,0 +1,11 @@
+{
+  "_comment": "用户指定的传说示例：+4% 攻击力与 +8% 攻击速度。",
+  "level": "superreforge:legendary",
+  "item_types": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
+  "name": {"translate": "modifier.superreforge.melee_6", "fallback": "传说", "color": "gold", "bold": true},
+  "weight": 12,
+  "attributes": [
+    {"id": "damage", "attribute": "minecraft:generic.attack_damage", "amount": 0.04, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "speed", "attribute": "minecraft:generic.attack_speed", "amount": 0.08, "operation": "add_multiplied_base", "slots": ["mainhand"]}
+  ]
+}

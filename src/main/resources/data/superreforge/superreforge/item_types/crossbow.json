@@ -1,0 +1,4 @@
+{
+  "_comment": "弩拥有独立类型，但默认与弓共享远程词条文件。",
+  "include": [{"item": "minecraft:crossbow"}]
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "近战 2 级示例，同时演示 add_value 固定值和百分比乘基础值。",
+  "level": "superreforge:common",
+  "item_types": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
+  "name": {"translate": "modifier.superreforge.melee_2", "fallback": "坚固", "color": "white"},
+  "weight": 35,
+  "attributes": [
+    {"id": "damage", "attribute": "minecraft:generic.attack_damage", "amount": 0.5, "operation": "add_value", "slots": ["mainhand"]},
+    {"id": "speed", "attribute": "minecraft:generic.attack_speed", "amount": 0.01, "operation": "add_multiplied_base", "slots": ["mainhand"]}
+  ]
+}

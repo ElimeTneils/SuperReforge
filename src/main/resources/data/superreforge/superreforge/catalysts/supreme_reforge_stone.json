@@ -1,0 +1,13 @@
+{
+  "_comment": "至高石固定消耗 4 个和 15 点/级经验，只出 5~8 级；数组中的数字会自动归一化。",
+  "ingredient": {"item": "superreforge:supreme_reforge_stone"},
+  "count": 4,
+  "experience": 15,
+  "allow_same_modifier": true,
+  "levels": [
+    {"level": "superreforge:epic", "weight": 30},
+    {"level": "superreforge:legendary", "weight": 30},
+    {"level": "superreforge:mythic", "weight": 25},
+    {"level": "superreforge:divine", "weight": 15}
+  ]
+}

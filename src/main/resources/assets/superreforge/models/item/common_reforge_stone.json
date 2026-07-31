@@ -1,0 +1,5 @@
+{
+  "_comment": "普通重铸石使用原版燧石轮廓；数据包定义其 1~4 级抽取范围。",
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "minecraft:item/flint"}
+}

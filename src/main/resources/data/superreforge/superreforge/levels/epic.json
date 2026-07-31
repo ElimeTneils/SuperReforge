@@ -1,0 +1,5 @@
+{
+  "_comment": "史诗品质，默认排位 5。",
+  "rank": 5,
+  "name": {"translate": "level.superreforge.epic", "fallback": "史诗", "color": "light_purple"}
+}

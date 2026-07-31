@@ -1,0 +1,5 @@
+{
+  "_comment": "精炼重铸石使用紫水晶轮廓；数据包定义其 3~6 级抽取范围。",
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "minecraft:item/amethyst_shard"}
+}

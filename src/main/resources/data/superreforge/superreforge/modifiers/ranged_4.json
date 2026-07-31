@@ -1,0 +1,11 @@
+{
+  "_comment": "远程 4 级稀有前缀。",
+  "level": "superreforge:rare",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_4", "fallback": "鹰眼", "color": "aqua"},
+  "weight": 25,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": 0.02, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": 1.0, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}

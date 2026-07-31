@@ -1,0 +1,11 @@
+{
+  "_comment": "近战 4 级稀有前缀。weight 是同等级词条间的相对权重。",
+  "level": "superreforge:rare",
+  "item_types": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
+  "name": {"translate": "modifier.superreforge.melee_4", "fallback": "英勇", "color": "aqua"},
+  "weight": 25,
+  "attributes": [
+    {"id": "damage", "attribute": "minecraft:generic.attack_damage", "amount": 0.02, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "speed", "attribute": "minecraft:generic.attack_speed", "amount": 0.04, "operation": "add_multiplied_base", "slots": ["mainhand"]}
+  ]
+}

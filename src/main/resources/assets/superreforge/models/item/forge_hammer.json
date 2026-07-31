@@ -1,0 +1,19 @@
+{
+  "_comment": "动态动画专用的原创 3D 锻锤；锤头、铜箍与木柄是三个独立部件。",
+  "textures": {
+    "head": "minecraft:block/iron_block",
+    "band": "minecraft:block/cut_copper",
+    "handle": "minecraft:block/stripped_dark_oak_log",
+    "particle": "minecraft:block/iron_block"
+  },
+  "display": {
+    "fixed": {"rotation": [0, 0, -45], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+    "gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.85, 0.85, 0.85]}
+  },
+  "elements": [
+    {"name":"木柄","from":[7,0,7],"to":[9,12,9],"faces":{"down":{"texture":"#handle"},"up":{"texture":"#handle"},"north":{"texture":"#handle"},"south":{"texture":"#handle"},"west":{"texture":"#handle"},"east":{"texture":"#handle"}}},
+    {"name":"铜箍","from":[6,9,6],"to":[10,12,10],"faces":{"down":{"texture":"#band"},"up":{"texture":"#band"},"north":{"texture":"#band"},"south":{"texture":"#band"},"west":{"texture":"#band"},"east":{"texture":"#band"}}},
+    {"name":"锻铁锤头","from":[2,11,5],"to":[14,15,11],"faces":{"down":{"texture":"#head"},"up":{"texture":"#head"},"north":{"texture":"#head"},"south":{"texture":"#head"},"west":{"texture":"#head"},"east":{"texture":"#head"}}},
+    {"name":"锤面加固层","from":[1,11,5],"to":[3,15,11],"faces":{"down":{"texture":"#band"},"up":{"texture":"#band"},"north":{"texture":"#band"},"south":{"texture":"#band"},"west":{"texture":"#band"},"east":{"texture":"#band"}}}
+  ]
+}

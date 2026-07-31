@@ -1,0 +1,11 @@
+{
+  "_comment": "远程 5 级史诗前缀。",
+  "level": "superreforge:epic",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_5", "fallback": "风行", "color": "light_purple"},
+  "weight": 20,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": 0.03, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": 1.5, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}

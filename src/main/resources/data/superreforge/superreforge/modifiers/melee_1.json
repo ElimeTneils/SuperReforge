@@ -1,0 +1,11 @@
+{
+  "_comment": "近战 1 级示例：一条前缀可同时包含伤害和攻速；每条效果独立指定运算与主手位置。",
+  "level": "superreforge:worn",
+  "item_types": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
+  "name": {"translate": "modifier.superreforge.melee_1", "fallback": "钝化", "color": "dark_gray"},
+  "weight": 40,
+  "attributes": [
+    {"id": "damage", "attribute": "minecraft:generic.attack_damage", "amount": -0.04, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "speed", "attribute": "minecraft:generic.attack_speed", "amount": -0.02, "operation": "add_multiplied_base", "slots": ["mainhand"]}
+  ]
+}

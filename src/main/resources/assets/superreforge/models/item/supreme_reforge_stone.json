@@ -1,0 +1,5 @@
+{
+  "_comment": "至高重铸石使用回响碎片轮廓；数据包定义其 5~8 级抽取范围。",
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "minecraft:item/echo_shard"}
+}

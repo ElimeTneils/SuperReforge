@@ -1,0 +1,5 @@
+{
+  "_comment": "让熔核锻台使用镐挖掘。",
+  "replace": false,
+  "values": ["superreforge:reforger"]
+}

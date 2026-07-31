@@ -1,0 +1,6 @@
+{
+  "_comment": "锻台没有朝向状态，动态锻锤由方块实体渲染器单独绘制。",
+  "variants": {
+    "": {"model": "superreforge:block/reforger"}
+  }
+}

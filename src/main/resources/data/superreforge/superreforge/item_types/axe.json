@@ -1,0 +1,4 @@
+{
+  "_comment": "标签能自动包含其他模组正确加入 minecraft:axes 的斧类物品。",
+  "include": [{"tag": "minecraft:axes"}]
+}

@@ -1,0 +1,12 @@
+{
+  "_comment": "Curios 通用池 7 级神话案例。",
+  "level": "superreforge:mythic",
+  "item_types": ["superreforge:curio"],
+  "name": {"translate": "modifier.superreforge.curio_7", "fallback": "星魂", "color": "red", "bold": true},
+  "weight": 6,
+  "attributes": [
+    {"id": "health", "attribute": "minecraft:generic.max_health", "amount": {"min": 5.0, "max": 7.0}, "operation": "add_value", "slots": ["curios:any"]},
+    {"id": "armor", "attribute": "minecraft:generic.armor", "amount": {"min": 2.5, "max": 3.5}, "operation": "add_value", "slots": ["curios:any"]},
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": 0.03, "operation": "add_multiplied_total", "slots": ["curios:any"]}
+  ]
+}

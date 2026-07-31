@@ -1,0 +1,11 @@
+{
+  "_comment": "远程 7 级神话前缀。",
+  "level": "superreforge:mythic",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_7", "fallback": "星坠", "color": "red", "bold": true},
+  "weight": 6,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": {"min": 0.05, "max": 0.07}, "operation": "add_multiplied_total", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": {"min": 2.5, "max": 3.5}, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}

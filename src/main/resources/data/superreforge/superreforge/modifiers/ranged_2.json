@@ -1,0 +1,11 @@
+{
+  "_comment": "远程 2 级前缀。安装提供射弹 Attribute 的模组后，可把 attribute ID 换成该模组的 ID。",
+  "level": "superreforge:common",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_2", "fallback": "轻便", "color": "white"},
+  "weight": 35,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": 0.005, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": 0.25, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}

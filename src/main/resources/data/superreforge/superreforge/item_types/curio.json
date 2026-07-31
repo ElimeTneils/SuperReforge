@@ -1,0 +1,4 @@
+{
+  "_comment": "安装 Curios 时匹配任意已注册饰品槽；未安装时该选择器安全地不命中。",
+  "include": [{"curios": "any"}]
+}

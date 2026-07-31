@@ -1,0 +1,11 @@
+{
+  "_comment": "Curios 通用池 1 级案例；curios:any 表示任意 Curios 栏位，不绑定 ring/charm 等固定名称。",
+  "level": "superreforge:worn",
+  "item_types": ["superreforge:curio"],
+  "name": {"translate": "modifier.superreforge.curio_1", "fallback": "黯淡", "color": "dark_gray"},
+  "weight": 40,
+  "attributes": [
+    {"id": "health", "attribute": "minecraft:generic.max_health", "amount": -1.0, "operation": "add_value", "slots": ["curios:any"]},
+    {"id": "armor", "attribute": "minecraft:generic.armor", "amount": -0.5, "operation": "add_value", "slots": ["curios:any"]}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "一次合成两枚普通重铸石。",
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "minecraft:flint"},
+    {"item": "minecraft:quartz"},
+    {"item": "minecraft:obsidian"}
+  ],
+  "result": {"id": "superreforge:common_reforge_stone", "count": 2}
+}

@@ -1,0 +1,4 @@
+{
+  "_comment": "Minecraft 1.21 重锤类型。",
+  "include": [{"item": "minecraft:mace"}]
+}

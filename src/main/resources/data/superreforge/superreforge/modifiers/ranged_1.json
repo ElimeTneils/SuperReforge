@@ -1,0 +1,11 @@
+{
+  "_comment": "远程池独立于近战池；Super Reforge 不注册射弹属性，因此默认只使用原版通用属性。",
+  "level": "superreforge:worn",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_1", "fallback": "沉重", "color": "dark_gray"},
+  "weight": 40,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": -0.02, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": -0.5, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}
