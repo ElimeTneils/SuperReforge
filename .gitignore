@@ -1,0 +1,14 @@
+# Local brainstorming companion files; not part of the mod.
+.superpowers/
+
+# Gradle and IDE output (used after implementation begins).
+.gradle/
+build/
+out/
+.idea/
+*.iml
+
+# Minecraft development runtime output.
+run/
+runs/
+
