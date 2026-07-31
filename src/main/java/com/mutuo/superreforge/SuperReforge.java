@@ -1,6 +1,11 @@
 package com.mutuo.superreforge;
 
 import com.mojang.logging.LogUtils;
+import com.mutuo.superreforge.config.SuperReforgeConfig;
+import com.mutuo.superreforge.registry.ModDataComponents;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.common.Mod;
 import org.slf4j.Logger;
 
@@ -23,7 +28,9 @@ public final class SuperReforge {
      *
      * <p>当前引导阶段没有业务注册；后续任务会把各模块注册器接入这里。
      */
-    public SuperReforge() {
+    public SuperReforge(IEventBus modBus, ModContainer modContainer) {
+        ModDataComponents.register(modBus);
+        modContainer.registerConfig(ModConfig.Type.SERVER, SuperReforgeConfig.SERVER_SPEC);
         LOGGER.info("Super Reforge bootstrap initialized");
     }
 }

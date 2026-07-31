@@ -105,6 +105,12 @@ neoForge {
             sourceSet(sourceSets.main)
         }
     }
+
+    // 让 JUnit 测试直接使用 Minecraft/NeoForge 的真实类与 Codec，而不是测试替身。
+    unitTest {
+        enable()
+        testedMod = mods.getByName(mod_id)
+    }
 }
 
 // Sets up a dependency configuration called 'localRuntime'.
@@ -146,6 +152,8 @@ dependencies {
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    // Windows 中文环境的默认编码可能是 GBK；NeoForge 元数据必须稳定输出为 UTF-8。
+    filteringCharset = 'UTF-8'
     var replaceProperties = [
             minecraft_version      : minecraft_version,
             minecraft_version_range: minecraft_version_range,

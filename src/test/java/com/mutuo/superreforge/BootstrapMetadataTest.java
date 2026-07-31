@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -15,21 +13,24 @@ import org.junit.jupiter.api.Test;
  * 避免生成一个能编译但无法被正确识别的 JAR。
  */
 final class BootstrapMetadataTest {
-    private static final Path MODS_TOML =
-            Path.of("src", "main", "templates", "META-INF", "neoforge.mods.toml");
-
     @Test
     void metadataDeclaresThePublishedIdentityAndRequiredPlatforms() throws IOException {
-        String metadata = Files.readString(MODS_TOML, StandardCharsets.UTF_8);
+        String metadata;
+        try (var stream = BootstrapMetadataTest.class
+                .getClassLoader()
+                .getResourceAsStream("META-INF/neoforge.mods.toml")) {
+            assertTrue(stream != null, "构建产物必须包含 META-INF/neoforge.mods.toml");
+            metadata = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
 
-        assertTrue(metadata.contains("modId=\"${mod_id}\""));
-        assertTrue(metadata.contains("displayName=\"${mod_name}\""));
-        assertTrue(metadata.contains("authors=\"${mod_authors}\""));
-        assertTrue(metadata.contains("license=\"${mod_license}\""));
+        assertTrue(metadata.contains("modId=\"superreforge\""));
+        assertTrue(metadata.contains("displayName=\"Super Reforge\""));
+        assertTrue(metadata.contains("authors=\"MUTUO\""));
+        assertTrue(metadata.contains("license=\"LGPL-3.0-or-later\""));
         assertTrue(metadata.contains("modId=\"neoforge\""));
-        assertTrue(metadata.contains("versionRange=\"[${neo_version},)\""));
+        assertTrue(metadata.contains("versionRange=\"[21.1.244,)\""));
         assertTrue(metadata.contains("modId=\"minecraft\""));
-        assertTrue(metadata.contains("versionRange=\"${minecraft_version_range}\""));
+        assertTrue(metadata.contains("versionRange=\"[1.21.1]\""));
     }
 
     @Test
