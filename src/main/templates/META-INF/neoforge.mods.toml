@@ -12,6 +12,10 @@ description='''
 Data-driven weapon and Curios prefix reforging with an animated molten-core reforger.
 '''
 
+# 名称注入只修改 getHoverName 的返回值，不改写物品 CUSTOM_NAME 数据组件。
+[[mixins]]
+config="superreforge.mixins.json"
+
 # NeoForge 21.1.244 是编译和验证基线；允许兼容同一 Minecraft 版本的后续 21.1.x。
 [[dependencies.${mod_id}]]
 modId="neoforge"

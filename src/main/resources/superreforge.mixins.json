@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.mutuo.superreforge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ItemStackNameMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
