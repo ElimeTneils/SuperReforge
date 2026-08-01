@@ -12,47 +12,32 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-/** 在静态熔核底座上方竖直渲染独立动力锻锤，并按服务端同步 tick 下落。 */
+/** 按共享变换计划把动力锻锤绕固定连接点渲染为斜置摆动。 */
 public final class ReforgerBlockEntityRenderer implements BlockEntityRenderer<ReforgerBlockEntity> {
     public ReforgerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(
-            ReforgerBlockEntity blockEntity,
-            float partialTick,
-            PoseStack poseStack,
-            MultiBufferSource buffers,
-            int packedLight,
-            int packedOverlay) {
+    public void render(ReforgerBlockEntity blockEntity, float partialTick, PoseStack poseStack,
+            MultiBufferSource buffers, int packedLight, int packedOverlay) {
         float hammerAngle = blockEntity.pending()
                 .map(value -> ReforgerRenderState.fromTicks(
-                        value.totalTicks(), value.remainingTicks(), partialTick)
-                        .hammerAngleDegrees())
+                        value.totalTicks(), value.remainingTicks(), partialTick).hammerAngleDegrees())
                 .orElse(ReforgerHammerGeometry.REST_ANGLE_DEGREES);
+        ReforgerHammerGeometry.TransformPlan plan = ReforgerHammerGeometry.transformPlan(
+                blockEntity.getBlockState().getValue(ReforgerBlock.FACING), hammerAngle);
         poseStack.pushPose();
-        poseStack.translate(
-                ReforgerHammerGeometry.PIVOT_X,
-                ReforgerHammerGeometry.PIVOT_Y,
-                ReforgerHammerGeometry.PIVOT_Z);
-        // 方块朝向只影响水平 yaw；模型本身已经是锤头朝下的工作姿态。
-        float yRotation = ReforgerHammerGeometry.yawDegrees(
-                blockEntity.getBlockState().getValue(ReforgerBlock.FACING));
-        poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(hammerAngle));
-        poseStack.scale(
-                ReforgerHammerGeometry.SCALE,
-                ReforgerHammerGeometry.SCALE,
-                ReforgerHammerGeometry.SCALE);
-        poseStack.translate(0.0, -ReforgerHammerGeometry.PIVOT_MODEL_Y + 0.5F, 0.0);
-        Minecraft.getInstance().getItemRenderer().renderStatic(
-                new ItemStack(ModItems.FORGE_HAMMER.get()),
-                ItemDisplayContext.FIXED,
-                packedLight,
-                packedOverlay,
-                poseStack,
-                buffers,
-                blockEntity.getLevel(),
-                (int) blockEntity.getBlockPos().asLong());
+        // renderer 逐步消费几何层的同一份计划，测试与实际矩阵顺序不会各自漂移。
+        for (ReforgerHammerGeometry.TransformStep step : plan.steps()) {
+            switch (step.operation()) {
+                case TRANSLATE -> poseStack.translate(step.x(), step.y(), step.z());
+                case ROTATE_Y -> poseStack.mulPose(Axis.YP.rotationDegrees(step.x()));
+                case ROTATE_Z -> poseStack.mulPose(Axis.ZP.rotationDegrees(step.x()));
+                case SCALE -> poseStack.scale(step.x(), step.y(), step.z());
+            }
+        }
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ModItems.FORGE_HAMMER.get()),
+                ItemDisplayContext.FIXED, packedLight, packedOverlay, poseStack, buffers,
+                blockEntity.getLevel(), (int) blockEntity.getBlockPos().asLong());
         poseStack.popPose();
     }
 }

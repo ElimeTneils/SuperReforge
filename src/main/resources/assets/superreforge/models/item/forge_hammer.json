@@ -1,5 +1,5 @@
 {
-  "_comment": "Block entity animation hammer; its cubes meet at boundaries without shared volume.",
+  "_comment": "方块实体动画专用动力锻锤；各部件仅在边界相接，不共享正体积。",
   "textures": {
     "head": "minecraft:block/iron_block",
     "band": "minecraft:block/cut_copper",

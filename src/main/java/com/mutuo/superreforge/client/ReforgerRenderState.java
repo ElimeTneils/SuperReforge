@@ -2,7 +2,7 @@ package com.mutuo.superreforge.client;
 
 import net.minecraft.util.Mth;
 
-/** 把同步 tick 转成锻锤模型中心高度、熔核亮度和总体进度，供 GUI 与 3D 渲染共用。 */
+/** 把同步 tick 转成锻锤局部摆角、熔核亮度和总体进度，供 GUI 与 3D 渲染共用。 */
 public record ReforgerRenderState(float progress, float hammerAngleDegrees, float coreIntensity) {
     public static ReforgerRenderState fromTicks(int totalTicks, int remainingTicks, float partialTick) {
         if (totalTicks <= 0) {
@@ -12,7 +12,7 @@ public record ReforgerRenderState(float progress, float hammerAngleDegrees, floa
         float elapsed = totalTicks - remainingTicks + partialTick;
         float progress = Mth.clamp(elapsed / totalTicks, 0.0F, 1.0F);
 
-        // 一秒内完成抬锤、加速落下、短回弹和复位；结束高度与无任务静止高度完全一致。
+        // 一秒内完成抬锤、加速下砸、短回弹和复位；结束摆角与无任务静止摆角完全一致。
         float hammerAngle;
         if (progress <= 0.25F) {
             float raise = smooth(progress / 0.25F);

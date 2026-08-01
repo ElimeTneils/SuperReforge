@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-/** 验证约一秒动画的关键时间点不会因渲染帧率改变。 */
+/** 验证约一秒动画的五个关键帧不会因渲染帧率改变。 */
 final class ReforgerRenderStateTest {
     @Test
     void hammerRaisesImpactsBouncesAndReturnsToRestAroundTheFixedPivot() {
@@ -16,9 +16,9 @@ final class ReforgerRenderStateTest {
         ReforgerRenderState end = ReforgerRenderState.fromTicks(20, 0, 0);
 
         assertEquals(-45.0F, start.hammerAngleDegrees(), 0.001F);
-        assertTrue(raised.hammerAngleDegrees() > start.hammerAngleDegrees());
+        assertEquals(-75.0F, raised.hammerAngleDegrees(), 0.001F);
         assertEquals(ReforgerHammerGeometry.CONTACT_ANGLE_DEGREES, impact.hammerAngleDegrees(), 0.001F);
-        assertTrue(rebound.hammerAngleDegrees() > impact.hammerAngleDegrees());
+        assertEquals(-47.0F, rebound.hammerAngleDegrees(), 0.001F);
         assertEquals(-45.0F, end.hammerAngleDegrees(), 0.001F);
         assertEquals(1.0F, impact.coreIntensity(), 0.001F);
         assertEquals(1.0F, end.progress(), 0.001F);
