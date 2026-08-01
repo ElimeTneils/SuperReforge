@@ -83,23 +83,15 @@ public final class ReforgerMenu extends AbstractContainerMenu {
         }
     }
 
+    /** 玩家背包槽仅消费共享位置表，避免菜单与客户端把 9 列布局各自复制一遍。 */
     private void addPlayerInventory(Inventory inventory) {
-        for (int row = 0; row < 3; row++) {
-            for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(
-                        inventory,
-                        column + row * 9 + 9,
-                        ReforgerLayout.playerSlotX(column),
-                        ReforgerLayout.PLAYER_INVENTORY_Y + row * 18));
-            }
+        for (ReforgerLayout.PlayerSlotPosition position : playerSlots()) {
+            addSlot(new Slot(inventory, position.inventoryIndex(), position.x(), position.y()));
         }
-        for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(
-                    inventory,
-                    column,
-                    ReforgerLayout.playerSlotX(column),
-                    ReforgerLayout.PLAYER_HOTBAR_Y));
-        }
+    }
+
+    static java.util.List<ReforgerLayout.PlayerSlotPosition> playerSlots() {
+        return ReforgerLayout.playerSlots();
     }
 
     @Override

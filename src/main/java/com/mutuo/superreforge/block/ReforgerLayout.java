@@ -1,5 +1,8 @@
 package com.mutuo.superreforge.block;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 重铸菜单与客户端屏幕共享的相对坐标。
  *
@@ -31,6 +34,7 @@ public final class ReforgerLayout {
     /** 原版背包面板固定为 176px：9 个槽位配合两侧对称 8px 内边距。 */
     public static final int PLAYER_PANEL_WIDTH = 176;
     private static final int PLAYER_PANEL_INSET = 8;
+    private static final List<PlayerSlotPosition> PLAYER_SLOTS = createPlayerSlots();
 
     private ReforgerLayout() {}
 
@@ -41,6 +45,40 @@ public final class ReforgerLayout {
     /** 菜单真实 Slot 与客户端空槽底图共同使用这条横坐标公式，避免出现第十列。 */
     public static int playerSlotX(int column) {
         return playerPanelLeft() + PLAYER_PANEL_INSET + column * 18;
+    }
+
+    /**
+     * 菜单 Slot 与屏幕空槽底图唯一共享的玩家背包几何；顺序与原版 Inventory 索引一致。
+     */
+    public static List<PlayerSlotPosition> playerSlots() {
+        return PLAYER_SLOTS;
+    }
+
+    private static List<PlayerSlotPosition> createPlayerSlots() {
+        List<PlayerSlotPosition> positions = new ArrayList<>(36);
+        for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < 9; column++) {
+                positions.add(new PlayerSlotPosition(
+                        9 + row * 9 + column,
+                        playerSlotX(column),
+                        PLAYER_INVENTORY_Y + row * 18));
+            }
+        }
+        for (int column = 0; column < 9; column++) {
+            positions.add(new PlayerSlotPosition(column, playerSlotX(column), PLAYER_HOTBAR_Y));
+        }
+        return List.copyOf(positions);
+    }
+
+    /** 16px 物品内容区坐标与环绕它的 18px 原版槽框坐标。 */
+    public record PlayerSlotPosition(int inventoryIndex, int x, int y) {
+        public int frameX() {
+            return x - 1;
+        }
+
+        public int frameY() {
+            return y - 1;
+        }
     }
 
     public static boolean insideLog(double x, double y) {

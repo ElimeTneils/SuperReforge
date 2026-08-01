@@ -140,22 +140,15 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
     }
 
     private void drawVanillaSlot(GuiGraphics graphics, int x, int y) {
-        graphics.fill(x, y, x + 18, y + 18, COLOR_SHADOW);
-        graphics.fill(x + 1, y + 1, x + 17, y + 17, COLOR_HIGHLIGHT);
-        graphics.fill(x + 2, y + 2, x + 16, y + 16, 0xFF8B8B8B);
+        graphics.fill(x - 1, y - 1, x + 17, y + 17, COLOR_SHADOW);
+        graphics.fill(x, y, x + 16, y + 16, COLOR_HIGHLIGHT);
+        graphics.fill(x + 1, y + 1, x + 15, y + 15, 0xFF8B8B8B);
     }
 
     /** 36 个玩家槽的底图复用菜单坐标，确保空槽可见且没有虚构第十列。 */
     private void drawPlayerSlotBackgrounds(GuiGraphics graphics) {
-        for (int row = 0; row < 3; row++) {
-            for (int column = 0; column < 9; column++) {
-                drawVanillaSlot(graphics, leftPos + ReforgerLayout.playerSlotX(column),
-                        topPos + ReforgerLayout.PLAYER_INVENTORY_Y + row * 18);
-            }
-        }
-        for (int column = 0; column < 9; column++) {
-            drawVanillaSlot(graphics, leftPos + ReforgerLayout.playerSlotX(column),
-                    topPos + ReforgerLayout.PLAYER_HOTBAR_Y);
+        for (ReforgerLayout.PlayerSlotPosition position : ReforgerLayout.playerSlots()) {
+            drawVanillaSlot(graphics, leftPos + position.x(), topPos + position.y());
         }
     }
 

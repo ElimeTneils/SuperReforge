@@ -2,10 +2,10 @@ package com.mutuo.superreforge.block;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** 验证屏幕和菜单共享的布局能保持槽位居中，并正确隔离日志滚动区域。 */
@@ -31,23 +31,39 @@ final class ReforgerLayoutTest {
     }
 
     @Test
-    void exposesExactlyThirtySixUniquePlayerSlotPositionsAcrossNineColumns() {
-        Set<String> positions = new HashSet<>();
+    void sharesTheExactOrderedThirtySixSlotPositionsWithTheMenu() {
+        List<ReforgerLayout.PlayerSlotPosition> positions = ReforgerLayout.playerSlots();
+
+        assertEquals(36, positions.size());
+        assertSame(positions, ReforgerMenu.playerSlots());
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                positions.add(ReforgerLayout.playerSlotX(column) + ","
-                        + (ReforgerLayout.PLAYER_INVENTORY_Y + row * 18));
+                int offset = row * 9 + column;
+                ReforgerLayout.PlayerSlotPosition position = positions.get(offset);
+                assertEquals(9 + offset, position.inventoryIndex());
+                assertEquals(ReforgerLayout.playerSlotX(column), position.x());
+                assertEquals(ReforgerLayout.PLAYER_INVENTORY_Y + row * 18, position.y());
             }
         }
         for (int column = 0; column < 9; column++) {
-            positions.add(ReforgerLayout.playerSlotX(column) + "," + ReforgerLayout.PLAYER_HOTBAR_Y);
+            ReforgerLayout.PlayerSlotPosition position = positions.get(27 + column);
+            assertEquals(column, position.inventoryIndex());
+            assertEquals(ReforgerLayout.playerSlotX(column), position.x());
+            assertEquals(ReforgerLayout.PLAYER_HOTBAR_Y, position.y());
         }
+        assertEquals(36, positions.stream().map(position -> position.x() + "," + position.y()).distinct().count());
+    }
 
-        assertEquals(36, positions.size());
-        assertEquals(9, positions.stream()
-                .map(position -> position.substring(0, position.indexOf(',')))
-                .distinct()
-                .count());
+    @Test
+    void framesTheSixteenPixelContentWithSymmetricSevenPixelVisualMargins() {
+        ReforgerLayout.PlayerSlotPosition first = ReforgerLayout.playerSlots().getFirst();
+        ReforgerLayout.PlayerSlotPosition last = ReforgerLayout.playerSlots().get(8);
+        int panelLeft = ReforgerLayout.playerPanelLeft();
+
+        assertEquals(panelLeft + 8, first.x());
+        assertEquals(panelLeft + 7, first.frameX());
+        assertEquals(8, panelLeft + ReforgerLayout.PLAYER_PANEL_WIDTH - (last.x() + 16));
+        assertEquals(7, panelLeft + ReforgerLayout.PLAYER_PANEL_WIDTH - (last.frameX() + 18));
     }
 
     @Test
