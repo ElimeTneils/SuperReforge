@@ -1,6 +1,8 @@
 package com.mutuo.superreforge.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import com.mutuo.superreforge.block.ReforgerBlock;
 import com.mutuo.superreforge.block.ReforgerBlockEntity;
 import com.mutuo.superreforge.registry.ModItems;
 import net.minecraft.client.Minecraft;
@@ -30,6 +32,14 @@ public final class ReforgerBlockEntityRenderer implements BlockEntityRenderer<Re
                 .orElse(0.92F);
         poseStack.pushPose();
         poseStack.translate(0.5, height, 0.5);
+        // 动态锻锤必须与 blockstate 的静态锤架同步旋转。
+        float yRotation = switch (blockEntity.getBlockState().getValue(ReforgerBlock.FACING)) {
+            case EAST -> 90.0F;
+            case SOUTH -> 180.0F;
+            case WEST -> 270.0F;
+            default -> 0.0F;
+        };
+        poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
         poseStack.scale(0.72F, 0.72F, 0.72F);
         poseStack.mulPose(new Quaternionf().rotateXYZ((float) Math.toRadians(90), 0.0F, 0.0F));
         Minecraft.getInstance().getItemRenderer().renderStatic(

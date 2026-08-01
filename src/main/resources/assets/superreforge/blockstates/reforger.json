@@ -1,6 +1,9 @@
 {
-  "_comment": "锻台没有朝向状态，动态锻锤由方块实体渲染器单独绘制。",
+  "_comment": "四个水平朝向旋转同一份原创 3D 模型；动态锻锤由方块实体渲染器使用相同角度绘制。",
   "variants": {
-    "": {"model": "superreforge:block/reforger"}
+    "facing=north": {"model": "superreforge:block/reforger"},
+    "facing=east": {"model": "superreforge:block/reforger", "y": 90, "uvlock": true},
+    "facing=south": {"model": "superreforge:block/reforger", "y": 180, "uvlock": true},
+    "facing=west": {"model": "superreforge:block/reforger", "y": 270, "uvlock": true}
   }
 }

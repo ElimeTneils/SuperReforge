@@ -72,6 +72,17 @@ final class DefaultResourcesTest {
         assertTrue(model.getAsJsonObject("textures").has("core"), "模型必须包含发光熔核材质层");
     }
 
+    @Test
+    void reforgerBlockstateRotatesTheModelInAllFourDirections() {
+        JsonObject variants = resourceJson("assets/superreforge/blockstates/reforger.json")
+                .getAsJsonObject("variants");
+
+        assertTrue(variants.has("facing=north"));
+        assertTrue(variants.has("facing=east"));
+        assertTrue(variants.has("facing=south"));
+        assertTrue(variants.has("facing=west"));
+    }
+
     private static <T> Map<ResourceLocation, T> loadAll(String folder, List<String> ids, Codec<T> codec) {
         Map<ResourceLocation, T> values = new LinkedHashMap<>();
         ids.forEach(id -> values.put(

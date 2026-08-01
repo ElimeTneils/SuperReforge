@@ -18,6 +18,8 @@ public final class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .strength(5.0F, 8.0F)
                     .requiresCorrectToolForDrops()
+                    // 立体模型含熔核凹槽和锤架空隙，不能按不透明整方块遮挡相邻面。
+                    .noOcclusion()
                     .lightLevel(state -> 6)));
 
     private ModBlocks() {}

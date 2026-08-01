@@ -16,13 +16,13 @@
 ### `block`
 
 - `PendingReforge.java`：保存待揭晓的结果栈、总 tick 与剩余 tick，提供递减和完成判定。改动会影响锻造动画时长、存档恢复和掉落保护。
-- `ReforgerBlock.java`：熔核锻台方块；服务端打开菜单、移除时掉落库存与待完成结果，并只在服务端挂方块实体 tick。改交互、ticker 或移除逻辑会影响 GUI 打开、动画提交与物品丢失/重复掉落风险。
+- `ReforgerBlock.java`：熔核锻台方块；维护四向水平朝向和随方向旋转的非整块碰撞轮廓，服务端打开菜单、移除时掉落库存与待完成结果，并只在服务端挂方块实体 tick。改朝向/碰撞会影响模型与锤架命中范围；改交互、ticker 或移除逻辑会影响 GUI 打开、动画提交与物品丢失/重复掉落风险。
 - `ReforgerBlockEntity.java`：锻台状态机，维护目标/媒介两槽、失败码、待完成结果，发起报价、扣媒介和经验、运行粒子音效及 NBT/客户端同步。修改影响重铸原子性、创造模式付款、断档恢复、方块破坏掉落和菜单进度显示。
 - `ReforgerMenu.java`：容器菜单，建立两个机器槽与背包槽、处理开始按钮和 shift-click；由服务端重新报价并发预览载荷。改槽位索引、按钮 ID 或同步条件会影响客户端容器兼容性和预览可信边界。
 
 ### `client`
 
-- `ReforgerBlockEntityRenderer.java`：客户端方块实体渲染器，读取同步后的 pending 状态渲染锻台动画。改其渲染计算只影响视觉，不应在此改服务端结果。
+- `ReforgerBlockEntityRenderer.java`：客户端方块实体渲染器，读取同步后的 pending 状态并按方块朝向渲染动态锻锤。改其渲染计算只影响视觉，不应在此改服务端结果。
 - `ReforgerRenderState.java`：把总/剩余 tick 与 partial tick 转为进度、锤高、核心强度。改公式会影响动画曲线和测试预期。
 - `ReforgerScreen.java`：锻台容器屏幕，绘制背景、标签、进度和开始交互，并消费菜单/预览状态。改坐标、文案或状态分支会影响 GUI 可用性而非重铸判定。
 - `SuperReforgeClient.java`：客户端事件注册入口，绑定锻台屏幕、方块实体渲染器和预览接收。改注册项会导致客户端界面或渲染缺失。
@@ -119,7 +119,7 @@
 ### `registry`
 
 - `ModBlockEntities.java`：注册熔核锻台的方块实体类型。改注册 ID/绑定方块会使世界方块实体无法加载。
-- `ModBlocks.java`：注册 `reforger` 方块及其属性。改 ID、强度或声音会影响配方、标签、模型和已有世界方块。
+- `ModBlocks.java`：注册 `reforger` 方块及其强度、亮度和非整块遮挡属性。改 ID 或物理属性会影响配方、标签、模型、光照和已有世界方块。
 - `ModDataComponents.java`：注册 `reforge_data` 数据组件及其持久/网络 Codec。改 ID 或 Codec 会影响物品存档和同步。
 - `ModItems.java`：注册锻台物品、三种重铸石和锻造锤。改 ID 会影响配方、媒介 JSON、语言和模型。
 - `ModMenus.java`：注册锻台菜单类型及客户端缓冲区构造器。改注册或 buf 格式会导致菜单无法打开。
@@ -135,7 +135,7 @@
 
 ### `assets/superreforge`
 
-- `blockstates/reforger.json`：把 `reforger` 状态映射到方块模型；改模型键会影响世界方块外观。
+- `blockstates/reforger.json`：把四个 `facing` 状态映射到同一 3D 模型的 0/90/180/270 度旋转；改状态键或角度会使世界模型与碰撞/动态锻锤方向不一致。
 - `models/block/reforger.json`：锻台方块模型及纹理引用；改几何/纹理 ID 只影响渲染。
 - `models/item/reforger.json`、`common_reforge_stone.json`、`refined_reforge_stone.json`、`supreme_reforge_stone.json`、`forge_hammer.json`：对应方块物品/媒介/工具的物品模型。它们应与 `ModItems` 的注册 ID 对齐，否则物品会显示为缺失模型。
 - `lang/en_us.json`、`lang/zh_cn.json`：英文/简体中文词条，覆盖锻台、失败提示、等级和示例词条名；例如 `level.superreforge.common`、`modifier.superreforge.melee_1`、`container.superreforge.reforger`。改键名会影响 JSON `translate`、屏幕与 mixin 名称显示。
@@ -172,6 +172,7 @@
 ### `block`
 
 - `PendingReforgeTest.java`：验证 pending tick 递减与 ready 边界。
+- `ReforgerBlockTest.java`：验证真实注册锻台具有默认北向和四个水平朝向。
 
 ### `client`
 
@@ -183,7 +184,7 @@
 
 ### `definition`
 
-- `DefaultResourcesTest.java`：读取默认数据包，检查等级、类型、词条、媒介资源的互相引用。
+- `DefaultResourcesTest.java`：读取默认数据包并用生产 Codec 检查等级、类型、词条、媒介引用，同时验证 3D 模型元素和四向 blockstate。
 - `DefinitionCodecTest.java`：验证定义 JSON Codec 的编码/解码。
 - `DefinitionManagerTest.java`：验证 datapack/脚本层的原子发布、覆盖和失败保留旧快照。
 - `DefinitionValidatorTest.java`：验证不合法权重、引用、效果与媒介被拒绝。
