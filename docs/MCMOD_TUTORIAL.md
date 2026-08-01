@@ -1,6 +1,6 @@
 # 超级重铸完整使用与自定义教程
 
-本教程面向 Minecraft `1.21.1` 与 NeoForge `21.1.244`（及更高的兼容版本）。Super Reforge 是双端必需模组；Curios 与 KubeJS 是双端可选依赖。不安装它们时，原版武器和数据包重铸仍可使用。
+本教程面向 Minecraft `1.21.1`，以及 NeoForge `21.1.244` 或后续仍兼容 Minecraft `1.21.1` 的构建。Super Reforge 是双端必需模组；Curios 与 KubeJS 是双端可选依赖。不安装它们时，原版武器和数据包重铸仍可使用。
 
 ## 适用版本与安装
 
