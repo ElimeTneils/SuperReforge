@@ -191,7 +191,7 @@ ServerEvents.loaded(event => {
 1. 再确认只启用一种定义脚本：方案 A 保存 `kubejs/server_scripts/superreforge_tutorial.js`；方案 B 只保存 `kubejs/server_scripts/superreforge_combat_attributes.js`。不要同时保留两者。
 2. 执行 KubeJS 的 `/kubejs reload server_scripts`；如当前整合包未暴露该命令，重启服务器以完整重载 `server_scripts`。
 3. 查看服务器日志，确认脚本无错且出现 Super Reforge 已发布 KubeJS 层的记录。
-4. 方案 A 用钻石与命中 `example:script_weapon` 的物品验证候选、权重和成本；方案 B 用内置重铸石与脚本支持的武器验证 40 条战斗词条。两种方案都应检查物品名称中的等级前缀显示。
+4. 方案 A 用钻石与命中 `example:script_weapon` 的物品验证候选、权重和成本；方案 B 用内置重铸石与脚本支持的武器、四种护甲、工具和 Curios 验证 64 条战斗词条。头盔、胸甲、护腿、靴子应分别只出现对应槽位的八级词条；两种方案都应检查物品名称中的等级前缀显示。
 
 每次 reload 都使用全新临时收集器。只有所有服务器脚本没有报错、四类定义通过交叉校验时，定义、谓词和阶段才会整体发布。任一步失败都保留上一份有效脚本层，不会只更新一半。
 

@@ -33,10 +33,15 @@ final class CombatKubeJsExampleTest {
             "pullTime", List.of(List.of(-0.03, 0.02), List.of(-0.05, 0.03), List.of(-0.07, 0.05), List.of(-0.10, 0.07), List.of(-0.13, 0.10), List.of(-0.16, 0.13), List.of(-0.19, 0.16), List.of(-0.22, 0.19)));
     private static final List<String> EXPECTED_LEVEL_NAMES =
             List.of("等级 1", "等级 2", "等级 3", "等级 4", "等级 5", "等级 6", "等级 7", "等级 8");
+    private static final List<String> EXPECTED_ARMOR_NAMES =
+            List.of("坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒");
     private static final Map<String, List<String>> EXPECTED_POOL_NAMES = Map.of(
             "melee", List.of("锐意", "强袭", "猎杀", "致命", "狂战", "破军", "弑神", "终焉"),
             "ranged", List.of("稳弦", "劲射", "疾羽", "鹰眼", "风行", "穿云", "逐星", "天穹"),
-            "armor", List.of("坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒"),
+            "helmet", EXPECTED_ARMOR_NAMES,
+            "chestplate", EXPECTED_ARMOR_NAMES,
+            "leggings", EXPECTED_ARMOR_NAMES,
+            "boots", EXPECTED_ARMOR_NAMES,
             "tool", List.of("熟练", "利落", "精工", "迅捷", "大师", "奇迹", "神匠", "创世"),
             "curio", List.of("微光", "灵辉", "祝福", "守护", "星辉", "命运", "神谕", "超越"));
 
@@ -47,7 +52,10 @@ final class CombatKubeJsExampleTest {
         for (String required : List.of(
                 "superreforge:worn",
                 "superreforge:divine",
-                "example:armor",
+                "example:helmet",
+                "example:chestplate",
+                "example:leggings",
+                "example:boots",
                 "example:tool",
                 "critical_strike:chance",
                 "critical_strike:damage",
@@ -60,10 +68,14 @@ final class CombatKubeJsExampleTest {
                 "curios:any")) {
             assertTrue(source.contains(required), "combat KubeJS example is missing: " + required);
         }
+        assertTrue(source.contains("include: itemType.selectors.map(tag => ({ tag: tag }))"),
+                "selector objects must use explicit keys supported by KubeJS 2101 Rhino");
+        assertFalse(source.contains("({ tag }))"),
+                "KubeJS 2101 Rhino does not support object property shorthand here");
     }
 
     @Test
-    void publishesFortyStructuredCombatModifiersWithRequiredPoolsAndEffects() throws IOException {
+    void publishesSixtyFourStructuredCombatModifiersWithExactArmorSlots() throws IOException {
         JsonObject spec = combatSpec();
         JsonArray levels = spec.getAsJsonArray("levels");
         assertTrue(levels.size() == 8, "combat specification must define eight ranks");
@@ -75,7 +87,7 @@ final class CombatKubeJsExampleTest {
         }
 
         JsonArray pools = spec.getAsJsonArray("pools");
-        assertTrue(pools.size() == 5, "combat specification must define five pools");
+        assertTrue(pools.size() == 8, "combat specification must define eight pools");
         Set<String> modifierIds = new HashSet<>();
         for (JsonElement poolElement : pools) {
             String poolId = poolElement.getAsJsonObject().get("id").getAsString();
@@ -84,14 +96,19 @@ final class CombatKubeJsExampleTest {
                 assertTrue(modifierIds.add("example:combat_" + poolId + "_" + rank), "duplicate modifier ID");
             }
         }
-        assertTrue(modifierIds.size() == 40, "five pools across eight ranks must produce forty modifier IDs");
-        assertItemType(spec.getAsJsonArray("itemTypes"), "example:armor", List.of(
-                "minecraft:head_armor", "minecraft:chest_armor", "minecraft:leg_armor", "minecraft:foot_armor"));
+        assertTrue(modifierIds.size() == 64, "eight pools across eight ranks must produce sixty-four modifier IDs");
+        assertItemType(spec.getAsJsonArray("itemTypes"), "example:helmet", List.of("minecraft:head_armor"));
+        assertItemType(spec.getAsJsonArray("itemTypes"), "example:chestplate", List.of("minecraft:chest_armor"));
+        assertItemType(spec.getAsJsonArray("itemTypes"), "example:leggings", List.of("minecraft:leg_armor"));
+        assertItemType(spec.getAsJsonArray("itemTypes"), "example:boots", List.of("minecraft:foot_armor"));
         assertItemType(spec.getAsJsonArray("itemTypes"), "example:tool", List.of(
                 "minecraft:pickaxes", "minecraft:shovels", "minecraft:hoes"));
         assertPool(pools, "melee", List.of("superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"), List.of("mainhand"), false);
         assertPool(pools, "ranged", List.of("superreforge:bow", "superreforge:crossbow"), List.of("mainhand"), true);
-        assertPool(pools, "armor", List.of("example:armor"), List.of("head", "chest", "legs", "feet"), false);
+        assertPool(pools, "helmet", List.of("example:helmet"), List.of("head"), false);
+        assertPool(pools, "chestplate", List.of("example:chestplate"), List.of("chest"), false);
+        assertPool(pools, "leggings", List.of("example:leggings"), List.of("legs"), false);
+        assertPool(pools, "boots", List.of("example:boots"), List.of("feet"), false);
         assertPool(pools, "tool", List.of("example:tool"), List.of("mainhand"), false);
         assertPool(pools, "curio", List.of("superreforge:curio"), List.of("curios:any"), false);
 

@@ -15,7 +15,7 @@
 - 加入经验等级/点数模式、创造免费策略、自动首词条和失效词条策略。
 - 加入 JSON Schema、严格 datapack、JSONC 阅读版和中文 API 文档。
 - 修正 1.21.1 资源管理器不接受目录末尾斜杠而导致服务器 datapack 加载中止的问题。
-- 新增可直接复制到 KubeJS 的 `examples/kubejs/superreforge_combat_attributes.js`：用一份 UTF-8 结构化表注册“等级 1”至“等级 8”与 5 组共 40 条战斗词条，并示范 Critical Strike、Ranged Weapon API 和 Curios 的可选 Attribute；未安装对应模组时核心功能仍可独立运行。
+- 新增可直接复制到 KubeJS 的 `examples/kubejs/superreforge_combat_attributes.js`：用一份 UTF-8 结构化表注册“等级 1”至“等级 8”与 8 组共 64 条战斗词条，并示范 Critical Strike、Ranged Weapon API 和 Curios 的可选 Attribute；头盔、胸甲、护腿、靴子使用独立物品类型、词条 ID 和精确装备槽，选择器对象采用 KubeJS 2101 Rhino 可解析的显式键写法，未安装对应模组时核心功能仍可独立运行。
 - 将默认八级显示统一为中文“等级 1”至“等级 8”和英文 “Level 1” 至 “Level 8”，保留原有资源 ID、rank、颜色与旧物品解析兼容。
 - 修复 Curios 在创意物品栏或 JEI 构建 tooltip 时传入 null 实体的崩溃：合成客户端上下文只解析显示数据，不再执行服务端物品校正。
 - 把重铸界面整理为原版 GUI 控件与面板风格；玩家背包严格使用 176px 面板内的 9 列 × 4 行共 36 个槽位，菜单真实槽与客户端槽框共享同一份几何，避免多出第十列或错位；无有效报价、定义未同步或正在锻造时，原版重铸按钮保持禁用。

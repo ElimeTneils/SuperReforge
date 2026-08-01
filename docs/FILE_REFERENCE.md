@@ -184,14 +184,14 @@
 
 ## `examples/kubejs`
 
-- `examples/kubejs/superreforge_combat_attributes.js`：可复制的八级战斗配置；可执行 `SR_COMBAT_SPEC` UTF-8 JSON 表由循环直接消费，为近战、远程、护甲、工具与 Curios 五个池各生成八级、共 40 个词条，并演示 Critical Strike、Ranged Weapon API 与 Curios Attribute。玩家应按教程与最小定义脚本二选一，且只有安装相应 Attribute 提供模组后才启用这份完整脚本。
+- `examples/kubejs/superreforge_combat_attributes.js`：可复制的八级战斗配置；可执行 `SR_COMBAT_SPEC` UTF-8 JSON 表由循环直接消费，为近战、远程、头盔、胸甲、护腿、靴子、工具与 Curios 八个池各生成八级、共 64 个词条，并演示 Critical Strike、Ranged Weapon API 与 Curios Attribute。四种护甲分别绑定单独 tag、类型和槽位；玩家应按教程与最小定义脚本二选一，且只有安装相应 Attribute 提供模组后才启用这份完整脚本。
 - `superreforge_definitions.js`：最小 KubeJS 定义示例，演示四类定义和脚本谓词；不能与完整战斗脚本同时注册相同八级 ID。
 - `superreforge_progression.js`：全服阶段开关与持久化进度示例。
 
 ## `src/test/java/com/mutuo/superreforge`
 
 - `BootstrapMetadataTest.java`：检查构建/模组元数据相关约定。
-- `CombatKubeJsExampleTest.java`：解析完整战斗脚本的真实 `SR_COMBAT_SPEC`，结构化验证 8 个 UTF-8 等级名、5 个池/40 个 ID、相对权重、选择器、槽位、Critical Strike 与仅远程池可用的 Ranged Weapon API operation。
+- `CombatKubeJsExampleTest.java`：解析完整战斗脚本的真实 `SR_COMBAT_SPEC`，结构化验证 8 个 UTF-8 等级名、8 个池/64 个 ID、相对权重、四种护甲 tag 与精确槽位、Critical Strike 与仅远程池可用的 Ranged Weapon API operation。
 - `DocumentationContractTest.java`：检查发布文件/真实 Markdown 链接、双教程工作流，以及 `CHANGELOG.md` 和本文件必须记录的原版 GUI、Curios、共享几何、单行日志与锻锤发布契约。
 
 ### `api`

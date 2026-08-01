@@ -25,7 +25,10 @@ const SR_COMBAT_SPEC = JSON.parse(`{
     { "criticalChance": [0.16, 0.20], "criticalDamage": [0.38, 0.48], "rangedDamage": [0.25, 0.32], "haste": [0.23, 0.28], "velocity": [0.16, 0.20], "pullTime": [-0.22, 0.19] }
   ],
   "itemTypes": [
-    { "id": "example:armor", "selectors": ["minecraft:head_armor", "minecraft:chest_armor", "minecraft:leg_armor", "minecraft:foot_armor"] },
+    { "id": "example:helmet", "selectors": ["minecraft:head_armor"] },
+    { "id": "example:chestplate", "selectors": ["minecraft:chest_armor"] },
+    { "id": "example:leggings", "selectors": ["minecraft:leg_armor"] },
+    { "id": "example:boots", "selectors": ["minecraft:foot_armor"] },
     { "id": "example:tool", "selectors": ["minecraft:pickaxes", "minecraft:shovels", "minecraft:hoes"] }
   ],
   "pools": [
@@ -54,10 +57,40 @@ const SR_COMBAT_SPEC = JSON.parse(`{
       ]
     },
     {
-      "id": "armor",
+      "id": "helmet",
       "names": ["坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒"],
-      "itemTypes": ["example:armor"],
-      "slots": ["head", "chest", "legs", "feet"],
+      "itemTypes": ["example:helmet"],
+      "slots": ["head"],
+      "effects": [
+        { "id": "critical_chance", "attribute": "critical_strike:chance", "range": "criticalChance", "operation": "add_multiplied_base" },
+        { "id": "critical_damage", "attribute": "critical_strike:damage", "range": "criticalDamage", "operation": "add_multiplied_base" }
+      ]
+    },
+    {
+      "id": "chestplate",
+      "names": ["坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒"],
+      "itemTypes": ["example:chestplate"],
+      "slots": ["chest"],
+      "effects": [
+        { "id": "critical_chance", "attribute": "critical_strike:chance", "range": "criticalChance", "operation": "add_multiplied_base" },
+        { "id": "critical_damage", "attribute": "critical_strike:damage", "range": "criticalDamage", "operation": "add_multiplied_base" }
+      ]
+    },
+    {
+      "id": "leggings",
+      "names": ["坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒"],
+      "itemTypes": ["example:leggings"],
+      "slots": ["legs"],
+      "effects": [
+        { "id": "critical_chance", "attribute": "critical_strike:chance", "range": "criticalChance", "operation": "add_multiplied_base" },
+        { "id": "critical_damage", "attribute": "critical_strike:damage", "range": "criticalDamage", "operation": "add_multiplied_base" }
+      ]
+    },
+    {
+      "id": "boots",
+      "names": ["坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒"],
+      "itemTypes": ["example:boots"],
+      "slots": ["feet"],
       "effects": [
         { "id": "critical_chance", "attribute": "critical_strike:chance", "range": "criticalChance", "operation": "add_multiplied_base" },
         { "id": "critical_damage", "attribute": "critical_strike:damage", "range": "criticalDamage", "operation": "add_multiplied_base" }
@@ -86,9 +119,11 @@ const SR_COMBAT_SPEC = JSON.parse(`{
   ]
 }`)
 
+// 四种护甲必须保持独立 type 和独立 slot；合并后同一词条会对所有护甲位置声明有效。
 // selector 可换成整合包自己的 tag；改 ID 时请同步修改 pools 的 itemTypes。
 SR_COMBAT_SPEC.itemTypes.forEach(itemType => SuperReforge.addItemType(itemType.id, {
-  include: itemType.selectors.map(tag => ({ tag }))
+  // KubeJS 2101 使用 Rhino；显式写出属性名，避免 JavaScript 对象属性简写在服务端解析失败。
+  include: itemType.selectors.map(tag => ({ tag: tag }))
 }))
 
 SR_COMBAT_SPEC.levels.forEach(level => SuperReforge.addLevel(level.id, {
