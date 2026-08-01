@@ -28,16 +28,19 @@ public final class ReforgerLayout {
 
     public static final int PLAYER_INVENTORY_Y = 136;
     public static final int PLAYER_HOTBAR_Y = 194;
-    private static final int PLAYER_INVENTORY_PANEL_WIDTH = 176;
+    /** 原版背包面板固定为 176px：9 个槽位配合两侧对称 8px 内边距。 */
+    public static final int PLAYER_PANEL_WIDTH = 176;
+    private static final int PLAYER_PANEL_INSET = 8;
 
     private ReforgerLayout() {}
 
-    public static int playerInventoryLeft() {
-        return (GUI_WIDTH - PLAYER_INVENTORY_PANEL_WIDTH) / 2;
+    public static int playerPanelLeft() {
+        return (GUI_WIDTH - PLAYER_PANEL_WIDTH) / 2;
     }
 
+    /** 菜单真实 Slot 与客户端空槽底图共同使用这条横坐标公式，避免出现第十列。 */
     public static int playerSlotX(int column) {
-        return playerInventoryLeft() + column * 18;
+        return playerPanelLeft() + PLAYER_PANEL_INSET + column * 18;
     }
 
     public static boolean insideLog(double x, double y) {

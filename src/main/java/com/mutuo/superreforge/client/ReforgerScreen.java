@@ -22,11 +22,15 @@ import net.minecraft.world.entity.player.Inventory;
  * <p>界面只消费服务端报价与同步定义，不在客户端重算成本、候选池或随机结果。
  */
 public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> {
-    private static final int COLOR_BACKGROUND = 0xF0181418;
-    private static final int COLOR_FRAME = 0xFF4B3432;
-    private static final int COLOR_COPPER = 0xFFB56F48;
-    private static final int COLOR_LOG = 0xFF211D27;
-    private static final int COLOR_LOG_ALT = 0xFF28222D;
+    private static final int COLOR_BACKGROUND = 0xFFC6C6C6;
+    private static final int COLOR_HIGHLIGHT = 0xFFFFFFFF;
+    private static final int COLOR_SHADOW = 0xFF555555;
+    private static final int COLOR_PANEL = 0xFFA0A0A0;
+    private static final int COLOR_LOG = 0xFFB9B9B9;
+    private static final int COLOR_LOG_ALT = 0xFFCACACA;
+    private static final int COLOR_TEXT = 0xFF404040;
+    private static final int COLOR_MUTED_TEXT = 0xFF606060;
+    private static final int COLOR_ALERT_TEXT = 0xFFAA3333;
 
     private Button reforgeButton;
     private ReforgePreviewPayload renderedPreview;
@@ -41,7 +45,7 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
         super(menu, inventory, title);
         imageWidth = ReforgerLayout.GUI_WIDTH;
         imageHeight = ReforgerLayout.GUI_HEIGHT;
-        inventoryLabelX = ReforgerLayout.playerInventoryLeft();
+        inventoryLabelX = ReforgerLayout.playerPanelLeft();
         inventoryLabelY = 124;
     }
 
@@ -110,34 +114,56 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
         int left = leftPos;
         int top = topPos;
         graphics.fill(left, top, left + imageWidth, top + imageHeight, COLOR_BACKGROUND);
-        graphics.renderOutline(left, top, imageWidth, imageHeight, COLOR_FRAME);
-        graphics.fill(left + 2, top + 16, left + imageWidth - 2, top + 18, COLOR_COPPER);
+        drawVanillaBevel(graphics, left, top, imageWidth, imageHeight);
 
         // 左侧锻造操作区、右侧日志区和下方背包区使用不同层次，保持像素风但提高可读性。
-        graphics.fill(left + 5, top + 20, left + 149, top + 120, 0xFF2A2222);
+        graphics.fill(left + 5, top + 20, left + 149, top + 120, COLOR_PANEL);
         graphics.fill(left + 151, top + 20, left + 281, top + 120, COLOR_LOG);
-        graphics.fill(left + 50, top + 128, left + 236, top + 214, 0xFF211C20);
-        graphics.renderOutline(left + 5, top + 20, 144, 100, COLOR_COPPER);
-        graphics.renderOutline(left + 151, top + 20, 130, 100, 0xFF765B7B);
-        graphics.renderOutline(left + 50, top + 128, 186, 86, 0xFF59464E);
+        drawVanillaBevel(graphics, left + 5, top + 20, 144, 100);
+        drawVanillaBevel(graphics, left + 151, top + 20, 130, 100);
+        int playerPanelLeft = left + ReforgerLayout.playerPanelLeft();
+        graphics.fill(playerPanelLeft, top + 128, playerPanelLeft + ReforgerLayout.PLAYER_PANEL_WIDTH, top + 214, COLOR_PANEL);
+        drawVanillaBevel(graphics, playerPanelLeft, top + 128, ReforgerLayout.PLAYER_PANEL_WIDTH, 86);
 
-        drawSlotFrame(graphics, left + ReforgerLayout.TARGET_X, top + ReforgerLayout.TARGET_Y);
-        drawSlotFrame(graphics, left + ReforgerLayout.CATALYST_X, top + ReforgerLayout.CATALYST_Y);
+        drawVanillaSlot(graphics, left + ReforgerLayout.TARGET_X, top + ReforgerLayout.TARGET_Y);
+        drawVanillaSlot(graphics, left + ReforgerLayout.CATALYST_X, top + ReforgerLayout.CATALYST_Y);
+        drawPlayerSlotBackgrounds(graphics);
         drawForgeStage(graphics, partialTick);
         drawScrollbar(graphics);
     }
 
-    private void drawSlotFrame(GuiGraphics graphics, int x, int y) {
-        graphics.fill(x - 1, y - 1, x + 17, y + 17, 0xFF0E0C0D);
-        graphics.renderOutline(x - 2, y - 2, 20, 20, 0xFFB98754);
-        graphics.fill(x - 1, y - 1, x + 17, y, 0xFF6A4233);
+    private void drawVanillaBevel(GuiGraphics graphics, int x, int y, int width, int height) {
+        graphics.fill(x, y, x + width, y + 1, COLOR_HIGHLIGHT);
+        graphics.fill(x, y, x + 1, y + height, COLOR_HIGHLIGHT);
+        graphics.fill(x, y + height - 1, x + width, y + height, COLOR_SHADOW);
+        graphics.fill(x + width - 1, y, x + width, y + height, COLOR_SHADOW);
+    }
+
+    private void drawVanillaSlot(GuiGraphics graphics, int x, int y) {
+        graphics.fill(x, y, x + 18, y + 18, COLOR_SHADOW);
+        graphics.fill(x + 1, y + 1, x + 17, y + 17, COLOR_HIGHLIGHT);
+        graphics.fill(x + 2, y + 2, x + 16, y + 16, 0xFF8B8B8B);
+    }
+
+    /** 36 个玩家槽的底图复用菜单坐标，确保空槽可见且没有虚构第十列。 */
+    private void drawPlayerSlotBackgrounds(GuiGraphics graphics) {
+        for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < 9; column++) {
+                drawVanillaSlot(graphics, leftPos + ReforgerLayout.playerSlotX(column),
+                        topPos + ReforgerLayout.PLAYER_INVENTORY_Y + row * 18);
+            }
+        }
+        for (int column = 0; column < 9; column++) {
+            drawVanillaSlot(graphics, leftPos + ReforgerLayout.playerSlotX(column),
+                    topPos + ReforgerLayout.PLAYER_HOTBAR_Y);
+        }
     }
 
     private void drawForgeStage(GuiGraphics graphics, float partialTick) {
         int left = leftPos;
         int top = topPos;
-        graphics.fill(left + 101, top + 45, left + 127, top + 69, 0xFF171216);
-        graphics.renderOutline(left + 99, top + 43, 30, 28, 0xFF694338);
+        graphics.fill(left + 101, top + 45, left + 127, top + 69, 0xFF777777);
+        drawVanillaBevel(graphics, left + 99, top + 43, 30, 28);
         int glow = 88;
         int hammerY = top + 28;
         if (menu.pending()) {
@@ -148,32 +174,32 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
         }
         int color = 0xFF000000 | (Math.min(255, glow) << 16) | (Math.min(255, glow / 2) << 8);
         graphics.fill(left + 104, top + 53, left + 124, top + 67, color);
-        graphics.fill(left + 98, hammerY, left + 130, hammerY + 7, 0xFFC7B7AE);
+        graphics.fill(left + 98, hammerY, left + 130, hammerY + 7, 0xFFB8B8B8);
         graphics.fill(left + 111, hammerY + 7, left + 117, hammerY + 23, 0xFF704735);
     }
 
     private void drawScrollbar(GuiGraphics graphics) {
         int x = leftPos + ReforgerLayout.SCROLLBAR_X;
         int y = topPos + ReforgerLayout.LOG_TOP;
-        graphics.fill(x, y, x + ReforgerLayout.SCROLLBAR_WIDTH, y + ReforgerLayout.LOG_HEIGHT, 0xFF130F16);
+        graphics.fill(x, y, x + ReforgerLayout.SCROLLBAR_WIDTH, y + ReforgerLayout.LOG_HEIGHT, 0xFF777777);
         int thumbHeight = logModel.thumbHeight(ReforgerLayout.LOG_HEIGHT, ReforgerLayout.LOG_HEIGHT);
         int thumbTop = scrollbarThumbTop(thumbHeight);
-        int thumbColor = draggingScrollbar ? 0xFFE0A164 : 0xFF9E6A52;
+        int thumbColor = draggingScrollbar ? 0xFFE0E0E0 : 0xFFB0B0B0;
         graphics.fill(x + 1, y + thumbTop, x + ReforgerLayout.SCROLLBAR_WIDTH - 1, y + thumbTop + thumbHeight, thumbColor);
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawString(font, title, 8, 6, 0xFFF1D4AE, false);
-        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 0xFFCDB9B1, false);
-        graphics.drawString(font, Component.translatable("gui.superreforge.target"), 58, 48, 0xFFE0C9B5, false);
-        graphics.drawString(font, Component.translatable("gui.superreforge.catalyst"), 58, 84, 0xFFE0C9B5, false);
-        graphics.drawString(font, Component.translatable("gui.superreforge.log"), 156, 24, 0xFFE3CDEA, false);
+        graphics.drawString(font, title, 8, 6, COLOR_TEXT, false);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, COLOR_TEXT, false);
+        graphics.drawString(font, Component.translatable("gui.superreforge.target"), 58, 48, COLOR_TEXT, false);
+        graphics.drawString(font, Component.translatable("gui.superreforge.catalyst"), 58, 84, COLOR_TEXT, false);
+        graphics.drawString(font, Component.translatable("gui.superreforge.log"), 156, 24, COLOR_TEXT, false);
 
         ReforgePreviewPayload preview = ClientPreviewState.get(menu.containerId).orElse(null);
         updateLogModel(preview);
         if (preview == null) {
-            graphics.drawString(font, Component.translatable("gui.superreforge.waiting"), 156, 38, 0xFF999199, false);
+            graphics.drawString(font, Component.translatable("gui.superreforge.waiting"), 156, 38, COLOR_MUTED_TEXT, false);
             return;
         }
         if (preview.failureOrdinal() >= 0) {
@@ -186,10 +212,10 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
                 Component.translatable("gui.superreforge.cost", preview.materialCost(), preview.experienceCost()),
                 58,
                 68,
-                0xFFFFC46B,
+                COLOR_TEXT,
                 false);
         if (preview.truncated()) {
-            graphics.drawString(font, "!", 263, 24, 0xFFFF9C54, false);
+            graphics.drawString(font, "!", 263, 24, COLOR_ALERT_TEXT, false);
             hoveredPreviewWarning = ReforgerLayout.insidePreviewWarning(
                     mouseX - leftPos, mouseY - topPos);
         }
@@ -203,7 +229,7 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
                 : "stale_state";
         Component message = Component.translatable("gui.superreforge.failure." + id);
         graphics.drawWordWrap(font, message, ReforgerLayout.LOG_LEFT + 2, ReforgerLayout.LOG_TOP + 2,
-                ReforgerLayout.LOG_WIDTH - 6, 0xFFE57373);
+                ReforgerLayout.LOG_WIDTH - 6, COLOR_ALERT_TEXT);
     }
 
     private void drawLogRows(GuiGraphics graphics, int relativeMouseX, int relativeMouseY) {
@@ -231,12 +257,12 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
                         COLOR_LOG_ALT);
             }
             // 每行依次绘制等级、最终词条和服务端联合概率，避免客户端重算概率。
-            graphics.drawString(font, row.levelName(), ReforgerLayout.LOG_LEFT + 2, y + 1, 0xFFFFD79B, false);
-            graphics.drawString(font, row.modifierName(), ReforgerLayout.LOG_LEFT + 34, y + 1, 0xFFC8BECF, false);
+            graphics.drawString(font, row.levelName(), ReforgerLayout.LOG_LEFT + 2, y + 1, COLOR_TEXT, false);
+            graphics.drawString(font, row.modifierName(), ReforgerLayout.LOG_LEFT + 34, y + 1, COLOR_TEXT, false);
             String probability = percent(row.probability());
             int probabilityX = ReforgerLayout.LOG_LEFT + ReforgerLayout.LOG_WIDTH - 3 - font.width(probability);
             graphics.fill(probabilityX - 2, y, ReforgerLayout.LOG_LEFT + ReforgerLayout.LOG_WIDTH, y + row.height(), COLOR_LOG);
-            graphics.drawString(font, probability, probabilityX, y + 1, 0xFFC8BECF, false);
+            graphics.drawString(font, probability, probabilityX, y + 1, COLOR_TEXT, false);
             if (ReforgerLayout.insideLog(relativeMouseX, relativeMouseY)
                     && relativeMouseY >= y
                     && relativeMouseY < y + row.height()) {
