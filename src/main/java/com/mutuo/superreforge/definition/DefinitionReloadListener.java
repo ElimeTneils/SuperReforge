@@ -5,6 +5,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mutuo.superreforge.SuperReforge;
+import com.mutuo.superreforge.api.ScriptDefinitionPublisher;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -46,6 +47,10 @@ public final class DefinitionReloadListener extends SimplePreparableReloadListen
                     prepared.itemTypes().size(),
                     prepared.modifiers().size(),
                     prepared.catalysts().size());
+            // 首次进入世界时 KubeJS 可能比 datapack 先运行；基础类型齐全后在同一 reload 中自动补发。
+            if (ScriptDefinitionPublisher.retryPending()) {
+                SuperReforge.LOGGER.info("Published deferred KubeJS Super Reforge layer after datapack reload");
+            }
         }
     }
 

@@ -67,17 +67,21 @@ final class DefinitionManagerTest {
     @Test
     void clientModifierMirrorCanBeInstalledAndClearedIndependently() {
         ResourceLocation modifierId = ResourceLocation.fromNamespaceAndPath("example", "client_visible");
+        DefinitionSnapshot serverSnapshot = new DefinitionSnapshot(
+                Map.of(TIER, new LevelDefinition(1, Component.literal("服务端保留"))),
+                Map.of(), Map.of(), Map.of());
         ModifierDefinition modifier = new ModifierDefinition(
                 TIER, List.of(ResourceLocation.fromNamespaceAndPath("example", "type")),
                 Component.literal("客户端可见"), 1.0, List.of());
 
+        assertTrue(DefinitionManager.publishDatapack(serverSnapshot));
         ModifierDisplayDefinition display = ModifierDisplayDefinition.from(modifier);
         DefinitionManager.installClientModifiers(Map.of(modifierId, display));
         assertEquals(display, DefinitionManager.clientModifiers().get(modifierId));
 
         DefinitionManager.clearClientSession();
         assertTrue(DefinitionManager.clientModifiers().isEmpty());
-        assertTrue(DefinitionManager.snapshot().modifiers().isEmpty());
+        assertEquals("服务端保留", DefinitionManager.snapshot().levels().get(TIER).name().getString());
     }
 
     @Test

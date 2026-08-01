@@ -195,6 +195,8 @@ ServerEvents.loaded(event => {
 
 每次 reload 都使用全新临时收集器。只有所有服务器脚本没有报错、四类定义通过交叉校验时，定义、谓词和阶段才会整体发布。任一步失败都保留上一份有效脚本层，不会只更新一半。
 
+新建或首次进入世界时不需要先执行 `/reload`。如果 `server_scripts` 先于内置/数据包等级与物品类型运行，Super Reforge 会暂存本轮完整定义、谓词和阶段，在 datapack 完成后自动重新校验并整体发布。只有 datapack 已经就绪后仍无法通过校验，才按真实配置错误处理。
+
 ## 常见问题与排错
 
 | 现象 | 检查 |
@@ -202,6 +204,7 @@ ServerEvents.loaded(event => {
 | `SuperReforge is not defined` | 确认 KubeJS 2101 已安装，文件在 `kubejs/server_scripts/`，而不是 `startup_scripts` 或 `client_scripts`。 |
 | 提示 `add*` 只能在加载期调用 | 把 `SuperReforge.addLevel/addItemType/addModifier/addCatalyst/addPredicate/addStage` 移回脚本顶层，不要放进延迟或异步回调。 |
 | reload 后仍是旧定义 | 查看当次 KubeJS 错误和交叉校验日志；发布失败会主动保留上一份有效层。 |
+| 首次进入世界没有前缀，执行 `/reload` 后才出现 | 这是旧版的加载时序问题；更新到包含自动延迟发布修复的 JAR。新版首次进入会在 datapack 就绪后自动发布，无需命令。 |
 | 报同类别重复 ID | 同一次 `server_scripts` reload 中每类定义的 ID 只能注册一次；脚本覆盖 datapack 不等于脚本内可重复。 |
 | `kubejs_predicate` 不命中 | 确认 `SuperReforge.addPredicate` 的字符串 ID 完全一致，谓词返回布尔值，且没有抛出异常。 |
 | 阶段无法切换 | `SuperReforge.setStageActive` 必须接收服务器事件给出的 `event.server`；阶段 ID 必须已用 `addStage` 定义才能影响成本。 |

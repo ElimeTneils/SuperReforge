@@ -2,9 +2,7 @@ package com.mutuo.superreforge.compat.kubejs;
 
 import com.mutuo.superreforge.SuperReforge;
 import com.mutuo.superreforge.api.ScriptDefinitionCollector;
-import com.mutuo.superreforge.definition.DefinitionManager;
-import com.mutuo.superreforge.progress.ProgressService;
-import com.mutuo.superreforge.reforge.SelectorHooks;
+import com.mutuo.superreforge.api.ScriptDefinitionPublisher;
 import com.mutuo.superreforge.network.ModNetwork;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
@@ -32,6 +30,8 @@ public final class SuperReforgeKubeJSPlugin implements KubeJSPlugin {
     @Override
     public void beforeScriptsLoaded(ScriptManager manager) {
         if (manager.scriptType == ScriptType.SERVER) {
+            // 新脚本加载会完全替代旧脚本，因此旧的待重试候选也必须同时作废。
+            ScriptDefinitionPublisher.discardPending();
             collector = new ScriptDefinitionCollector();
             BINDINGS.begin(collector);
         }
@@ -53,12 +53,17 @@ public final class SuperReforgeKubeJSPlugin implements KubeJSPlugin {
                 return;
             }
             var bundle = collector.build();
-            if (!DefinitionManager.replaceScriptLayer(bundle.definitions())) {
+            ScriptDefinitionPublisher.Result result = ScriptDefinitionPublisher.publish(bundle);
+            if (result == ScriptDefinitionPublisher.Result.DEFERRED) {
+                // 首次开服时 datapack 基础等级/类型可能尚未发布；reload listener 会在稍后自动重试。
+                SuperReforge.LOGGER.info(
+                        "KubeJS Super Reforge layer is waiting for datapack definitions; it will be retried automatically");
+                return;
+            }
+            if (result == ScriptDefinitionPublisher.Result.REJECTED) {
                 SuperReforge.LOGGER.error("KubeJS Super Reforge definitions failed validation; previous layer kept");
                 return;
             }
-            SelectorHooks.replaceScriptPredicates(bundle.predicates());
-            ProgressService.replaceStages(bundle.stages().values());
             // server_scripts 可独立 reload；完整发布后必须主动重发新代次，不能等待下一次 datapack sync。
             var server = ServerLifecycleHooks.getCurrentServer();
             if (server != null) {

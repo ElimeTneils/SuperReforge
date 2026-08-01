@@ -10,6 +10,7 @@
 
 - `DefinitionContribution.java`：脚本定义贡献的函数接口，向收集器写入定义。改变签名会破坏 KubeJS/其他 API 调用方。
 - `ScriptDefinitionBundle.java`：不可变脚本层打包值，含等级、类型、词条、媒介、脚本谓词和进度阶段。字段变更会改变 KubeJS 重载时可发布的数据边界。
+- `ScriptDefinitionPublisher.java`：原子发布脚本 bundle；首次开服缺少 datapack 基础等级/类型时暂存并在资源重载完成后自动重试，正常运行期的无效脚本则立即拒绝。它同时提交/清理谓词与阶段，修改重试或清理时机会影响首次进世界是否需要手动 `/reload`、半发布防护及跨世界隔离。
 - `ScriptDefinitionCollector.java`：同步收集脚本添加的四类定义、谓词与阶段，`build()` 生成 bundle。修改覆盖/重复 ID 规则会影响脚本的最终数据层。
 - `SuperReforgeApi.java`：公开读取当前定义、以贡献集合替换脚本定义的门面。修改会影响外部 Java 集成及脚本层发布成功/失败的语义。
 
@@ -41,7 +42,7 @@
 #### `compat/kubejs`
 
 - `KubeReforgeBindings.java`：KubeJS 暴露的绑定，接收等级、类型、词条、媒介、谓词、阶段及服务器阶段开关调用。改绑定名称或入参会破坏现有脚本；应保持定义先收集、再整体发布的方式。
-- `SuperReforgeKubeJSPlugin.java`：KubeJS 插件生命周期桥；脚本加载前清理收集器，加载后发布定义层/谓词/阶段。改生命周期钩子会影响脚本删除后的清理以及数据包与脚本层的覆盖关系。
+- `SuperReforgeKubeJSPlugin.java`：KubeJS 插件生命周期桥；脚本加载前清理收集器与旧待发布候选，加载后通过统一发布器提交定义层/谓词/阶段；首次开服若 datapack 尚未就绪则等待自动补发。改生命周期钩子会影响首次加载、脚本删除后的清理以及数据包与脚本层的覆盖关系。
 
 ### `config`
 
@@ -56,9 +57,9 @@
 - `AttributeOperation.java`：数据层的三种属性运算枚举及字符串 Codec。改序列化名会使已有词条 JSON 失效或改变数值含义。
 - `CatalystDefinition.java`：媒介定义与 Codec，描述匹配选择器、消耗量、经验、可否重复词条、等级权重和类型限制。修改会直接改变报价、候选池和 JSON 结构。
 - `DefinitionLayer.java`：脚本层四类定义的不可变覆盖层及 builder。改其复制/构建逻辑会影响 KubeJS 重载的原子替换。
-- `DefinitionManager.java`：维护 datapack、脚本和合并后的活动快照；校验成功后原子发布，脚本同 ID 覆盖数据包。改合并优先级或发布顺序会改变 reload 可见性与失败时保留旧状态的保证。
+- `DefinitionManager.java`：维护 datapack、脚本和合并后的活动快照；校验成功后原子发布，脚本同 ID 覆盖数据包；客户端断线只清显示镜像，服务端停止才清定义层，并记录 datapack 是否已经完成首次发布。改合并优先级、会话清理或发布顺序会改变 reload 可见性、跨世界隔离与失败时保留旧状态的保证。
 - `ModifierDisplayDefinition.java`：只含词条名称和 Attribute 效果的客户端镜像值，不下发权重、类型或脚本谓词。修改字段需要同步网络 Codec；加入服务端抽取规则会扩大不必要的信息暴露面。
-- `DefinitionReloadListener.java`：资源重载监听器，从 `superreforge/levels`、`item_types`、`modifiers`、`catalysts` 读取 JSON，经 Codec 解析后发布；传给 1.21.1 资源管理器的目录不含末尾斜杠。改目录、ID 转换或错误聚合会影响数据包布局和 reload 失败条件。
+- `DefinitionReloadListener.java`：资源重载监听器，从 `superreforge/levels`、`item_types`、`modifiers`、`catalysts` 读取 JSON，经 Codec 解析后发布；传给 1.21.1 资源管理器的目录不含末尾斜杠；成功后自动重试可能早于 datapack 执行的 KubeJS bundle。改目录、ID 转换、错误聚合或重试位置会影响数据包布局、首次世界加载和 reload 失败条件。
 - `DefinitionSnapshot.java`：等级、类型、词条、媒介四张不可变映射组成的活动快照。改字段会波及所有解析、报价和预览消费者。
 - `DefinitionValidationException.java`：定义加载/解析错误的专用非法参数异常。改异常类型会影响重载报错路径及测试断言。
 - `DefinitionValidator.java`：补充 Codec 无法表示的约束：空选择器、权重、等级/类型引用、效果 ID、数值范围、媒介数量与经验。减少校验会让坏数据进入运行时；加约束会改变旧数据包的可加载性。
@@ -224,7 +225,8 @@
 - `DefaultResourcesTest.java`：读取默认数据包并用生产 Codec 检查等级、类型、词条、媒介引用，验证默认 rank 1–8 的数字本地化 Component，同时验证 3D 模型元素和四向 blockstate。
 - `DefinitionCodecTest.java`：验证定义 JSON Codec 的编码/解码。
 - `DefinitionReloadListenerTest.java`：使用原版 `MultiPackResourceManager` 回归验证 reload 目录参数合法，防止真实服务器在 datapack 阶段中止。
-- `DefinitionManagerTest.java`：验证 datapack/脚本层的原子发布、覆盖和失败保留旧快照。
+- `DefinitionManagerTest.java`：验证 datapack/脚本层的原子发布、覆盖、失败保留旧快照，以及客户端显示镜像清理不会误删同进程服务端定义。
+- `ScriptDefinitionPublisherTest.java`：验证首次开服时暂缓的 KubeJS bundle 会在 datapack 就绪后整体发布，并验证正常运行期的无效脚本会被拒绝且不进入待重试队列。
 - `DefinitionValidatorTest.java`：验证不合法权重、引用、效果与媒介被拒绝。
 
 ### `item`
