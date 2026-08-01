@@ -8,13 +8,15 @@
 
 **Tech Stack:** Markdown、Minecraft 1.21.1、NeoForge 21.1.244、Super Reforge 0.1.0、JSON datapack、KubeJS 2101。
 
+> **历史状态说明（更新于 `8506b07`）：** 本计划保留实施时的步骤与检查边界。下文原先针对 GUI 滚动、悬停详情、锤子校正和独立创造页签的“禁写”要求，是功能尚未提交、尚未验证时的实施前边界，不代表当前最终状态；这些能力现已提交并完成项目验证，应以当前事实清单和最终实施结果为准。
+
 ## Global Constraints
 
 - 中文名称使用“超级重铸”，原名使用“Super Reforge”。
 - 只写 Minecraft 1.21.1、NeoForge 21.1.244 或同 Minecraft 版本后续兼容构建。
 - Curios 9.x 与 KubeJS 2101 均为可选依赖，不得写成必需前置。
 - 不宣称兼容所有模组；只说明可引用已注册 Attribute，并可按 ID、标签、Curios 或 KubeJS 谓词接入物品。
-- 不把正在开发但尚未完成验证的 GUI 滚动、悬停详情、锤子校正或独立创造页签写成已发布功能。
+- 实施前不得把尚未提交或尚未验证的 GUI 滚动、悬停详情、锤子校正或独立创造页签写成已发布功能；截至 `8506b07`，完整概率滚动列表、拖动滚动滑块、Attribute 悬停详情、截断警告、竖直锻锤修正和独立创造页签均已提交并验证，当前底稿应准确写入。
 - 使用中立、简明、准确的第三人称表述；不使用主观强度评价、广告式措辞或不确定说法。
 - 最终文本是作者核对和改写用底稿，不直接代替作者对 MC 百科投稿内容的人工确认。
 
@@ -344,15 +346,15 @@ git commit -m "docs: add Super Reforge usage tutorial"
 
 Confirm the page copy covers introduction, main functions, dependencies and tutorial summary. Confirm the tutorial covers installation, operation, probability, configuration, datapack, KubeJS override, deletion, existing-item behavior and common failures.
 
-- [ ] **Step 2: 检查未完成功能是否误入成稿**
+- [ ] **Step 2: 回顾实施前禁写边界，并按最终状态检查新增功能**
 
 Run:
 
 ```powershell
-rg -n "滚动条|拖动滚动|悬停详情|独立创造|锤子穿模|竖直动力锻锤" docs/MCMOD_PAGE_COPY.md docs/MCMOD_TUTORIAL.md
+rg -n "完整.*概率|滚轮|拖动.*滚动滑块|悬停.*Attribute|截断警告|独立.*创造.*页签|竖直.*锻锤" docs/MCMOD_PAGE_COPY.md docs/MCMOD_TUTORIAL.md
 ```
 
-Expected: 无输出，除非执行时这些功能已经提交、通过测试并被重新加入事实清单。
+Historical expected: 在这些功能尚未提交时无输出。Final state at `8506b07`: 命令应命中完整概率滚动列表、拖动滚动滑块、悬停详情、截断警告、竖直动力锻锤和独立创造页签；每项均须已提交、通过测试并重新加入事实清单。原“禁写”只约束实施前状态。
 
 - [ ] **Step 3: 运行完整文档与项目验证**
 
@@ -389,3 +391,9 @@ git commit -m "docs: finalize MC百科 submission draft"
 ```
 
 Expected: only the two deliverable files are staged; commit succeeds without including concurrent mod implementation files.
+
+## Final implementation status at `8506b07`
+
+- 已实现并纳入当前事实清单与成稿：完整概率滚动列表、拖动滚动滑块、Attribute 悬停详情、展示上限截断警告、竖直锻锤视觉修正、独立 `Super Reforge` 创造页签及动画锤隐藏规则。
+- 项目验证已完成：`clean test build` 的 79 项测试全部通过；仅核心、Curios 9.x、KubeJS 2101、Curios 9.x + KubeJS 2101 四种专用服务器组合均启动至 `Done`；NeoForge 客户端冒烟检查完成至模组初始化、资源重载、音频启动和 GUI 纹理图集创建。
+- 上述项目验证不替代作者使用最终发布 JAR 做投稿前人工验收；最终文件、截图、下载地址、依赖展示和目标整合包表现仍须作者确认。
