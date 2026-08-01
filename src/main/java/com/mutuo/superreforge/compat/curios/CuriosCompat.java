@@ -11,6 +11,7 @@ import com.mutuo.superreforge.item.VanillaAttributeApplicator;
 import com.mutuo.superreforge.config.SuperReforgeConfig;
 import com.mutuo.superreforge.reforge.SelectorHooks;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.neoforge.common.NeoForge;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -45,23 +46,27 @@ public final class CuriosCompat {
      * 这里只处理功能栏位；外观栏位不应给玩家实体提供属性。
      */
     private static void onCurioAttributes(CurioAttributeModifierEvent event) {
-        if (event.getSlotContext().cosmetic()) {
+        // 事件可能来自没有实体的合成 tooltip 上下文；只读取一次，后续按同一判定执行。
+        SlotContext slotContext = event.getSlotContext();
+        LivingEntity entity = slotContext.entity();
+        CuriosContextPolicy.Kind contextKind = CuriosContextPolicy.classify(entity);
+        if (slotContext.cosmetic()) {
             return;
         }
-        if (!event.getSlotContext().entity().level().isClientSide) {
+        if (contextKind == CuriosContextPolicy.Kind.SERVER_ENTITY) {
             ModifierLifecycle.reconcile(
                     event.getItemStack(),
                     DefinitionManager.snapshot(),
                     SuperReforgeConfig.snapshot(),
-                    event.getSlotContext().entity().getRandom().nextLong());
+                    entity.getRandom().nextLong());
         }
         ModifierResolver.resolveCurrent(event.getItemStack()).ifPresent(modifier -> {
             for (var effect : modifier.effects()) {
                 if (!effect.slots().contains(SlotTarget.CURIOS_ANY)) {
                     continue;
                 }
-                // Curios 客户端用同一事件生成属性提示；隐藏时只跳过客户端展示，不影响服务端数值。
-                boolean clientSide = event.getSlotContext().entity().level().isClientSide;
+                // 合成上下文和普通客户端都只构建 tooltip；服务端仍会完整保留数值与权威状态。
+                boolean clientSide = contextKind != CuriosContextPolicy.Kind.SERVER_ENTITY;
                 if (clientSide && (!SuperReforgeConfig.snapshot().showAttributeLines() || !effect.showInTooltip())) {
                     continue;
                 }
@@ -75,8 +80,8 @@ public final class CuriosCompat {
                 var id = VanillaAttributeApplicator.curiosModifierId(
                         modifier.id(),
                         effect.id(),
-                        event.getSlotContext().identifier(),
-                        event.getSlotContext().index());
+                        slotContext.identifier(),
+                        slotContext.index());
                 var attributeModifier = new AttributeModifier(
                         id,
                         effect.amount(),
