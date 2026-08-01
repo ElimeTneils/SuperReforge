@@ -33,7 +33,16 @@ repositories {
     // KubeJS 官方 Maven；限制 group，防止意外从这里解析其他依赖。
     maven {
         url = 'https://maven.latvian.dev/releases'
-        content { includeGroup 'dev.latvian.mods' }
+        content {
+            includeGroup 'dev.latvian.mods'
+            // KubeJS 的开发运行 POM 还引用其内嵌 tiny-java-server 坐标。
+            includeGroup 'dev.latvian.apps'
+        }
+    }
+    // KubeJS 官方构建使用同一镜像解析其 animated-gif 开发运行依赖。
+    maven {
+        url = 'https://maven.latvian.dev/mirror'
+        content { includeGroup 'com.github.rtyley' }
     }
 }
 
@@ -136,6 +145,14 @@ dependencies {
     // 这两项是编译期接口，均不传递、不打包；玩家可只装其中一个或两个都不装。
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     compileOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
+
+    // 发布 JAR 仍保持零强制依赖；这两个属性只给本地/CI 兼容矩阵临时补齐运行时模组。
+    if (providers.gradleProperty('withCuriosRuntime').map { it.toBoolean() }.getOrElse(false)) {
+        localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    }
+    if (providers.gradleProperty('withKubeJSRuntime').map { it.toBoolean() }.getOrElse(false)) {
+        localRuntime "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
+    }
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"

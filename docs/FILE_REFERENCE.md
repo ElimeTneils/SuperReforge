@@ -212,7 +212,7 @@
 
 ## 根构建文件
 
-- `build.gradle`：Java 21 + NeoForge ModDevGradle 构建、资源生成、JUnit、客户端/服务端/Data/GameTest 运行配置；Curios/KubeJS 为 `compileOnly`，不会被打包。改依赖范围会改变无可选模组时的可加载性；改 `unitTest` 会影响这些真实 Minecraft 类型测试。
+- `build.gradle`：Java 21 + NeoForge ModDevGradle 构建、资源生成、JUnit、客户端/服务端/Data/GameTest 运行配置；Curios/KubeJS 正式依赖均为 `compileOnly`，不会被打包，`withCuriosRuntime`/`withKubeJSRuntime` 属性只供本地兼容矩阵临时加入运行类路径。改依赖范围会改变无可选模组时的可加载性；改 `unitTest` 会影响这些真实 Minecraft 类型测试。
 - `settings.gradle`：Gradle 插件仓库与固定根项目名 `superreforge`。改名会改变构建坐标/IDE 项目名。
 - `gradle.properties`：Minecraft 1.21.1、NeoForge、Parchment、模组坐标/版本、Curios/KubeJS 编译版本及 Gradle 性能参数。改版本必须与 `build.gradle` 和兼容源码 API 一并核对。
 - `gradlew`、`gradlew.bat`：Unix/Windows Gradle Wrapper 启动器。一般不手改业务逻辑；升级 wrapper 时与 `gradle/wrapper` 元数据一起处理。
