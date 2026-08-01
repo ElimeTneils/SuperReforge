@@ -1,0 +1,11 @@
+{
+  // include 中任意一条命中即可；同一个物品可以同时命中多个类型。
+  "include": [
+    {"item": "minecraft:stick"}, // 按 ID 把木棍硬绑定到这个武器类型。
+    {"items": ["minecraft:diamond_sword", "minecraft:netherite_sword"]},
+    {"tag": "minecraft:swords"} // KubeJS 的物品标签/组可通过标签 ID 使用。
+  ],
+
+  // exclude 优先于 include；留空或省略就没有黑名单。
+  "exclude": [{"item": "minecraft:wooden_sword"}]
+}

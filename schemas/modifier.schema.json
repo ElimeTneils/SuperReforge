@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mutuo.example/superreforge/modifier.schema.json",
+  "title": "Super Reforge 前缀词条定义",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["level", "item_types", "name"],
+  "properties": {
+    "level": {"$ref": "#/$defs/resourceLocation"},
+    "item_types": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/resourceLocation"}},
+    "name": {"$ref": "#/$defs/component"},
+    "weight": {"type": "number", "minimum": 0, "default": 1},
+    "attributes": {"type": "array", "items": {"$ref": "#/$defs/effect"}, "default": []}
+  },
+  "$defs": {
+    "resourceLocation": {"type": "string", "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"},
+    "component": {
+      "oneOf": [
+        {"type": "string"},
+        {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "text": {"type": "string"}, "translate": {"type": "string"},
+            "fallback": {"type": "string"}, "color": {"type": "string"},
+            "bold": {"type": "boolean"}, "italic": {"type": "boolean"}
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "amount": {
+      "oneOf": [
+        {"type": "number"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {"min": {"type": "number"}, "max": {"type": "number"}}
+        }
+      ]
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "attribute", "amount", "operation", "slots"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "attribute": {"$ref": "#/$defs/resourceLocation"},
+        "amount": {"$ref": "#/$defs/amount"},
+        "operation": {"enum": ["add_value", "add_multiplied_base", "add_multiplied_total"]},
+        "slots": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"enum": ["mainhand", "offhand", "head", "chest", "legs", "feet", "curios:any"]}
+        },
+        "show_in_tooltip": {"type": "boolean", "default": true}
+      }
+    }
+  }
+}

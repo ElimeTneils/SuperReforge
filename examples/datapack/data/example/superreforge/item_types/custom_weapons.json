@@ -1,0 +1,10 @@
+{
+  "include": [
+    {"item": "minecraft:stick"},
+    {"items": ["minecraft:diamond_sword", "minecraft:netherite_sword"]},
+    {"tag": "minecraft:swords"}
+  ],
+  "exclude": [
+    {"item": "minecraft:wooden_sword"}
+  ]
+}
