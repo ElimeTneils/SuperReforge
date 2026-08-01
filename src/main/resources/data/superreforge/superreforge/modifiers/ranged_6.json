@@ -1,0 +1,11 @@
+{
+  "_comment": "远程 6 级传说前缀。",
+  "level": "superreforge:legendary",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_6", "fallback": "追风", "color": "gold", "bold": true},
+  "weight": 12,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": 0.04, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": 2.0, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}

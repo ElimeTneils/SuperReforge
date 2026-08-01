@@ -1,0 +1,19 @@
+{
+  "_comment": "方块实体动画专用动力锻锤；各部件仅在边界相接，不共享正体积。",
+  "textures": {
+    "head": "minecraft:block/iron_block",
+    "band": "minecraft:block/cut_copper",
+    "handle": "minecraft:block/stripped_dark_oak_log",
+    "particle": "minecraft:block/iron_block"
+  },
+  "display": {
+    "fixed": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+    "gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0], "scale": [0.85, 0.85, 0.85]}
+  },
+  "elements": [
+    {"name":"handle","from":[7,7,7],"to":[9,16,9],"faces":{"down":{"texture":"#handle"},"up":{"texture":"#handle"},"north":{"texture":"#handle"},"south":{"texture":"#handle"},"west":{"texture":"#handle"},"east":{"texture":"#handle"}}},
+    {"name":"socket","from":[6,5,6],"to":[10,7,10],"faces":{"down":{"texture":"#band"},"up":{"texture":"#band"},"north":{"texture":"#band"},"south":{"texture":"#band"},"west":{"texture":"#band"},"east":{"texture":"#band"}}},
+    {"name":"head","from":[3,1,5],"to":[14,5,11],"faces":{"down":{"texture":"#head"},"up":{"texture":"#head"},"north":{"texture":"#head"},"south":{"texture":"#head"},"west":{"texture":"#head"},"east":{"texture":"#head"}}},
+    {"name":"cap","from":[2,1,5],"to":[3,5,11],"faces":{"down":{"texture":"#band"},"up":{"texture":"#band"},"north":{"texture":"#band"},"south":{"texture":"#band"},"west":{"texture":"#band"},"east":{"texture":"#band"}}}
+  ]
+}

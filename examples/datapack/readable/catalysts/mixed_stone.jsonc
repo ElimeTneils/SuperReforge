@@ -1,0 +1,13 @@
+{
+  // 每次只接受一种媒介定义；这里用钻石作为示例媒介。
+  "ingredient": {"item": "minecraft:diamond"},
+  "count": 2,      // 每次固定消耗数量；服务器阶段可再乘/加。
+  "experience": 5, // 按全局 LEVELS 或 POINTS 模式解释。
+  "allow_same_modifier": false,
+
+  // 白名单/黑名单都可省略；未填写白名单就适用于全部物品类型。
+  "allowed_item_types": ["example:custom_weapons"],
+
+  // 这里只列出一个等级；多项时 weight 会自动除以所有有效项之和。
+  "levels": [{"level": "example:legendary", "weight": 20}]
+}

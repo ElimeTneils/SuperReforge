@@ -1,0 +1,49 @@
+# NeoForge 读取此文件发现模组；占位符由 build.gradle 在构建时展开。
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="${mod_authors}"
+description='''
+Data-driven weapon and Curios prefix reforging with an animated molten-core reforger.
+'''
+
+# 名称注入只修改 getHoverName 的返回值，不改写物品 CUSTOM_NAME 数据组件。
+[[mixins]]
+config="superreforge.mixins.json"
+
+# NeoForge 21.1.244 是编译和验证基线；允许兼容同一 Minecraft 版本的后续 21.1.x。
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
+
+# Minecraft 版本范围固定为 1.21.1，避免数据组件协议跨版本误用。
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+# Curios 是可选兼容；缺失时不得加载 compat.curios 包中的类。
+[[dependencies.${mod_id}]]
+modId="curios"
+type="optional"
+versionRange="[9,)"
+ordering="AFTER"
+side="BOTH"
+
+# KubeJS 是可选定义层；缺失时 datapack 与核心重铸功能仍可运行。
+[[dependencies.${mod_id}]]
+modId="kubejs"
+type="optional"
+versionRange="[2101,)"
+ordering="AFTER"
+side="BOTH"

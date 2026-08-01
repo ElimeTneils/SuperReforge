@@ -1,0 +1,7 @@
+{
+  // rank 是可自定义整数，不要求连续，也不写死为 1~8。
+  "rank": 4,
+
+  // name 是 Minecraft Component；可改用 translate/fallback，也支持颜色和粗体。
+  "name": {"text": "传说", "color": "gold", "bold": true}
+}

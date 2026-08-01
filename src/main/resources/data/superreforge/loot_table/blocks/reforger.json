@@ -1,0 +1,11 @@
+{
+  "_comment": "使用正确工具破坏时掉落熔核锻台本体；容器内物品由方块逻辑安全掉落。",
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [{"type": "minecraft:item", "name": "superreforge:reforger"}],
+      "conditions": [{"condition": "minecraft:survives_explosion"}]
+    }
+  ]
+}

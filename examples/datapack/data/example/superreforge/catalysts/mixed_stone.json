@@ -1,0 +1,10 @@
+{
+  "ingredient": {"item": "minecraft:diamond"},
+  "count": 2,
+  "experience": 5,
+  "allow_same_modifier": false,
+  "allowed_item_types": ["example:custom_weapons"],
+  "levels": [
+    {"level": "example:legendary", "weight": 20}
+  ]
+}

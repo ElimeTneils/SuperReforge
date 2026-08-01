@@ -1,0 +1,11 @@
+{
+  "_comment": "近战 5 级史诗前缀。数值、运算方式和位置均可在数据包里替换。",
+  "level": "superreforge:epic",
+  "item_types": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
+  "name": {"translate": "modifier.superreforge.melee_5", "fallback": "史诗", "color": "light_purple"},
+  "weight": 20,
+  "attributes": [
+    {"id": "damage", "attribute": "minecraft:generic.attack_damage", "amount": 0.03, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "speed", "attribute": "minecraft:generic.attack_speed", "amount": 0.06, "operation": "add_multiplied_base", "slots": ["mainhand"]}
+  ]
+}

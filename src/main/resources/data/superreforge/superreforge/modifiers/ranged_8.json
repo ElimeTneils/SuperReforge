@@ -1,0 +1,11 @@
+{
+  "_comment": "远程 8 级神圣前缀。",
+  "level": "superreforge:divine",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_8", "fallback": "天穹", "color": "yellow", "bold": true},
+  "weight": 2,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": 0.08, "operation": "add_multiplied_total", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": 4.0, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}

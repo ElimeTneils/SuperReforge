@@ -1,0 +1,11 @@
+{
+  "_comment": "至高石是默认后期媒介。",
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "superreforge:refined_reforge_stone"},
+    {"item": "minecraft:echo_shard"},
+    {"item": "minecraft:nether_star"}
+  ],
+  "result": {"id": "superreforge:supreme_reforge_stone", "count": 1}
+}

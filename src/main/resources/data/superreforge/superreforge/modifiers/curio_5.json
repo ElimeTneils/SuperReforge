@@ -1,0 +1,12 @@
+{
+  "_comment": "Curios 通用池 5 级案例；每条 Attribute 都可自行选择位置和运算。",
+  "level": "superreforge:epic",
+  "item_types": ["superreforge:curio"],
+  "name": {"translate": "modifier.superreforge.curio_5", "fallback": "辉光", "color": "light_purple"},
+  "weight": 20,
+  "attributes": [
+    {"id": "health", "attribute": "minecraft:generic.max_health", "amount": 3.0, "operation": "add_value", "slots": ["curios:any"]},
+    {"id": "armor", "attribute": "minecraft:generic.armor", "amount": 1.5, "operation": "add_value", "slots": ["curios:any"]},
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": 0.01, "operation": "add_multiplied_base", "slots": ["curios:any"]}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "近战 3 级示例：min/max 会由物品保存的随机种子稳定重算。",
+  "level": "superreforge:fine",
+  "item_types": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
+  "name": {"translate": "modifier.superreforge.melee_3", "fallback": "锋锐", "color": "green"},
+  "weight": 30,
+  "attributes": [
+    {"id": "damage", "attribute": "minecraft:generic.attack_damage", "amount": {"min": 0.01, "max": 0.02}, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "speed", "attribute": "minecraft:generic.attack_speed", "amount": {"min": 0.02, "max": 0.03}, "operation": "add_multiplied_base", "slots": ["mainhand"]}
+  ]
+}

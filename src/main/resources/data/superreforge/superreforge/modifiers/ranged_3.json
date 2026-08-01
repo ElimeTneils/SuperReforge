@@ -1,0 +1,11 @@
+{
+  "_comment": "远程 3 级前缀，两个数值均由保存的种子稳定随机。",
+  "level": "superreforge:fine",
+  "item_types": ["superreforge:bow", "superreforge:crossbow"],
+  "name": {"translate": "modifier.superreforge.ranged_3", "fallback": "迅捷", "color": "green"},
+  "weight": 30,
+  "attributes": [
+    {"id": "mobility", "attribute": "minecraft:generic.movement_speed", "amount": {"min": 0.01, "max": 0.015}, "operation": "add_multiplied_base", "slots": ["mainhand"]},
+    {"id": "luck", "attribute": "minecraft:generic.luck", "amount": {"min": 0.4, "max": 0.8}, "operation": "add_value", "slots": ["mainhand"]}
+  ]
+}

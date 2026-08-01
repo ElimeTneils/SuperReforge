@@ -1,0 +1,11 @@
+{
+  "_comment": "精炼石由普通石、紫水晶和烈焰粉升级。",
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "superreforge:common_reforge_stone"},
+    {"item": "minecraft:amethyst_shard"},
+    {"item": "minecraft:blaze_powder"}
+  ],
+  "result": {"id": "superreforge:refined_reforge_stone", "count": 1}
+}

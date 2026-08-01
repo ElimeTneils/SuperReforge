@@ -1,0 +1,13 @@
+{
+  "_comment": "熔核锻台的默认合成配方。",
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["ICI", "BMB", "III"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "C": {"item": "minecraft:copper_block"},
+    "B": {"item": "minecraft:polished_blackstone_bricks"},
+    "M": {"item": "minecraft:magma_block"}
+  },
+  "result": {"id": "superreforge:reforger", "count": 1}
+}

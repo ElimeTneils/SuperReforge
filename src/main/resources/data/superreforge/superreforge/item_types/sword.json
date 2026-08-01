@@ -1,0 +1,7 @@
+{
+  "_comment": "所有剑标签物品和木棍都使用剑池；木棍演示按 ID 硬绑定任意物品。exclude 可选且优先否决。",
+  "include": [
+    {"tag": "minecraft:swords"},
+    {"item": "minecraft:stick"}
+  ]
+}

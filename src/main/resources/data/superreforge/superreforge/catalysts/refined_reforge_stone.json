@@ -1,0 +1,13 @@
+{
+  "_comment": "精炼石固定消耗 2 个和 8 点/级经验，只出 3~6 级。allowed_item_types 与 denied_item_types 均可选。",
+  "ingredient": {"item": "superreforge:refined_reforge_stone"},
+  "count": 2,
+  "experience": 8,
+  "allow_same_modifier": false,
+  "levels": [
+    {"level": "superreforge:fine", "weight": 35},
+    {"level": "superreforge:rare", "weight": 30},
+    {"level": "superreforge:epic", "weight": 22},
+    {"level": "superreforge:legendary", "weight": 13}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "_comment": "Curios 通用池 2 级案例。",
+  "level": "superreforge:common",
+  "item_types": ["superreforge:curio"],
+  "name": {"translate": "modifier.superreforge.curio_2", "fallback": "温润", "color": "white"},
+  "weight": 35,
+  "attributes": [
+    {"id": "health", "attribute": "minecraft:generic.max_health", "amount": 1.0, "operation": "add_value", "slots": ["curios:any"]},
+    {"id": "armor", "attribute": "minecraft:generic.armor", "amount": 0.5, "operation": "add_value", "slots": ["curios:any"]}
+  ]
+}

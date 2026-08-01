@@ -1,0 +1,13 @@
+{
+  "_comment": "权重无需合计 1 或 100；实际概率为 weight/所有有效 weight 之和。普通石只出 1~4 级。",
+  "ingredient": {"item": "superreforge:common_reforge_stone"},
+  "count": 1,
+  "experience": 3,
+  "allow_same_modifier": false,
+  "levels": [
+    {"level": "superreforge:worn", "weight": 45},
+    {"level": "superreforge:common", "weight": 30},
+    {"level": "superreforge:fine", "weight": 18},
+    {"level": "superreforge:rare", "weight": 7}
+  ]
+}

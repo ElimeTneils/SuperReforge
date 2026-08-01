@@ -1,0 +1,5 @@
+{
+  "_comment": "精良品质，默认排位 3。",
+  "rank": 3,
+  "name": {"translate": "level.superreforge.fine", "fallback": "等级 3", "color": "green"}
+}

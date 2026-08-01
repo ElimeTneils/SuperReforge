@@ -1,0 +1,35 @@
+{
+  // 引用品质等级和一个或多个物品类型；多类型词条池最终按词条资源 ID 去重。
+  "level": "example:legendary",
+  "item_types": ["example:custom_weapons"],
+
+  // translate 可本地化，fallback 在语言键缺失时仍可读。
+  "name": {
+    "translate": "modifier.example.legendary_blade",
+    "fallback": "传说",
+    "color": "gold",
+    "bold": true
+  },
+
+  // 同等级内的相对权重；20、30、30 会自动成为 20/80、30/80、30/80。
+  "weight": 20,
+  "attributes": [
+    {
+      // effect id 在同一词条内必须唯一，并参与稳定随机种子和 Attribute modifier ID。
+      "id": "damage",
+      "attribute": "minecraft:generic.attack_damage",
+      "amount": 0.04, // 固定值。
+      "operation": "add_multiplied_base", // +4% 基础攻击力。
+      "slots": ["mainhand"],
+      "show_in_tooltip": true
+    },
+    {
+      "id": "speed",
+      "attribute": "minecraft:generic.attack_speed",
+      "amount": {"min": 0.06, "max": 0.10}, // 由物品保存的 seed 稳定随机。
+      "operation": "add_multiplied_total", // 乘算力。
+      "slots": ["mainhand"],
+      "show_in_tooltip": false
+    }
+  ]
+}

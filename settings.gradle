@@ -1,0 +1,12 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+// 固定根项目名称，避免不同解压目录产生不同的 Gradle 项目名。
+rootProject.name = 'superreforge'

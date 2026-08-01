@@ -1,0 +1,29 @@
+{
+  "level": "example:legendary",
+  "item_types": ["example:custom_weapons"],
+  "name": {
+    "translate": "modifier.example.legendary_blade",
+    "fallback": "传说",
+    "color": "gold",
+    "bold": true
+  },
+  "weight": 20,
+  "attributes": [
+    {
+      "id": "damage",
+      "attribute": "minecraft:generic.attack_damage",
+      "amount": 0.04,
+      "operation": "add_multiplied_base",
+      "slots": ["mainhand"],
+      "show_in_tooltip": true
+    },
+    {
+      "id": "speed",
+      "attribute": "minecraft:generic.attack_speed",
+      "amount": {"min": 0.06, "max": 0.10},
+      "operation": "add_multiplied_total",
+      "slots": ["mainhand"],
+      "show_in_tooltip": false
+    }
+  ]
+}

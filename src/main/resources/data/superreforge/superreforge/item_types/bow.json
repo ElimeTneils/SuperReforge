@@ -1,0 +1,4 @@
+{
+  "_comment": "精确 ID 示例；可在数据包中追加 items、tag 或 kubejs_predicate。",
+  "include": [{"item": "minecraft:bow"}]
+}

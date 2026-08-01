@@ -1,0 +1,5 @@
+{
+  "_comment": "稀有品质，默认排位 4。",
+  "rank": 4,
+  "name": {"translate": "level.superreforge.rare", "fallback": "等级 4", "color": "aqua"}
+}

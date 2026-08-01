@@ -1,0 +1,11 @@
+{
+  "_comment": "近战 8 级神圣前缀，演示乘算力 add_multiplied_total。",
+  "level": "superreforge:divine",
+  "item_types": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
+  "name": {"translate": "modifier.superreforge.melee_8", "fallback": "神圣", "color": "yellow", "bold": true},
+  "weight": 2,
+  "attributes": [
+    {"id": "damage", "attribute": "minecraft:generic.attack_damage", "amount": 0.08, "operation": "add_multiplied_total", "slots": ["mainhand"]},
+    {"id": "speed", "attribute": "minecraft:generic.attack_speed", "amount": 0.12, "operation": "add_multiplied_total", "slots": ["mainhand"]}
+  ]
+}

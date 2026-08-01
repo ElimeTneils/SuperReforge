@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mutuo.example/superreforge/item_type.schema.json",
+  "title": "Super Reforge 物品类型定义",
+  "description": "include 内任意 selector 命中即属于该类型；exclude 任意命中时优先排除。",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "include": {"type": "array", "items": {"$ref": "#/$defs/selector"}, "default": []},
+    "exclude": {"type": "array", "items": {"$ref": "#/$defs/selector"}, "default": []}
+  },
+  "$defs": {
+    "resourceLocation": {"type": "string", "pattern": "^[a-z0-9_.-]+:[a-z0-9_./-]+$"},
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "item": {"$ref": "#/$defs/resourceLocation"},
+        "items": {"type": "array", "items": {"$ref": "#/$defs/resourceLocation"}},
+        "tag": {"$ref": "#/$defs/resourceLocation"},
+        "curios": {"const": "any"},
+        "kubejs_predicate": {"type": "string", "minLength": 1}
+      },
+      "anyOf": [
+        {"required": ["item"]}, {"required": ["items"]}, {"required": ["tag"]},
+        {"required": ["curios"]}, {"required": ["kubejs_predicate"]}
+      ]
+    }
+  }
+}

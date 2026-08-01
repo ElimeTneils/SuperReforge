@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mutuo.example/superreforge/level.schema.json",
+  "title": "Super Reforge 等级定义",
+  "description": "对应 data/<namespace>/superreforge/levels/*.json。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rank", "name"],
+  "properties": {
+    "rank": {"type": "integer", "description": "用于排序和自定义等级范围的整数。"},
+    "name": {"$ref": "#/$defs/component"}
+  },
+  "$defs": {
+    "component": {
+      "description": "Minecraft Component：可直接写字符串，也可写 text/translate、颜色、粗体等对象。",
+      "oneOf": [
+        {"type": "string"},
+        {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "text": {"type": "string"},
+            "translate": {"type": "string"},
+            "fallback": {"type": "string"},
+            "color": {"type": "string"},
+            "bold": {"type": "boolean"},
+            "italic": {"type": "boolean"},
+            "underlined": {"type": "boolean"},
+            "strikethrough": {"type": "boolean"},
+            "obfuscated": {"type": "boolean"}
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  }
+}

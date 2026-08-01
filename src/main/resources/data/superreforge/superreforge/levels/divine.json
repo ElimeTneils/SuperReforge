@@ -1,0 +1,5 @@
+{
+  "_comment": "神圣品质，默认排位 8。",
+  "rank": 8,
+  "name": {"translate": "level.superreforge.divine", "fallback": "等级 8", "color": "yellow", "bold": true}
+}

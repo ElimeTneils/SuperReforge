@@ -1,0 +1,4 @@
+{
+  "_comment": "三叉戟类型。物品允许同时命中其他自定义类型，最终词条池会按 ID 合并去重。",
+  "include": [{"item": "minecraft:trident"}]
+}
