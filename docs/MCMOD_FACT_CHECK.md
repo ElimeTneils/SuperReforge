@@ -48,7 +48,7 @@
 
 - 工作树中存在未跟踪的 `ReforgerLayout.java`、`ModifierTooltipFormatter.java` 及其两份测试；它们涉及更宽界面中的背包/日志布局及候选词条悬浮信息，未提交，不能作为已发布功能宣传。（`git status --short`、`src/main/java/com/mutuo/superreforge/block/ReforgerLayout.java`、`src/main/java/com/mutuo/superreforge/client/ModifierTooltipFormatter.java`、`src/test/java/com/mutuo/superreforge/block/ReforgerLayoutTest.java`、`src/test/java/com/mutuo/superreforge/client/ModifierTooltipFormatterTest.java`）
 - 本次仅完成仓库静态事实核对，未在真实 NeoForge 客户端、专用服务器、Curios 或 KubeJS 环境中进行运行时验收；兼容性和联机表现不得扩展为“已实测”。（`git status --short`、`git diff --check`、`rg --files src/main/resources/data/superreforge/superreforge`）
-- 不得使用无来源的绝对性或时效性声明。（`rg -n '待补充|占位符|稍后完成|最新版本|旧版本|兼容所有|支持所有' docs/MCMOD_FACT_CHECK.md`）
+- 不得使用无来源的绝对性或时效性声明。（`.superpowers/sdd/2026-08-01-mcmod-page-content/task-1-brief.md`）
 
 ## 投稿前需由作者人工确认
 
