@@ -28,7 +28,7 @@
 - `ReforgerHammerGeometry.java`：集中声明锤子缩放、砧面高度、真实模型边界、固定连接枢轴、-45° 静止/接触角、-75° 抬起角、-47° 回弹角和四向 yaw；不可变 `TransformPlan`/`TransformStep` 同时供 renderer 与测试消费，并提供基于分离轴定理（SAT）的旋转盒正体积相交判定。修改会影响锤头是否对准中央砧面、四向关键帧是否穿模以及渲染矩阵顺序。
 - `ReforgerLogModel.java`：把服务端嵌套等级/词条预览扁平化为完整有序的单行日志；每个 `Row` 同时保留 `levelName`、词条 ID/名称、最终概率和连续几何位置，等级不再额外占一行，并集中计算滚轮、滑块和视口边界。修改会影响日志顺序、行高、Attribute 悬停解析和滚动距离，不会改变服务端概率。
 - `ReforgerRenderState.java`：把总/剩余 tick 与 partial tick 转为静止、抬锤、接触、回弹、复位五段局部 Z 角度及核心强度；关键帧输出直接进入共享 `TransformPlan`。改公式会影响约一秒动画曲线和接触时点。
-- `ReforgerScreen.java`：286×218 的熔核锻造日志屏幕，使用原版 `Button`，绘制操作/176px 背包/日志分区，从共享位置表绘制全部 36 个槽框，将等级、词条和最终概率绘制在同一行；裁剪完整列表并处理滚轮、拖动滑块、Attribute 悬停和截断警告。改坐标、裁剪或状态分支会影响 GUI 可用性而非服务端重铸判定。
+- `ReforgerScreen.java`：286×218 的熔核锻造日志屏幕，使用原版 `Button`，绘制操作/176px 背包/日志分区，从共享位置表绘制全部 36 个槽框，将等级、词条和最终概率绘制在同一行；`canStart` 保证无有效报价、定义未同步或正在锻造时按钮禁用；屏幕还负责裁剪完整列表并处理滚轮、拖动滑块、Attribute 悬停和截断警告。改坐标、裁剪或状态分支会影响 GUI 可用性而非服务端重铸判定。
 - `SuperReforgeClient.java`：客户端事件注册入口，绑定锻台屏幕、方块实体渲染器和预览接收。改注册项会导致客户端界面或渲染缺失。
 
 ### `compat`
@@ -209,6 +209,7 @@
 - `ReforgerHammerGeometryTest.java`：直接解析锤子与锻台模型 JSON，验证四个锤部件只边界接触、`TransformPlan` 固定枢轴/步骤顺序、四向 yaw，以及静止/抬起/接触/回弹/复位各关键帧通过 SAT 检查与全部 22 个真实锻台盒无正体积相交。
 - `ReforgerLogModelTest.java`：逐一验证全部最终词条单行的等级 Component、词条 ID/Component、服务端概率、连续 top/height，不因视口截断，并覆盖滚轮、滑块和边界钳制。
 - `ReforgerRenderStateTest.java`：验证 20 tick 内 -45° 静止、-75° 抬起、-45° 接触、-47° 回弹、复位关键帧和熔核峰值。
+- `ReforgerScreenTest.java`：验证 pending、缺少报价、报价失败或定义代次过期时原版重铸按钮保持禁用，只有当前代次的成功服务端报价可启用按钮。
 
 ### `compat/curios`
 

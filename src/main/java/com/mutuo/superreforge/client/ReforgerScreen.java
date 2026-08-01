@@ -75,12 +75,19 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
         ReforgePreviewPayload preview = ClientPreviewState.get(menu.containerId).orElse(null);
         updateLogModel(preview);
         if (reforgeButton != null) {
-            boolean synchronizedDefinitions = preview != null
-                    && preview.generation() == ClientDefinitionSync.completedGeneration();
-            reforgeButton.active = !menu.pending() && synchronizedDefinitions;
+            reforgeButton.active = canStart(
+                    menu.pending(), preview, ClientDefinitionSync.completedGeneration());
             reforgeButton.setMessage(Component.translatable(
                     menu.pending() ? "gui.superreforge.forging" : "gui.superreforge.reforge"));
         }
+    }
+
+    /** 只有服务端报价成功且定义代次一致时才启用按钮，失败报价仍展示原因但不能误导玩家点击。 */
+    static boolean canStart(boolean pending, ReforgePreviewPayload preview, long completedGeneration) {
+        return !pending
+                && preview != null
+                && preview.failureOrdinal() < 0
+                && preview.generation() == completedGeneration;
     }
 
     @Override
