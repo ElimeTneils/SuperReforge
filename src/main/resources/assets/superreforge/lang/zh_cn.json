@@ -1,5 +1,6 @@
 {
   "_comment": "简体中文本地化；词条名称采用翻译键，数据文件内仍带 fallback，缺语言包时也可读。",
+  "itemGroup.superreforge": "Super Reforge",
   "block.superreforge.reforger": "熔核锻台",
   "item.superreforge.reforger": "熔核锻台",
   "item.superreforge.common_reforge_stone": "普通重铸石",

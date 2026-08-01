@@ -9,6 +9,7 @@ public final class ModRegistries {
     public static void register(IEventBus bus) {
         ModBlocks.register(bus);
         ModItems.register(bus);
+        ModCreativeTabs.register(bus);
         ModBlockEntities.register(bus);
         ModMenus.register(bus);
     }
