@@ -163,7 +163,8 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
             ReforgerRenderState state = ReforgerRenderState.fromTicks(
                     menu.totalTicks(), menu.remainingTicks(), partialTick);
             glow = (int) (80 + 175 * state.coreIntensity());
-            hammerY = top + 22 + (int) ((1.2F - state.hammerHeight()) * 26.0F);
+            hammerY = top + 22 + (int) ((1.2F - ReforgerHammerGeometry.hammerFaceY(
+                    state.hammerAngleDegrees())) * 26.0F);
         }
         int color = 0xFF000000 | (Math.min(255, glow) << 16) | (Math.min(255, glow / 2) << 8);
         graphics.fill(left + 104, top + 53, left + 124, top + 67, color);

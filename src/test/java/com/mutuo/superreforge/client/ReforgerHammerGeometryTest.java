@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 final class ReforgerHammerGeometryTest {
     @Test
     void contactPointTouchesTheAnvilWithoutEnteringIt() {
-        float headBottom = ReforgerHammerGeometry.headBottom(
-                ReforgerHammerGeometry.CONTACT_ORIGIN_Y);
+        float headBottom = ReforgerHammerGeometry.hammerFaceY(
+                ReforgerHammerGeometry.CONTACT_ANGLE_DEGREES);
 
         assertTrue(headBottom >= ReforgerHammerGeometry.ANVIL_TOP);
         assertTrue(headBottom - ReforgerHammerGeometry.ANVIL_TOP < 1.0F / 16.0F);
-        assertTrue(ReforgerHammerGeometry.headBottom(ReforgerHammerGeometry.REST_ORIGIN_Y) > headBottom);
+        assertTrue(ReforgerHammerGeometry.hammerFaceY(ReforgerHammerGeometry.REST_ANGLE_DEGREES) >= headBottom);
     }
 
     @Test
@@ -32,5 +32,15 @@ final class ReforgerHammerGeometryTest {
         assertEquals(90.0F, ReforgerHammerGeometry.yawDegrees(Direction.EAST));
         assertEquals(180.0F, ReforgerHammerGeometry.yawDegrees(Direction.SOUTH));
         assertEquals(270.0F, ReforgerHammerGeometry.yawDegrees(Direction.WEST));
+    }
+
+    @Test
+    void handleSocketHeadAndCapMeetAtBoundariesWithoutVolumeOverlap() {
+        assertTrue(ReforgerHammerGeometry.boxesDoNotOverlap(
+                ReforgerHammerGeometry.HANDLE_BOUNDS, ReforgerHammerGeometry.SOCKET_BOUNDS));
+        assertTrue(ReforgerHammerGeometry.boxesDoNotOverlap(
+                ReforgerHammerGeometry.SOCKET_BOUNDS, ReforgerHammerGeometry.HEAD_BOUNDS));
+        assertTrue(ReforgerHammerGeometry.boxesDoNotOverlap(
+                ReforgerHammerGeometry.CAP_BOUNDS, ReforgerHammerGeometry.HEAD_BOUNDS));
     }
 }

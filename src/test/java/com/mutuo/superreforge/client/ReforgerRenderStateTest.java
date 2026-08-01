@@ -8,27 +8,28 @@ import org.junit.jupiter.api.Test;
 /** 验证约一秒动画的关键时间点不会因渲染帧率改变。 */
 final class ReforgerRenderStateTest {
     @Test
-    void hammerRaisesImpactsBouncesAndReturnsToRest() {
+    void hammerRaisesImpactsBouncesAndReturnsToRestAroundTheFixedPivot() {
         ReforgerRenderState start = ReforgerRenderState.fromTicks(20, 20, 0);
         ReforgerRenderState raised = ReforgerRenderState.fromTicks(20, 15, 0);
         ReforgerRenderState impact = ReforgerRenderState.fromTicks(20, 10, 0);
         ReforgerRenderState rebound = ReforgerRenderState.fromTicks(20, 7, 0);
         ReforgerRenderState end = ReforgerRenderState.fromTicks(20, 0, 0);
 
-        assertEquals(ReforgerHammerGeometry.REST_ORIGIN_Y, start.hammerHeight(), 0.001F);
-        assertEquals(ReforgerHammerGeometry.RAISED_ORIGIN_Y, raised.hammerHeight(), 0.001F);
-        assertEquals(ReforgerHammerGeometry.CONTACT_ORIGIN_Y, impact.hammerHeight(), 0.001F);
-        assertTrue(rebound.hammerHeight() > impact.hammerHeight());
-        assertEquals(ReforgerHammerGeometry.REST_ORIGIN_Y, end.hammerHeight(), 0.001F);
+        assertEquals(-45.0F, start.hammerAngleDegrees(), 0.001F);
+        assertTrue(raised.hammerAngleDegrees() > start.hammerAngleDegrees());
+        assertEquals(ReforgerHammerGeometry.CONTACT_ANGLE_DEGREES, impact.hammerAngleDegrees(), 0.001F);
+        assertTrue(rebound.hammerAngleDegrees() > impact.hammerAngleDegrees());
+        assertEquals(-45.0F, end.hammerAngleDegrees(), 0.001F);
         assertEquals(1.0F, impact.coreIntensity(), 0.001F);
         assertEquals(1.0F, end.progress(), 0.001F);
     }
 
     @Test
-    void everySampledHeightStaysAboveTheContactPoint() {
+    void everySampledAngleKeepsTheHammerFaceAboveTheAnvil() {
         for (int remaining = 20; remaining >= 0; remaining--) {
             ReforgerRenderState state = ReforgerRenderState.fromTicks(20, remaining, 0);
-            assertTrue(state.hammerHeight() >= ReforgerHammerGeometry.CONTACT_ORIGIN_Y);
+            assertTrue(ReforgerHammerGeometry.hammerFaceY(state.hammerAngleDegrees())
+                    >= ReforgerHammerGeometry.ANVIL_TOP);
         }
     }
 }
