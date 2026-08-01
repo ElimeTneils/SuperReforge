@@ -1,0 +1,5 @@
+{
+  "_comment": "强化石 5级暂用下界之星图标；获取配方交由整合包自行定义。",
+  "parent": "minecraft:item/generated",
+  "textures": {"layer0": "minecraft:item/nether_star"}
+}

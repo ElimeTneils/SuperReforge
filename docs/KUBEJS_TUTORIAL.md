@@ -4,7 +4,7 @@
 
 ## 1. 文件位置和完整方法集
 
-在游戏或服务器根目录确认有以下目录；先不要创建脚本文件，第 2 节会要求二选一：
+在游戏或服务器根目录确认有以下目录；先不要创建脚本文件，第 2 节会要求三选一：
 
 ```text
 kubejs/
@@ -26,14 +26,15 @@ kubejs/
 
 所有 `SuperReforge.add*` 调用都必须直接在 `server_scripts` 加载期执行。不要把它们放进延迟任务、异步线程或普通运行期事件。
 
-## 2. 先二选一：最小教学脚本或完整战斗脚本
+## 2. 先三选一：最小教学、完整战斗或纯 Curios 脚本
 
-下面的方案 A 与方案 B 必须二选一，不能同时放进 `server_scripts` 运行。KubeJS 定义可以用同 ID 覆盖 datapack 定义；但两个脚本都属于同一 KubeJS 层，同类别的重复 ID 会直接让 reload 失败，绝不会由后一个 KubeJS 脚本覆盖前一个。
+下面的方案 A、B、C 必须三选一，不能同时放进 `server_scripts` 运行。KubeJS 定义可以用同 ID 覆盖 datapack 定义；但多个脚本都属于同一 KubeJS 层，同类别的重复 ID 会直接让 reload 失败，绝不会由后一个 KubeJS 脚本覆盖前一个。
 
 | 选择 | 唯一启用的定义脚本 | 不要启用 |
 | --- | --- | --- |
 | 方案 A：最小教学脚本 | `superreforge_tutorial.js` | `superreforge_combat_attributes.js` |
 | 方案 B：完整战斗脚本 | `superreforge_combat_attributes.js` | `superreforge_tutorial.js` |
+| 方案 C：纯 Curios 八级脚本 | `superreforge_curio_progression.js` | 前两种脚本以及旧 `superreforge_definitions.js` |
 
 先做选择再复制代码。选择方案 B 时直接跳到“方案 B”，不要复制方案 A 的任何注册代码块。
 
@@ -69,6 +70,10 @@ SR_LEVELS.forEach(([id, rank, text, color]) => {
 不要创建或启用 `superreforge_tutorial.js`，只复制 [`examples/kubejs/superreforge_combat_attributes.js`](../examples/kubejs/superreforge_combat_attributes.js) 到 `kubejs/server_scripts/`。完整脚本自身已经注册同一组 8 个 `superreforge:*` 等级；因此第 2～4 节的最小教学注册代码只阅读、不运行。若之前用过方案 A，先从 `server_scripts` 删除或移走 `superreforge_tutorial.js`，再启用方案 B。
 
 第 6 节的进度阶段不注册等级，可以按需单独放入另一个 progression 脚本，与方案 B 共用。
+
+### 方案 C：纯 Curios 八级脚本
+
+只复制 [`examples/kubejs/superreforge_curio_progression.js`](../examples/kubejs/superreforge_curio_progression.js) 到 `kubejs/server_scripts/`。它会用不可匹配类型与零权重覆盖内置 24 条词条，只注册 Curios 任意栏位的 32 条固定词条，并用六种强化石定义指定的等级权重。该脚本已包含等级、物品类型、词条和媒介定义，因此不要同时启用方案 A、方案 B 或旧的 `superreforge_definitions.js`；`superreforge_progression.js` 仍可按需共存。
 
 ## 3. 物品类型、选择器、KubeJS 组与谓词
 
@@ -188,10 +193,10 @@ ServerEvents.loaded(event => {
 
 ## 7. Reload 与验收
 
-1. 再确认只启用一种定义脚本：方案 A 保存 `kubejs/server_scripts/superreforge_tutorial.js`；方案 B 只保存 `kubejs/server_scripts/superreforge_combat_attributes.js`。不要同时保留两者。
+1. 再确认只启用一种定义脚本：方案 A 保存 `superreforge_tutorial.js`；方案 B 保存 `superreforge_combat_attributes.js`；方案 C 保存 `superreforge_curio_progression.js`。三者不要同时保留。
 2. 执行 KubeJS 的 `/kubejs reload server_scripts`；如当前整合包未暴露该命令，重启服务器以完整重载 `server_scripts`。
 3. 查看服务器日志，确认脚本无错且出现 Super Reforge 已发布 KubeJS 层的记录。
-4. 方案 A 用钻石与命中 `example:script_weapon` 的物品验证候选、权重和成本；方案 B 用内置重铸石与脚本支持的武器、四种护甲、工具和 Curios 验证 64 条战斗词条。头盔、胸甲、护腿、靴子应分别只出现对应槽位的八级词条；两种方案都应检查物品名称中的等级前缀显示。
+4. 方案 A 用钻石与命中 `example:script_weapon` 的物品验证候选；方案 B 用内置重铸石验证 64 条战斗词条；方案 C 用六级强化石和 Curios 饰品验证 32 条纯饰品词条，并确认普通武器没有候选。所有方案都应检查物品名称中的等级前缀显示。
 
 每次 reload 都使用全新临时收集器。只有所有服务器脚本没有报错、四类定义通过交叉校验时，定义、谓词和阶段才会整体发布。任一步失败都保留上一份有效脚本层，不会只更新一半。
 

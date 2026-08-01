@@ -105,16 +105,18 @@ final class DocumentationContractTest {
             assertTrue(kubeJs.contains(required), "KubeJS 教程缺少已支持内容：" + required);
         }
 
-        String choice = markdownSection(kubeJs, "## 2. 先二选一：最小教学脚本或完整战斗脚本");
+        String choice = markdownSection(kubeJs, "## 2. 先三选一：最小教学、完整战斗或纯 Curios 脚本");
         for (String required : List.of(
                 "方案 A",
                 "方案 B",
-                "二选一",
+                "方案 C",
+                "三选一",
                 "不能同时",
                 "同一 KubeJS 层",
                 "datapack",
-                "superreforge_combat_attributes.js")) {
-            assertTrue(choice.contains(required), "KubeJS 教程的二选一流程缺少：" + required);
+                "superreforge_combat_attributes.js",
+                "superreforge_curio_progression.js")) {
+            assertTrue(choice.contains(required), "KubeJS 教程的三选一流程缺少：" + required);
         }
         assertTrue(choice.contains("覆盖 datapack") && choice.contains("重复 ID"),
                 "教程必须区分 KubeJS 覆盖 datapack 与同层重复 ID");
@@ -127,6 +129,7 @@ final class DocumentationContractTest {
         assertTrue(combat.contains("add_multiplied_base") && combat.contains("add_multiplied_total"),
                 "战斗 Attribute 章节必须保留真实 operation");
         assertLocalMarkdownLink(kubeJsPath, "../examples/kubejs/superreforge_combat_attributes.js");
+        assertLocalMarkdownLink(kubeJsPath, "../examples/kubejs/superreforge_curio_progression.js");
 
         String stages = markdownSection(kubeJs, "## 6. 持久化全服阶段与最高优先级成本");
         assertTrue(stages.contains("SuperReforge.getActiveStage") && stages.contains("event.server"),
@@ -147,6 +150,7 @@ final class DocumentationContractTest {
         String changelog = Files.readString(ROOT.resolve("CHANGELOG.md"), StandardCharsets.UTF_8);
         for (String required : List.of(
                 "superreforge_combat_attributes.js",
+                "superreforge_curio_progression.js",
                 "UTF-8",
                 "等级 1",
                 "Curios",
@@ -168,6 +172,7 @@ final class DocumentationContractTest {
         String reference = Files.readString(ROOT.resolve("docs/FILE_REFERENCE.md"), StandardCharsets.UTF_8);
         for (String required : List.of(
                 "examples/kubejs/superreforge_combat_attributes.js",
+                "examples/kubejs/superreforge_curio_progression.js",
                 "docs/DATAPACK_TUTORIAL.md",
                 "docs/KUBEJS_TUTORIAL.md",
                 "CuriosContextPolicy.java",
@@ -181,6 +186,7 @@ final class DocumentationContractTest {
                 "TransformPlan",
                 "SAT",
                 "CombatKubeJsExampleTest.java",
+                "CurioProgressionKubeJsExampleTest.java",
                 "CuriosContextPolicyTest.java")) {
             assertTrue(reference.contains(required), "文件参考缺少 Task 7 责任：" + required);
         }

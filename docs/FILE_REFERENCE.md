@@ -132,9 +132,9 @@
 
 - `ModBlockEntities.java`：注册熔核锻台的方块实体类型。改注册 ID/绑定方块会使世界方块实体无法加载。
 - `ModBlocks.java`：注册 `reforger` 方块及其强度、亮度和非整块遮挡属性。改 ID 或物理属性会影响配方、标签、模型、光照和已有世界方块。
-- `ModCreativeTabs.java`：注册独立 `Super Reforge` 创造页签，并以唯一清单固定显示重铸台、普通/精炼/至高重铸石的顺序；动画锤子有意隐藏。修改清单会改变玩家创造栏可见内容，不影响物品注册本身。
+- `ModCreativeTabs.java`：注册独立 `Super Reforge` 创造页签，并以唯一清单固定显示重铸台与强化石 1–6 级的顺序；动画锤子有意隐藏。修改清单会改变玩家创造栏可见内容，不影响物品注册本身。
 - `ModDataComponents.java`：注册 `reforge_data` 数据组件及其持久/网络 Codec。改 ID 或 Codec 会影响物品存档和同步。
-- `ModItems.java`：注册锻台物品、三种重铸石和锻造锤。改 ID 会影响配方、媒介 JSON、语言和模型。
+- `ModItems.java`：注册锻台物品、六级强化石和锻造锤。1–3 级沿用原三种石头的稳定 ID，4–6 级使用新 ID；改 ID 会影响配方、KubeJS 媒介、语言和模型。
 - `ModMenus.java`：注册锻台菜单类型及客户端缓冲区构造器。改注册或 buf 格式会导致菜单无法打开。
 - `ModRegistries.java`：集中调用方块、物品、独立创造页签、菜单和方块实体注册。改调用顺序或遗漏调用会造成对应内容未注册。
 
@@ -150,7 +150,7 @@
 
 - `blockstates/reforger.json`：把四个 `facing` 状态映射到同一 3D 模型的 0/90/180/270 度旋转；改状态键或角度会使世界模型与碰撞/动态锻锤方向不一致。
 - `models/block/reforger.json`：锻台方块模型及纹理引用；改几何/纹理 ID 只影响渲染。
-- `models/item/reforger.json`、`common_reforge_stone.json`、`refined_reforge_stone.json`、`supreme_reforge_stone.json`：对应方块物品和三种媒介的物品模型。它们应与 `ModItems` 的注册 ID 对齐，否则物品会显示为缺失模型。
+- `models/item/reforger.json`、`common_reforge_stone.json`、`refined_reforge_stone.json`、`supreme_reforge_stone.json`、`enhancement_stone_4.json` 至 `enhancement_stone_6.json`：对应方块物品和六级强化石模型。它们应与 `ModItems` 的注册 ID 对齐，否则物品会显示为缺失模型；4–6 级暂用原版图标且不内置获取配方。
 - `models/item/forge_hammer.json`：方块实体动画专用的原创 3D 动力锻锤，四个具名元素（handle/socket/head/cap）只在边界相接；模型由共享固定枢轴旋转，`fixed` 不再叠加倾斜。修改元素范围必须同步 `ReforgerHammerGeometry`，否则 SAT 穿模、接触高度测试与实际烘焙模型会失配。
 - `lang/en_us.json`、`lang/zh_cn.json`：英文/简体中文词条，覆盖独立页签、锻台、滚动/悬停说明、失败提示、等级和示例词条名；八个默认等级目前统一显示为 “Level 1” 至 “Level 8” / “等级 1” 至 “等级 8”。改键名会影响 JSON `translate`、屏幕与 mixin 名称显示。
 
@@ -179,12 +179,13 @@
 - `README.md`：安装、快速开始和全部公开指南入口；现在分别链接 Datapack 与 KubeJS 教程。修改入口时必须保持仓库内相对链接可解析。
 - `docs/DATAPACK_API.md`、`docs/KUBEJS_API.md`：字段/绑定的完整参考，并交叉链接两条教程；API 签名、Codec 或示例路径变化时需同步。
 - `docs/DATAPACK_TUTORIAL.md`：面向数据包作者的独立中文实作流程，覆盖 pack 布局、四类严格 JSON、JSONC 阅读版、相对权重、`curios:any`、`/reload` 与常见错误；示例代码块必须保持可解析。
-- `docs/KUBEJS_TUTORIAL.md`：面向脚本作者的独立中文实作流程，覆盖脚本放置、定义 API、最小脚本与完整战斗脚本二选一、同层重复 ID、相对权重、可选 Attribute、持久化阶段、成本公式与排错。
+- `docs/KUBEJS_TUTORIAL.md`：面向脚本作者的独立中文实作流程，覆盖脚本放置、定义 API、最小教学/完整战斗/纯 Curios 脚本三选一、同层重复 ID、相对权重、可选 Attribute、持久化阶段、成本公式与排错。
 - `docs/FILE_REFERENCE.md`：本文件；发布审查用它核对每个源码、资源、测试、示例与指南的责任边界。
 
 ## `examples/kubejs`
 
-- `examples/kubejs/superreforge_combat_attributes.js`：可复制的八级战斗配置；可执行 `SR_COMBAT_SPEC` UTF-8 JSON 表由循环直接消费，为近战、远程、头盔、胸甲、护腿、靴子、工具与 Curios 八个池各生成八级、共 64 个词条，并演示 Critical Strike、Ranged Weapon API 与 Curios Attribute。四种护甲分别绑定单独 tag、类型和槽位；玩家应按教程与最小定义脚本二选一，且只有安装相应 Attribute 提供模组后才启用这份完整脚本。
+- `examples/kubejs/superreforge_combat_attributes.js`：可复制的八级战斗配置；可执行 `SR_COMBAT_SPEC` UTF-8 JSON 表由循环直接消费，为近战、远程、头盔、胸甲、护腿、靴子、工具与 Curios 八个池各生成八级、共 64 个词条，并演示 Critical Strike、Ranged Weapon API 与 Curios Attribute。四种护甲分别绑定单独 tag、类型和槽位；玩家应按教程与其他定义脚本三选一，且只有安装相应 Attribute 提供模组后才启用这份完整脚本。
+- `examples/kubejs/superreforge_curio_progression.js`：MUTUO 的纯 Curios 八级配置；解析 `SR_CURIO_SPEC` 注册 32 条固定饰品词条与六级强化石精确权重，用零权重/空气类型覆盖内置 24 条词条，并统一把效果限制为 `curios:any`。它必须替换而非叠加最小教学、完整战斗或旧自定义定义脚本。
 - `superreforge_definitions.js`：最小 KubeJS 定义示例，演示四类定义和脚本谓词；不能与完整战斗脚本同时注册相同八级 ID。
 - `superreforge_progression.js`：全服阶段开关与持久化进度示例。
 
@@ -192,6 +193,7 @@
 
 - `BootstrapMetadataTest.java`：检查构建/模组元数据相关约定。
 - `CombatKubeJsExampleTest.java`：解析完整战斗脚本的真实 `SR_COMBAT_SPEC`，结构化验证 8 个 UTF-8 等级名、8 个池/64 个 ID、相对权重、四种护甲 tag 与精确槽位、Critical Strike 与仅远程池可用的 Ranged Weapon API operation。
+- `CurioProgressionKubeJsExampleTest.java`：解析纯饰品脚本的 `SR_CURIO_SPEC`，验证 8 级 × 4 条固定词条、六种强化石的精确等级权重、外部 Attribute、重复交互距离去重、内置词条停用与 `curios:any` 限制。
 - `DocumentationContractTest.java`：检查发布文件/真实 Markdown 链接、双教程工作流，以及 `CHANGELOG.md` 和本文件必须记录的原版 GUI、Curios、共享几何、单行日志与锻锤发布契约。
 
 ### `api`
