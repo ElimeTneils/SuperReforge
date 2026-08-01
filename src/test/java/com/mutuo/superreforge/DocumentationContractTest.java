@@ -142,6 +142,47 @@ final class DocumentationContractTest {
         assertLocalMarkdownLink(ROOT.resolve("docs/KUBEJS_API.md"), "KUBEJS_TUTORIAL.md");
     }
 
+    @Test
+    void recordsVanillaReforgerAndCompatibilityReleaseChanges() throws IOException {
+        String changelog = Files.readString(ROOT.resolve("CHANGELOG.md"), StandardCharsets.UTF_8);
+        for (String required : List.of(
+                "superreforge_combat_attributes.js",
+                "UTF-8",
+                "等级 1",
+                "Curios",
+                "合成客户端上下文",
+                "原版 GUI",
+                "36",
+                "单行概率",
+                "-45°",
+                "SAT",
+                "DATAPACK_TUTORIAL.md",
+                "KUBEJS_TUTORIAL.md")) {
+            assertTrue(changelog.contains(required), "0.1.0 更新日志缺少发布可见变更：" + required);
+        }
+    }
+
+    @Test
+    void documentsEveryVanillaReforgerAndCompatibilityFileResponsibility() throws IOException {
+        String reference = Files.readString(ROOT.resolve("docs/FILE_REFERENCE.md"), StandardCharsets.UTF_8);
+        for (String required : List.of(
+                "examples/kubejs/superreforge_combat_attributes.js",
+                "docs/DATAPACK_TUTORIAL.md",
+                "docs/KUBEJS_TUTORIAL.md",
+                "CuriosContextPolicy.java",
+                "SYNTHETIC_CLIENT",
+                "PlayerSlotPosition",
+                "36",
+                "ReforgerLogModel.java",
+                "单行",
+                "TransformPlan",
+                "SAT",
+                "CombatKubeJsExampleTest.java",
+                "CuriosContextPolicyTest.java")) {
+            assertTrue(reference.contains(required), "文件参考缺少 Task 7 责任：" + required);
+        }
+    }
+
     private static String markdownSection(String markdown, String heading) {
         int start = markdown.indexOf(heading);
         assertTrue(start >= 0, "缺少章节：" + heading);
