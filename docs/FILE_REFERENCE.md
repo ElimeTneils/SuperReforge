@@ -18,13 +18,17 @@
 - `PendingReforge.java`：保存待揭晓的结果栈、总 tick 与剩余 tick，提供递减和完成判定。改动会影响锻造动画时长、存档恢复和掉落保护。
 - `ReforgerBlock.java`：熔核锻台方块；维护四向水平朝向和随方向旋转的非整块碰撞轮廓，服务端打开菜单、移除时掉落库存与待完成结果，并只在服务端挂方块实体 tick。改朝向/碰撞会影响模型与锤架命中范围；改交互、ticker 或移除逻辑会影响 GUI 打开、动画提交与物品丢失/重复掉落风险。
 - `ReforgerBlockEntity.java`：锻台状态机，维护目标/媒介两槽、失败码、待完成结果，发起报价、扣媒介和经验、运行粒子音效及 NBT/客户端同步。修改影响重铸原子性、创造模式付款、断档恢复、方块破坏掉落和菜单进度显示。
-- `ReforgerMenu.java`：容器菜单，建立两个机器槽与背包槽、处理开始按钮和 shift-click；由服务端重新报价并发预览载荷。改槽位索引、按钮 ID 或同步条件会影响客户端容器兼容性和预览可信边界。
+- `ReforgerLayout.java`：菜单与屏幕共享的 GUI 尺寸、机器槽、玩家背包、日志裁剪区、滚动条和警告命中坐标。修改它会同步影响客户端绘制与服务端容器槽位；错误坐标会造成槽位错位、滚轮误触或悬停区域覆盖背包。
+- `ReforgerMenu.java`：容器菜单，使用 `ReforgerLayout` 建立两个机器槽与居中的背包槽、处理开始按钮和 shift-click；由服务端重新报价并发预览载荷。改槽位索引、按钮 ID 或同步条件会影响客户端容器兼容性和预览可信边界。
 
 ### `client`
 
-- `ReforgerBlockEntityRenderer.java`：客户端方块实体渲染器，读取同步后的 pending 状态并按方块朝向渲染动态锻锤。改其渲染计算只影响视觉，不应在此改服务端结果。
-- `ReforgerRenderState.java`：把总/剩余 tick 与 partial tick 转为进度、锤高、核心强度。改公式会影响动画曲线和测试预期。
-- `ReforgerScreen.java`：锻台容器屏幕，绘制背景、标签、进度和开始交互，并消费菜单/预览状态。改坐标、文案或状态分支会影响 GUI 可用性而非重铸判定。
+- `ModifierTooltipFormatter.java`：把客户端同步的词条定义格式化为悬停 Component，显示词条 ID、外部 Attribute ID、固定值/随机范围、运算和槽位。修改它只影响候选详情展示；它不会提前生成新随机种子或改变物品实际属性。
+- `ReforgerBlockEntityRenderer.java`：客户端方块实体渲染器，读取同步后的 pending 状态，以竖直姿态和方块水平朝向渲染动力锻锤。改其变换只影响视觉，不应在此改服务端结果。
+- `ReforgerHammerGeometry.java`：集中声明锤子缩放、砧面高度、模型边界、静止/接触/抬起锚点和四向 yaw。修改会影响锤头是否对准中央砧面、是否穿模以及动画关键帧测试。
+- `ReforgerLogModel.java`：把服务端嵌套等级/词条预览扁平化为完整有序日志行，并计算滚轮、滑块和视口边界。修改会影响日志顺序、行高和滚动距离，不会改变服务端概率。
+- `ReforgerRenderState.java`：把总/剩余 tick 与 partial tick 转为静止、抬锤、接触、回弹、复位五段锤高及核心强度。改公式会影响约一秒动画曲线和接触时点。
+- `ReforgerScreen.java`：286×218 的熔核锻造日志屏幕，绘制操作/背包/日志分区，裁剪完整概率列表，处理滚轮、拖动滑块、Attribute 悬停和截断警告。改坐标、裁剪或状态分支会影响 GUI 可用性而非服务端重铸判定。
 - `SuperReforgeClient.java`：客户端事件注册入口，绑定锻台屏幕、方块实体渲染器和预览接收。改注册项会导致客户端界面或渲染缺失。
 
 ### `compat`
@@ -92,7 +96,7 @@
 - `ModNetwork.java`：注册预览、分块定义同步和 ACK payload；登录/datapack reload 与 KubeJS 独立 reload 都走同一同步入口。同步前刷新已穿戴属性，退出时清理玩家状态。修改时机会影响动态解析、实体数值和重铸安全门。
 - `PreviewLevel.java`：预览中的等级、显示名、概率和词条集合值。改字段需同步 `ReforgePreviewPayload` 编解码与屏幕。
 - `PreviewModifier.java`：预览中的词条 ID、名称、概率值。改字段会影响网络格式及界面展示。
-- `ReforgePreviewPayload.java`：服务端从真实报价和快照构造的重铸预览 payload，并定义 type/stream codec 与客户端处理。改概率构造或 Codec 会影响 GUI 展示和网络兼容；它不是客户端可提交的报价。
+- `ReforgePreviewPayload.java`：服务端从真实报价和快照构造的重铸预览 payload，并定义 type/stream codec、等级/单级词条安全上限和 `truncated` 标记。改概率构造或 Codec 会影响 GUI 展示和网络兼容；它不是客户端可提交的报价。
 
 ### `progress`
 
@@ -126,10 +130,11 @@
 
 - `ModBlockEntities.java`：注册熔核锻台的方块实体类型。改注册 ID/绑定方块会使世界方块实体无法加载。
 - `ModBlocks.java`：注册 `reforger` 方块及其强度、亮度和非整块遮挡属性。改 ID 或物理属性会影响配方、标签、模型、光照和已有世界方块。
+- `ModCreativeTabs.java`：注册独立 `Super Reforge` 创造页签，并以唯一清单固定显示重铸台、普通/精炼/至高重铸石的顺序；动画锤子有意隐藏。修改清单会改变玩家创造栏可见内容，不影响物品注册本身。
 - `ModDataComponents.java`：注册 `reforge_data` 数据组件及其持久/网络 Codec。改 ID 或 Codec 会影响物品存档和同步。
 - `ModItems.java`：注册锻台物品、三种重铸石和锻造锤。改 ID 会影响配方、媒介 JSON、语言和模型。
 - `ModMenus.java`：注册锻台菜单类型及客户端缓冲区构造器。改注册或 buf 格式会导致菜单无法打开。
-- `ModRegistries.java`：集中调用方块、物品、菜单、方块实体注册。改调用会造成对应内容未注册。
+- `ModRegistries.java`：集中调用方块、物品、独立创造页签、菜单和方块实体注册。改调用顺序或遗漏调用会造成对应内容未注册。
 
 ## `src/main/resources`
 
@@ -143,8 +148,9 @@
 
 - `blockstates/reforger.json`：把四个 `facing` 状态映射到同一 3D 模型的 0/90/180/270 度旋转；改状态键或角度会使世界模型与碰撞/动态锻锤方向不一致。
 - `models/block/reforger.json`：锻台方块模型及纹理引用；改几何/纹理 ID 只影响渲染。
-- `models/item/reforger.json`、`common_reforge_stone.json`、`refined_reforge_stone.json`、`supreme_reforge_stone.json`、`forge_hammer.json`：对应方块物品/媒介/工具的物品模型。它们应与 `ModItems` 的注册 ID 对齐，否则物品会显示为缺失模型。
-- `lang/en_us.json`、`lang/zh_cn.json`：英文/简体中文词条，覆盖锻台、失败提示、等级和示例词条名；例如 `level.superreforge.common`、`modifier.superreforge.melee_1`、`container.superreforge.reforger`。改键名会影响 JSON `translate`、屏幕与 mixin 名称显示。
+- `models/item/reforger.json`、`common_reforge_stone.json`、`refined_reforge_stone.json`、`supreme_reforge_stone.json`：对应方块物品和三种媒介的物品模型。它们应与 `ModItems` 的注册 ID 对齐，否则物品会显示为缺失模型。
+- `models/item/forge_hammer.json`：方块实体动画专用的原创 3D 动力锻锤，直接按锤头朝下、木柄朝上建模，`fixed` 不再叠加倾斜旋转。修改元素范围必须同步 `ReforgerHammerGeometry`，否则接触高度测试与实际烘焙模型会失配。
+- `lang/en_us.json`、`lang/zh_cn.json`：英文/简体中文词条，覆盖独立页签、锻台、滚动/悬停说明、失败提示、等级和示例词条名；例如 `itemGroup.superreforge`、`gui.superreforge.tooltip.attribute`、`level.superreforge.common`。改键名会影响 JSON `translate`、屏幕与 mixin 名称显示。
 
 ### `data/minecraft`
 
@@ -179,10 +185,14 @@
 
 - `PendingReforgeTest.java`：验证 pending tick 递减与 ready 边界。
 - `ReforgerBlockTest.java`：验证真实注册锻台具有默认北向和四个水平朝向。
+- `ReforgerLayoutTest.java`：验证背包居中、机器槽位处于操作区，以及日志、滚动条和截断警告只命中各自区域。
 
 ### `client`
 
-- `ReforgerRenderStateTest.java`：验证剩余 tick 到锤/核心动画状态的计算。
+- `ModifierTooltipFormatterTest.java`：验证固定值、百分比范围、外部 Attribute、三种运算/槽位说明和同步定义缺失回退。
+- `ReforgerHammerGeometryTest.java`：验证锤头接触面不低于砧面、缩放后位于中央工作区，并验证四向 yaw。
+- `ReforgerLogModelTest.java`：验证全部等级/词条行不因视口截断，并覆盖滚轮、滑块和边界钳制。
+- `ReforgerRenderStateTest.java`：验证 20 tick 内静止、抬起、接触、回弹、复位关键帧和熔核峰值。
 
 ### `config`
 
@@ -221,6 +231,11 @@
 ### `network`
 
 - `DefinitionSyncPayloadTest.java`：验证大型显示快照分块、乱序原子组装以及成功/失败/陈旧 ACK 的服务端门控。
+- `ReforgePreviewPayloadTest.java`：验证等级/单级词条超过网络上限时设置截断标记，小预览保持完整，并验证标记的网络往返。
+
+### `registry`
+
+- `ModCreativeTabsTest.java`：验证独立页签的四个公开物品及其顺序、动画锤子隐藏和中英文标题资源。
 
 ## 根构建文件
 

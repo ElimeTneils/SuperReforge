@@ -24,6 +24,7 @@
 - `network/ReforgePreviewPayload.java`：在服务端报价中标注是否因网络安全上限而截断，概率本身仍由服务端生成。
 - `client/ReforgerLogModel.java`：把嵌套等级/词条预览转换为完整有序行，并提供滚动边界与滑块换算的纯逻辑。
 - `client/ModifierTooltipFormatter.java`：把同步词条定义格式化为 Attribute 详情 Component。
+- `block/ReforgerLayout.java`：让菜单槽位和屏幕绘制共同使用 GUI、日志与滚动条坐标。
 - `client/ReforgerScreen.java`：绘制精致双栏界面、裁剪日志、处理滚轮/拖动和悬停提示。
 - `block/ReforgerMenu.java`：将两个机器槽和玩家背包槽移动到新界面坐标。
 - `client/ReforgerRenderState.java`：输出静止、抬锤、接触、回弹和复位阶段的垂直位置与熔核亮度。
@@ -128,12 +129,13 @@ git commit -m "feat: model complete scrollable reforge previews"
 
 **Files:**
 - Create: `src/main/java/com/mutuo/superreforge/client/ModifierTooltipFormatter.java`
+- Create: `src/main/java/com/mutuo/superreforge/block/ReforgerLayout.java`
 - Modify: `src/main/java/com/mutuo/superreforge/client/ReforgerScreen.java`
 - Modify: `src/main/java/com/mutuo/superreforge/block/ReforgerMenu.java`
 - Modify: `src/main/resources/assets/superreforge/lang/en_us.json`
 - Modify: `src/main/resources/assets/superreforge/lang/zh_cn.json`
 - Test: `src/test/java/com/mutuo/superreforge/client/ModifierTooltipFormatterTest.java`
-- Test: `src/test/java/com/mutuo/superreforge/client/ReforgerScreenContractTest.java`
+- Test: `src/test/java/com/mutuo/superreforge/block/ReforgerLayoutTest.java`
 
 **Interfaces:**
 - Consumes: Task 1 的 `ReforgerLogModel`，以及 `DefinitionManager.clientModifiers()` 返回的 `Map<ResourceLocation, ModifierDisplayDefinition>`。
@@ -175,14 +177,14 @@ public static List<Component> format(ResourceLocation id, ModifierDisplayDefinit
 }
 ```
 
-- [ ] **Step 4: 写屏幕契约失败测试**
+- [ ] **Step 4: 写共享布局行为失败测试**
 
-`ReforgerScreenContractTest` 读取生产源码和翻译资源，断言 GUI 常量为 `286 × 218`，存在 `mouseScrolled`、`mouseDragged`、`enableScissor`、`ReforgerLogModel` 和 `ModifierTooltipFormatter` 接入；断言源码不再包含 `if (y > 93) break`。同时验证菜单槽位：目标 `(35,45)`、媒介 `(35,81)`、背包首槽 `(55,136)`、热栏首槽 `(55,194)`。
+`ReforgerLayoutTest` 直接执行共享布局：断言标准 176 像素玩家背包在 286 像素界面中居中、两个机器槽位于左侧操作区，并验证日志、滚动条和截断警告的命中边界不会覆盖玩家背包。
 
 - [ ] **Step 5: 运行屏幕契约测试并确认失败**
 
-Run: `./gradlew.bat test --tests '*ReforgerScreenContractTest' --console=plain`
-Expected: FAIL，因为当前界面仍为 `256 × 198` 且直接截断日志。
+Run: `./gradlew.bat test --tests '*ReforgerLayoutTest' --console=plain`
+Expected: FAIL，因为共享 `ReforgerLayout` 尚不存在。
 
 - [ ] **Step 6: 实现新界面布局**
 
@@ -226,14 +228,14 @@ addSlot(new Slot(inventory, index, 55 + column * 18, 136 + row * 18));
 
 - [ ] **Step 9: 运行目标测试和客户端编译**
 
-Run: `./gradlew.bat test --tests '*ModifierTooltipFormatterTest' --tests '*ReforgerScreenContractTest' --console=plain`
+Run: `./gradlew.bat test --tests '*ModifierTooltipFormatterTest' --tests '*ReforgerLayoutTest' --console=plain`
 Run: `./gradlew.bat compileJava --console=plain`
 Expected: PASS。
 
 - [ ] **Step 10: 提交**
 
 ```powershell
-git add src/main/java/com/mutuo/superreforge/client/ModifierTooltipFormatter.java src/main/java/com/mutuo/superreforge/client/ReforgerScreen.java src/main/java/com/mutuo/superreforge/block/ReforgerMenu.java src/main/resources/assets/superreforge/lang/en_us.json src/main/resources/assets/superreforge/lang/zh_cn.json src/test/java/com/mutuo/superreforge/client/ModifierTooltipFormatterTest.java src/test/java/com/mutuo/superreforge/client/ReforgerScreenContractTest.java
+git add src/main/java/com/mutuo/superreforge/client/ModifierTooltipFormatter.java src/main/java/com/mutuo/superreforge/client/ReforgerScreen.java src/main/java/com/mutuo/superreforge/block/ReforgerLayout.java src/main/java/com/mutuo/superreforge/block/ReforgerMenu.java src/main/resources/assets/superreforge/lang/en_us.json src/main/resources/assets/superreforge/lang/zh_cn.json src/test/java/com/mutuo/superreforge/client/ModifierTooltipFormatterTest.java src/test/java/com/mutuo/superreforge/block/ReforgerLayoutTest.java
 git commit -m "feat: polish scrollable forge-log screen"
 ```
 
