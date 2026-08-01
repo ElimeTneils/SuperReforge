@@ -11,9 +11,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Quaternionf;
 
-/** 在静态熔核底座上方渲染独立锻锤，并按服务端同步 tick 下落。 */
+/** 在静态熔核底座上方竖直渲染独立动力锻锤，并按服务端同步 tick 下落。 */
 public final class ReforgerBlockEntityRenderer implements BlockEntityRenderer<ReforgerBlockEntity> {
     public ReforgerBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
 
@@ -27,21 +26,19 @@ public final class ReforgerBlockEntityRenderer implements BlockEntityRenderer<Re
             int packedOverlay) {
         float height = blockEntity.pending()
                 .map(value -> ReforgerRenderState.fromTicks(
-                                value.totalTicks(), value.remainingTicks(), partialTick)
+                        value.totalTicks(), value.remainingTicks(), partialTick)
                         .hammerHeight())
-                .orElse(0.92F);
+                .orElse(ReforgerHammerGeometry.REST_ORIGIN_Y);
         poseStack.pushPose();
         poseStack.translate(0.5, height, 0.5);
-        // 动态锻锤必须与 blockstate 的静态锤架同步旋转。
-        float yRotation = switch (blockEntity.getBlockState().getValue(ReforgerBlock.FACING)) {
-            case EAST -> 90.0F;
-            case SOUTH -> 180.0F;
-            case WEST -> 270.0F;
-            default -> 0.0F;
-        };
+        // 方块朝向只影响水平 yaw；模型本身已经是锤头朝下的工作姿态。
+        float yRotation = ReforgerHammerGeometry.yawDegrees(
+                blockEntity.getBlockState().getValue(ReforgerBlock.FACING));
         poseStack.mulPose(Axis.YP.rotationDegrees(yRotation));
-        poseStack.scale(0.72F, 0.72F, 0.72F);
-        poseStack.mulPose(new Quaternionf().rotateXYZ((float) Math.toRadians(90), 0.0F, 0.0F));
+        poseStack.scale(
+                ReforgerHammerGeometry.SCALE,
+                ReforgerHammerGeometry.SCALE,
+                ReforgerHammerGeometry.SCALE);
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 new ItemStack(ModItems.FORGE_HAMMER.get()),
                 ItemDisplayContext.FIXED,
