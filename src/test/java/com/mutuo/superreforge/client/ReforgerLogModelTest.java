@@ -18,9 +18,16 @@ final class ReforgerLogModelTest {
 
         // 每个最终词条独占一行，等级仅作为该行的第一列而非额外标题行。
         assertEquals(6, model.rows().size());
-        assertEquals(Component.literal("one"), model.rows().getFirst().levelName());
-        assertEquals(id("one_a"), model.rows().getFirst().modifierId());
-        assertEquals(Component.literal("one_a"), model.rows().getFirst().modifierName());
+        List<ExpectedRow> expectedRows = List.of(
+                expected("one", "one_a", 0.13333333333333333, 0),
+                expected("one", "one_b", 0.13333333333333333, 10),
+                expected("one", "one_c", 0.13333333333333333, 20),
+                expected("two", "two_a", 0.19999999999999998, 30),
+                expected("two", "two_b", 0.19999999999999998, 40),
+                expected("two", "two_c", 0.19999999999999998, 50));
+        for (int index = 0; index < expectedRows.size(); index++) {
+            assertRow(expectedRows.get(index), model.rows().get(index));
+        }
         assertEquals(60, model.contentHeight());
     }
 
@@ -74,5 +81,22 @@ final class ReforgerLogModelTest {
 
     private static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath("test", path);
+    }
+
+    /** 全字段断言防止未来重构只保留第一行或打乱连续几何位置。 */
+    private static void assertRow(ExpectedRow expected, ReforgerLogModel.Row actual) {
+        assertEquals(Component.literal(expected.level()), actual.levelName());
+        assertEquals(id(expected.modifier()), actual.modifierId());
+        assertEquals(Component.literal(expected.modifier()), actual.modifierName());
+        assertEquals(expected.probability(), actual.probability());
+        assertEquals(expected.top(), actual.top());
+        assertEquals(ReforgerLogModel.ROW_HEIGHT, actual.height());
+    }
+
+    /** 人工列出的预期行，不复用日志模型的扁平化或坐标计算。 */
+    private record ExpectedRow(String level, String modifier, double probability, int top) {}
+
+    private static ExpectedRow expected(String level, String modifier, double probability, int top) {
+        return new ExpectedRow(level, modifier, probability, top);
     }
 }
