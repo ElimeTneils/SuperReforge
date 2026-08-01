@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 /** 保证发布包旁的中文指南、可复制示例和 JSON Schema 不会在重构时遗漏。 */
@@ -104,14 +105,56 @@ final class DocumentationContractTest {
             assertTrue(kubeJs.contains(required), "KubeJS 教程缺少已支持内容：" + required);
         }
 
-        String readme = Files.readString(ROOT.resolve("README.md"), StandardCharsets.UTF_8);
-        String datapackApi = Files.readString(ROOT.resolve("docs/DATAPACK_API.md"), StandardCharsets.UTF_8);
-        String kubeJsApi = Files.readString(ROOT.resolve("docs/KUBEJS_API.md"), StandardCharsets.UTF_8);
-        for (String guide : List.of("DATAPACK_TUTORIAL.md", "KUBEJS_TUTORIAL.md")) {
-            assertTrue(readme.contains(guide), "README 缺少教程链接：" + guide);
-            assertTrue(datapackApi.contains(guide), "Datapack API 缺少教程链接：" + guide);
-            assertTrue(kubeJsApi.contains(guide), "KubeJS API 缺少教程链接：" + guide);
+        String choice = markdownSection(kubeJs, "## 2. 先二选一：最小教学脚本或完整战斗脚本");
+        for (String required : List.of(
+                "方案 A",
+                "方案 B",
+                "二选一",
+                "不能同时",
+                "同一 KubeJS 层",
+                "datapack",
+                "superreforge_combat_attributes.js")) {
+            assertTrue(choice.contains(required), "KubeJS 教程的二选一流程缺少：" + required);
         }
+        assertTrue(choice.contains("覆盖 datapack") && choice.contains("重复 ID"),
+                "教程必须区分 KubeJS 覆盖 datapack 与同层重复 ID");
+
+        String weights = markdownSection(kubeJs, "## 4. 词条、媒介与相对权重");
+        assertTrue(weights.contains("相对权重") && weights.contains("自动归一化"),
+                "KubeJS 教程必须说明 relative weight 的归一化");
+
+        String combat = markdownSection(kubeJs, "## 5. Critical Strike 与 Ranged Weapon Attribute");
+        assertTrue(combat.contains("add_multiplied_base") && combat.contains("add_multiplied_total"),
+                "战斗 Attribute 章节必须保留真实 operation");
+        assertLocalMarkdownLink(kubeJsPath, "../examples/kubejs/superreforge_combat_attributes.js");
+
+        String stages = markdownSection(kubeJs, "## 6. 持久化全服阶段与最高优先级成本");
+        assertTrue(stages.contains("SuperReforge.getActiveStage") && stages.contains("event.server"),
+                "阶段章节必须展示真实服务器查询流程");
+        assertTrue(stages.contains("floor(") && stages.contains("multiplier") && stages.contains("addition"),
+                "阶段章节必须说明完整成本公式");
+
+        assertLocalMarkdownLink(ROOT.resolve("README.md"), "docs/DATAPACK_TUTORIAL.md");
+        assertLocalMarkdownLink(ROOT.resolve("README.md"), "docs/KUBEJS_TUTORIAL.md");
+        assertLocalMarkdownLink(ROOT.resolve("docs/DATAPACK_API.md"), "DATAPACK_TUTORIAL.md");
+        assertLocalMarkdownLink(ROOT.resolve("docs/DATAPACK_API.md"), "KUBEJS_TUTORIAL.md");
+        assertLocalMarkdownLink(ROOT.resolve("docs/KUBEJS_API.md"), "DATAPACK_TUTORIAL.md");
+        assertLocalMarkdownLink(ROOT.resolve("docs/KUBEJS_API.md"), "KUBEJS_TUTORIAL.md");
+    }
+
+    private static String markdownSection(String markdown, String heading) {
+        int start = markdown.indexOf(heading);
+        assertTrue(start >= 0, "缺少章节：" + heading);
+        int end = markdown.indexOf("\n## ", start + heading.length());
+        return end < 0 ? markdown.substring(start) : markdown.substring(start, end);
+    }
+
+    private static void assertLocalMarkdownLink(Path source, String target) throws IOException {
+        String markdown = Files.readString(source, StandardCharsets.UTF_8);
+        Pattern link = Pattern.compile("\\[[^\\]]+\\]\\(" + Pattern.quote(target) + "\\)");
+        assertTrue(link.matcher(markdown).find(), source + " 缺少真实 Markdown 链接：" + target);
+        Path resolved = source.getParent().resolve(target).normalize();
+        assertTrue(Files.isRegularFile(resolved), source + " 的 Markdown 链接目标不存在：" + resolved);
     }
 
     private static Path findProjectRoot() {

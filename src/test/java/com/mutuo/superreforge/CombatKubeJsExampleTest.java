@@ -1,5 +1,6 @@
 package com.mutuo.superreforge;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonArray;
@@ -30,6 +31,14 @@ final class CombatKubeJsExampleTest {
             "haste", List.of(List.of(0.02, 0.03), List.of(0.03, 0.05), List.of(0.05, 0.08), List.of(0.08, 0.11), List.of(0.11, 0.15), List.of(0.15, 0.19), List.of(0.19, 0.23), List.of(0.23, 0.28)),
             "velocity", List.of(List.of(0.01, 0.02), List.of(0.02, 0.035), List.of(0.035, 0.05), List.of(0.05, 0.075), List.of(0.075, 0.10), List.of(0.10, 0.13), List.of(0.13, 0.16), List.of(0.16, 0.20)),
             "pullTime", List.of(List.of(-0.03, 0.02), List.of(-0.05, 0.03), List.of(-0.07, 0.05), List.of(-0.10, 0.07), List.of(-0.13, 0.10), List.of(-0.16, 0.13), List.of(-0.19, 0.16), List.of(-0.22, 0.19)));
+    private static final List<String> EXPECTED_LEVEL_NAMES =
+            List.of("等级 1", "等级 2", "等级 3", "等级 4", "等级 5", "等级 6", "等级 7", "等级 8");
+    private static final Map<String, List<String>> EXPECTED_POOL_NAMES = Map.of(
+            "melee", List.of("锐意", "强袭", "猎杀", "致命", "狂战", "破军", "弑神", "终焉"),
+            "ranged", List.of("稳弦", "劲射", "疾羽", "鹰眼", "风行", "穿云", "逐星", "天穹"),
+            "armor", List.of("坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒"),
+            "tool", List.of("熟练", "利落", "精工", "迅捷", "大师", "奇迹", "神匠", "创世"),
+            "curio", List.of("微光", "灵辉", "祝福", "守护", "星辉", "命运", "神谕", "超越"));
 
     @Test
     void shipsCombatExampleWithEveryOptionalAttributePool() throws IOException {
@@ -99,6 +108,30 @@ final class CombatKubeJsExampleTest {
                 assertTrue(values.get(0).getAsDouble() == expected.get(0) && values.get(1).getAsDouble() == expected.get(1),
                         "wrong range for rank " + (index + 1) + ": " + field);
             }
+        }
+    }
+
+    @Test
+    void publishesReadableUtf8LevelAndPoolNames() throws IOException {
+        String source = Files.readString(
+                ROOT.resolve("examples/kubejs/superreforge_combat_attributes.js"), StandardCharsets.UTF_8);
+        JsonObject spec = combatSpec();
+        assertTrue(spec.getAsJsonArray("levels").asList().stream()
+                        .map(element -> element.getAsJsonObject().get("name").getAsString())
+                        .toList()
+                        .equals(EXPECTED_LEVEL_NAMES),
+                "combat levels must use the published Chinese names");
+        for (var expected : EXPECTED_POOL_NAMES.entrySet()) {
+            JsonObject pool = spec.getAsJsonArray("pools").asList().stream()
+                    .map(JsonElement::getAsJsonObject)
+                    .filter(candidate -> expected.getKey().equals(candidate.get("id").getAsString()))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("missing pool: " + expected.getKey()));
+            assertTrue(strings(pool.getAsJsonArray("names")).equals(expected.getValue()),
+                    "combat pool has corrupted names: " + expected.getKey());
+        }
+        for (String mojibake : List.of("绛夌骇", "閿愭剰", "鍔插皠", "鍧氶煣", "鐔熺粌", "寰厜", "�")) {
+            assertFalse(source.contains(mojibake), "combat script contains mojibake: " + mojibake);
         }
     }
 

@@ -5,14 +5,14 @@
 // 这一份 JSON 是脚本实际执行的配置表：复制一个等级 range 行和对应前缀即可扩充内容。
 const SR_COMBAT_SPEC = JSON.parse(`{
   "levels": [
-    { "id": "superreforge:worn", "rank": 1, "name": "绛夌骇 1", "color": "gray", "weight": 92 },
-    { "id": "superreforge:common", "rank": 2, "name": "绛夌骇 2", "color": "white", "weight": 84 },
-    { "id": "superreforge:fine", "rank": 3, "name": "绛夌骇 3", "color": "green", "weight": 76 },
-    { "id": "superreforge:rare", "rank": 4, "name": "绛夌骇 4", "color": "aqua", "weight": 68 },
-    { "id": "superreforge:epic", "rank": 5, "name": "绛夌骇 5", "color": "light_purple", "weight": 60 },
-    { "id": "superreforge:legendary", "rank": 6, "name": "绛夌骇 6", "color": "gold", "weight": 52 },
-    { "id": "superreforge:mythic", "rank": 7, "name": "绛夌骇 7", "color": "red", "weight": 44 },
-    { "id": "superreforge:divine", "rank": 8, "name": "绛夌骇 8", "color": "yellow", "weight": 36 }
+    { "id": "superreforge:worn", "rank": 1, "name": "等级 1", "color": "gray", "weight": 92 },
+    { "id": "superreforge:common", "rank": 2, "name": "等级 2", "color": "white", "weight": 84 },
+    { "id": "superreforge:fine", "rank": 3, "name": "等级 3", "color": "green", "weight": 76 },
+    { "id": "superreforge:rare", "rank": 4, "name": "等级 4", "color": "aqua", "weight": 68 },
+    { "id": "superreforge:epic", "rank": 5, "name": "等级 5", "color": "light_purple", "weight": 60 },
+    { "id": "superreforge:legendary", "rank": 6, "name": "等级 6", "color": "gold", "weight": 52 },
+    { "id": "superreforge:mythic", "rank": 7, "name": "等级 7", "color": "red", "weight": 44 },
+    { "id": "superreforge:divine", "rank": 8, "name": "等级 8", "color": "yellow", "weight": 36 }
   ],
   "ranges": [
     { "criticalChance": [0.01, 0.02], "criticalDamage": [0.03, 0.05], "rangedDamage": [0.02, 0.03], "haste": [0.02, 0.03], "velocity": [0.01, 0.02], "pullTime": [-0.03, 0.02] },
@@ -31,7 +31,7 @@ const SR_COMBAT_SPEC = JSON.parse(`{
   "pools": [
     {
       "id": "melee",
-      "names": ["閿愭剰", "寮鸿", "鐚庢潃", "鑷村懡", "鐙傛垬", "鐮村啗", "寮戠", "缁堢剦"],
+      "names": ["锐意", "强袭", "猎杀", "致命", "狂战", "破军", "弑神", "终焉"],
       "itemTypes": ["superreforge:sword", "superreforge:axe", "superreforge:trident", "superreforge:mace"],
       "slots": ["mainhand"],
       "effects": [
@@ -41,7 +41,7 @@ const SR_COMBAT_SPEC = JSON.parse(`{
     },
     {
       "id": "ranged",
-      "names": ["绋冲鸡", "鍔插皠", "鐤剧窘", "楣扮溂", "椋庤", "绌夸簯", "閫愭槦", "澶╃┕"],
+      "names": ["稳弦", "劲射", "疾羽", "鹰眼", "风行", "穿云", "逐星", "天穹"],
       "itemTypes": ["superreforge:bow", "superreforge:crossbow"],
       "slots": ["mainhand"],
       "effects": [
@@ -55,7 +55,7 @@ const SR_COMBAT_SPEC = JSON.parse(`{
     },
     {
       "id": "armor",
-      "names": ["鍧氶煣", "瀹堝娍", "閾佸", "涓嶅眻", "纾愮煶", "鍦ｄ綉", "涓嶇伃", "姘告亽"],
+      "names": ["坚韧", "守势", "铁壁", "不屈", "磐石", "圣佑", "不灭", "永恒"],
       "itemTypes": ["example:armor"],
       "slots": ["head", "chest", "legs", "feet"],
       "effects": [
@@ -65,7 +65,7 @@ const SR_COMBAT_SPEC = JSON.parse(`{
     },
     {
       "id": "tool",
-      "names": ["鐔熺粌", "鍒╄惤", "绮惧伐", "杩呮嵎", "澶у笀", "濂囪抗", "绁炲尃", "鍒涗笘"],
+      "names": ["熟练", "利落", "精工", "迅捷", "大师", "奇迹", "神匠", "创世"],
       "itemTypes": ["example:tool"],
       "slots": ["mainhand"],
       "effects": [
@@ -75,7 +75,7 @@ const SR_COMBAT_SPEC = JSON.parse(`{
     },
     {
       "id": "curio",
-      "names": ["寰厜", "鐏佃緣", "绁濈", "瀹堟姢", "鏄熻緣", "鍛借繍", "绁炶皶", "瓒呰秺"],
+      "names": ["微光", "灵辉", "祝福", "守护", "星辉", "命运", "神谕", "超越"],
       "itemTypes": ["superreforge:curio"],
       "slots": ["curios:any"],
       "effects": [
