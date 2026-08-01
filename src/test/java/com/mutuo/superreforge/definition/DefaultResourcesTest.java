@@ -1,5 +1,6 @@
 package com.mutuo.superreforge.definition;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,6 +41,27 @@ final class DefaultResourcesTest {
                 decode("modifiers", family + "_" + rank, ModifierDefinition.CODEC);
             }
         }
+    }
+
+    @Test
+    void bundledRanksUseStableNumericDisplayNames() {
+        for (int rank = 1; rank <= LEVELS.size(); rank++) {
+            String id = LEVELS.get(rank - 1);
+            JsonObject name = resourceJson("data/superreforge/superreforge/levels/" + id + ".json")
+                    .getAsJsonObject("name");
+
+            // 保留等级资源 ID，只把默认展示名改为与 rank 对应的数字名称。
+            assertEquals("等级 " + rank, name.get("fallback").getAsString());
+            assertEquals("等级 " + rank, translation("zh_cn", id));
+            assertEquals("Level " + rank, translation("en_us", id));
+        }
+    }
+
+    /** 语言文件与数据包 fallback 同时校验，避免客户端本地化退回旧品质名称。 */
+    private static String translation(String language, String id) {
+        return resourceJson("assets/superreforge/lang/" + language + ".json")
+                .get("level.superreforge." + id)
+                .getAsString();
     }
 
     @Test

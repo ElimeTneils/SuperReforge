@@ -1,5 +1,5 @@
 {
   "_comment": "神话品质，默认排位 7。",
   "rank": 7,
-  "name": {"translate": "level.superreforge.mythic", "fallback": "神话", "color": "red", "bold": true}
+  "name": {"translate": "level.superreforge.mythic", "fallback": "等级 7", "color": "red", "bold": true}
 }

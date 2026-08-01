@@ -14,8 +14,8 @@ import net.minecraft.resources.ResourceLocation;
  * <p>该模型不接触屏幕尺寸以外的客户端状态，因此服务端给出的所有行都会保留，界面只负责裁剪可见部分。
  */
 public final class ReforgerLogModel {
-    public static final int LEVEL_HEIGHT = 10;
-    public static final int MODIFIER_HEIGHT = 9;
+    /** 每个最终词条使用同一行高，避免等级标题额外占用滚动空间。 */
+    public static final int ROW_HEIGHT = 10;
     private static final int WHEEL_STEP = 18;
     private static final int MIN_THUMB_HEIGHT = 10;
 
@@ -32,17 +32,15 @@ public final class ReforgerLogModel {
         List<Row> rows = new ArrayList<>();
         int top = 0;
         for (PreviewLevel level : preview.levels()) {
-            rows.add(new Row(Kind.LEVEL, level.id(), level.name(), level.probability(), top, LEVEL_HEIGHT));
-            top += LEVEL_HEIGHT;
             for (PreviewModifier modifier : level.modifiers()) {
                 rows.add(new Row(
-                        Kind.MODIFIER,
+                        level.name(),
                         modifier.id(),
                         modifier.name(),
                         modifier.probability(),
                         top,
-                        MODIFIER_HEIGHT));
-                top += MODIFIER_HEIGHT;
+                        ROW_HEIGHT));
+                top += ROW_HEIGHT;
             }
         }
         return new ReforgerLogModel(rows, top);
@@ -91,17 +89,12 @@ public final class ReforgerLogModel {
         return clampScroll((int) Math.round(clampedTop / travel * maximum), viewportHeight);
     }
 
-    /** 一行日志的语义与几何；词条行的 ID 同时用于查找悬停 Attribute 定义。 */
+    /** 每行保留等级显示和词条 ID，后者用于解析整行的悬停 Attribute 详情。 */
     public record Row(
-            Kind kind,
-            ResourceLocation id,
-            Component name,
+            Component levelName,
+            ResourceLocation modifierId,
+            Component modifierName,
             double probability,
             int top,
             int height) {}
-
-    public enum Kind {
-        LEVEL,
-        MODIFIER
-    }
 }

@@ -230,18 +230,17 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
                         y + row.height(),
                         COLOR_LOG_ALT);
             }
-            int nameX = ReforgerLayout.LOG_LEFT + (row.kind() == ReforgerLogModel.Kind.MODIFIER ? 7 : 2);
-            int color = row.kind() == ReforgerLogModel.Kind.LEVEL ? 0xFFFFD79B : 0xFFC8BECF;
-            graphics.drawString(font, row.name(), nameX, y + 1, color, false);
+            // 每行依次绘制等级、最终词条和服务端联合概率，避免客户端重算概率。
+            graphics.drawString(font, row.levelName(), ReforgerLayout.LOG_LEFT + 2, y + 1, 0xFFFFD79B, false);
+            graphics.drawString(font, row.modifierName(), ReforgerLayout.LOG_LEFT + 34, y + 1, 0xFFC8BECF, false);
             String probability = percent(row.probability());
             int probabilityX = ReforgerLayout.LOG_LEFT + ReforgerLayout.LOG_WIDTH - 3 - font.width(probability);
             graphics.fill(probabilityX - 2, y, ReforgerLayout.LOG_LEFT + ReforgerLayout.LOG_WIDTH, y + row.height(), COLOR_LOG);
-            graphics.drawString(font, probability, probabilityX, y + 1, color, false);
-            if (row.kind() == ReforgerLogModel.Kind.MODIFIER
-                    && ReforgerLayout.insideLog(relativeMouseX, relativeMouseY)
+            graphics.drawString(font, probability, probabilityX, y + 1, 0xFFC8BECF, false);
+            if (ReforgerLayout.insideLog(relativeMouseX, relativeMouseY)
                     && relativeMouseY >= y
                     && relativeMouseY < y + row.height()) {
-                hoveredModifier = row.id();
+                hoveredModifier = row.modifierId();
             }
             rowIndex++;
         }

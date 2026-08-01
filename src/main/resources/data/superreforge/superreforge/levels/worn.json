@@ -1,5 +1,5 @@
 {
   "_comment": "等级 1：名称既可写 text，也可像这里一样使用翻译键和样式。",
   "rank": 1,
-  "name": {"translate": "level.superreforge.worn", "fallback": "粗糙", "color": "dark_gray"}
+  "name": {"translate": "level.superreforge.worn", "fallback": "等级 1", "color": "dark_gray"}
 }

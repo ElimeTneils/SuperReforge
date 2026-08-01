@@ -1,5 +1,5 @@
 {
   "_comment": "传说品质示例同时使用颜色与粗体。",
   "rank": 6,
-  "name": {"translate": "level.superreforge.legendary", "fallback": "传说", "color": "gold", "bold": true}
+  "name": {"translate": "level.superreforge.legendary", "fallback": "等级 6", "color": "gold", "bold": true}
 }

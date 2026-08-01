@@ -16,11 +16,12 @@ final class ReforgerLogModelTest {
     void flattensEveryLevelAndModifierWithoutViewportTruncation() {
         ReforgerLogModel model = ReforgerLogModel.from(preview());
 
-        assertEquals(8, model.rows().size());
-        assertEquals(ReforgerLogModel.Kind.LEVEL, model.rows().get(0).kind());
-        assertEquals(ReforgerLogModel.Kind.MODIFIER, model.rows().get(1).kind());
-        assertEquals(ReforgerLogModel.Kind.LEVEL, model.rows().get(4).kind());
-        assertEquals(74, model.contentHeight());
+        // 每个最终词条独占一行，等级仅作为该行的第一列而非额外标题行。
+        assertEquals(6, model.rows().size());
+        assertEquals(Component.literal("one"), model.rows().getFirst().levelName());
+        assertEquals(id("one_a"), model.rows().getFirst().modifierId());
+        assertEquals(Component.literal("one_a"), model.rows().getFirst().modifierName());
+        assertEquals(60, model.contentHeight());
     }
 
     @Test
@@ -28,11 +29,11 @@ final class ReforgerLogModelTest {
         ReforgerLogModel model = ReforgerLogModel.from(preview());
 
         assertEquals(0, model.clampScroll(-5, 40));
-        assertEquals(34, model.clampScroll(999, 40));
+        assertEquals(20, model.clampScroll(999, 40));
         assertEquals(18, model.scrollBy(0, -1.0, 40));
         assertEquals(0, model.scrollBy(18, 1.0, 40));
-        assertEquals(21, model.thumbHeight(40, 40));
-        assertEquals(34, model.scrollFromThumb(19.0, 40, 21, 40));
+        assertEquals(26, model.thumbHeight(40, 40));
+        assertEquals(20, model.scrollFromThumb(14.0, 40, 26, 40));
     }
 
     @Test
