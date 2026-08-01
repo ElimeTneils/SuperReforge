@@ -22,6 +22,7 @@ public record ReforgePreviewPayload(
         int failureOrdinal,
         int materialCost,
         int experienceCost,
+        boolean truncated,
         List<PreviewLevel> levels) implements CustomPacketPayload {
     private static final int MAX_LEVELS = 64;
     private static final int MAX_MODIFIERS_PER_LEVEL = 256;
@@ -47,12 +48,13 @@ public record ReforgePreviewPayload(
             int failure = result.failure().map(Enum::ordinal).orElse(ReforgeFailure.STALE_STATE.ordinal());
             return new ReforgePreviewPayload(
                     containerId, com.mutuo.superreforge.definition.DefinitionManager.generation(),
-                    failure, 0, 0, List.of());
+                    failure, 0, 0, false, List.of());
         }
         var quote = result.quote().orElseThrow();
         var normalizedLevels = WeightNormalizer.normalize(quote.candidates().levels().stream()
                 .map(level -> new WeightedValue<>(level, level.weight()))
                 .toList());
+        boolean truncated = normalizedLevels.size() > MAX_LEVELS;
         List<PreviewLevel> levels = new ArrayList<>();
         for (var weightedLevel : normalizedLevels.stream().limit(MAX_LEVELS).toList()) {
             var candidateLevel = weightedLevel.value();
@@ -60,6 +62,8 @@ public record ReforgePreviewPayload(
                     ? snapshot.levels().get(candidateLevel.level()).name()
                     : Component.literal(candidateLevel.level().toString());
             var normalizedModifiers = WeightNormalizer.normalize(candidateLevel.modifiers());
+            // 网络上限只限制展示负载；必须把截断事实告诉客户端，避免伪装成完整概率列表。
+            truncated |= normalizedModifiers.size() > MAX_MODIFIERS_PER_LEVEL;
             List<PreviewModifier> modifiers = normalizedModifiers.stream()
                     .limit(MAX_MODIFIERS_PER_LEVEL)
                     .map(weighted -> {
@@ -79,6 +83,7 @@ public record ReforgePreviewPayload(
                 -1,
                 quote.cost().materialCount(),
                 quote.cost().experience(),
+                truncated,
                 levels);
     }
 
@@ -88,6 +93,7 @@ public record ReforgePreviewPayload(
         buffer.writeVarInt(failureOrdinal + 1);
         buffer.writeVarInt(materialCost);
         buffer.writeVarInt(experienceCost);
+        buffer.writeBoolean(truncated);
         buffer.writeVarInt(levels.size());
         for (PreviewLevel level : levels) {
             buffer.writeResourceLocation(level.id());
@@ -111,6 +117,7 @@ public record ReforgePreviewPayload(
         int failure = buffer.readVarInt() - 1;
         int material = buffer.readVarInt();
         int experience = buffer.readVarInt();
+        boolean truncated = buffer.readBoolean();
         int levelCount = buffer.readVarInt();
         if (levelCount < 0 || levelCount > MAX_LEVELS) {
             throw new IllegalArgumentException("非法预览等级数量: " + levelCount);
@@ -133,7 +140,8 @@ public record ReforgePreviewPayload(
             }
             levels.add(new PreviewLevel(levelId, levelName, levelProbability, modifiers));
         }
-        return new ReforgePreviewPayload(containerId, generation, failure, material, experience, levels);
+        return new ReforgePreviewPayload(
+                containerId, generation, failure, material, experience, truncated, levels);
     }
 
     @Override
