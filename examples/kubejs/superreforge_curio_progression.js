@@ -32,7 +32,7 @@ const SR_CURIO_SPEC = JSON.parse(`
     ]},
     {"id":"mutuo:curio_1_3","rank":1,"name":"垃圾","weight":15,"attributes":[
       {"id":"luck","attribute":"minecraft:generic.luck","amount":-2.0,"operation":"add_value"},
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":-0.15,"operation":"add_value"}
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":-0.15,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_1_4","rank":1,"name":"贪婪","weight":5,"attributes":[
       {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":-0.03,"operation":"add_multiplied_total"},
@@ -43,7 +43,7 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"movement_speed","attribute":"minecraft:generic.movement_speed","amount":-0.02,"operation":"add_multiplied_base"}
     ]},
     {"id":"mutuo:curio_2_2","rank":2,"name":"简单","weight":25,"attributes":[
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":-0.05,"operation":"add_value"}
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":-0.05,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_2_3","rank":2,"name":"能用","weight":15,"attributes":[
       {"id":"armor","attribute":"minecraft:generic.armor","amount":-0.5,"operation":"add_value"}
@@ -53,7 +53,7 @@ const SR_CURIO_SPEC = JSON.parse(`
     ]},
 
     {"id":"mutuo:curio_3_1","rank":3,"name":"稀有","weight":55,"attributes":[
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.05,"operation":"add_value"}
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.05,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_3_2","rank":3,"name":"精良","weight":25,"attributes":[
       {"id":"armor","attribute":"minecraft:generic.armor","amount":0.5,"operation":"add_value"}
@@ -66,7 +66,7 @@ const SR_CURIO_SPEC = JSON.parse(`
     ]},
 
     {"id":"mutuo:curio_4_1","rank":4,"name":"史诗","weight":55,"attributes":[
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.10,"operation":"add_value"}
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.10,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_4_2","rank":4,"name":"卓越","weight":25,"attributes":[
       {"id":"armor","attribute":"minecraft:generic.armor","amount":1.0,"operation":"add_value"}
@@ -88,7 +88,7 @@ const SR_CURIO_SPEC = JSON.parse(`
     ]},
     {"id":"mutuo:curio_5_3","rank":5,"name":"不朽","weight":15,"attributes":[
       {"id":"luck","attribute":"minecraft:generic.luck","amount":1.0,"operation":"add_value"},
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.125,"operation":"add_value"}
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.125,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_5_4","rank":5,"name":"神话","weight":5,"attributes":[
       {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.015,"operation":"add_multiplied_base"},
@@ -97,7 +97,7 @@ const SR_CURIO_SPEC = JSON.parse(`
 
     {"id":"mutuo:curio_6_1","rank":6,"name":"运动员","weight":55,"attributes":[
       {"id":"max_health","attribute":"minecraft:generic.max_health","amount":1.0,"operation":"add_value"},
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.15,"operation":"add_value"}
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.15,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_6_2","rank":6,"name":"防御师","weight":25,"attributes":[
       {"id":"armor","attribute":"minecraft:generic.armor","amount":1.0,"operation":"add_value"},
@@ -115,7 +115,7 @@ const SR_CURIO_SPEC = JSON.parse(`
 
     {"id":"mutuo:curio_7_1","rank":7,"name":"才华横溢","weight":55,"attributes":[
       {"id":"luck","attribute":"minecraft:generic.luck","amount":2.0,"operation":"add_value"},
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.25,"operation":"add_value"}
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.25,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_7_2","rank":7,"name":"坚韧不拔","weight":25,"attributes":[
       {"id":"max_health","attribute":"minecraft:generic.max_health","amount":2.0,"operation":"add_value"},
@@ -135,11 +135,11 @@ const SR_CURIO_SPEC = JSON.parse(`
     {"id":"mutuo:curio_8_1","rank":8,"name":"不朽的训练家","weight":55,"attributes":[
       {"id":"block_range","attribute":"minecraft:player.block_interaction_range","amount":2.0,"operation":"add_value"},
       {"id":"luck","attribute":"minecraft:generic.luck","amount":4.0,"operation":"add_value"},
-      {"id":"mining_efficiency","attribute":"minecraft:player.mining_efficiency","amount":0.25,"operation":"add_value"},
+      {"id":"mining_efficiency","attribute":"minecraft:player.mining_efficiency","amount":0.25,"operation":"add_value","show_in_tooltip":false},
       {"id":"step_height","attribute":"minecraft:generic.step_height","amount":1.0,"operation":"add_value"},
       {"id":"submerged_mining_speed","attribute":"minecraft:player.submerged_mining_speed","amount":0.25,"operation":"add_multiplied_base"},
-      {"id":"water_movement_efficiency","attribute":"minecraft:generic.water_movement_efficiency","amount":0.25,"operation":"add_value"},
-      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.25,"operation":"add_value"}
+      {"id":"water_movement_efficiency","attribute":"minecraft:generic.water_movement_efficiency","amount":0.25,"operation":"add_value","show_in_tooltip":false},
+      {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.25,"operation":"add_value","show_in_tooltip":false}
     ]},
     {"id":"mutuo:curio_8_2","rank":8,"name":"最后的守护者","weight":25,"attributes":[
       {"id":"armor","attribute":"minecraft:generic.armor","amount":5.0,"operation":"add_value"},
@@ -211,7 +211,7 @@ SR_CURIO_SPEC.modifiers.forEach(modifier => {
       amount: effect.amount,
       operation: effect.operation,
       slots: ['curios:any'],
-      show_in_tooltip: true
+      show_in_tooltip: effect.show_in_tooltip !== false
     }))
   })
 })

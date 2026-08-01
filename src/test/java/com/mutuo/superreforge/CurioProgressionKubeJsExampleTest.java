@@ -125,6 +125,30 @@ final class CurioProgressionKubeJsExampleTest {
     }
 
     @Test
+    void hidesZeroBaseRawDecimalsSoTheClientScriptCanRenderPercentages() throws IOException {
+        Set<String> zeroBasePercentAttributes = Set.of(
+                "minecraft:generic.movement_efficiency",
+                "minecraft:generic.water_movement_efficiency",
+                "minecraft:player.mining_efficiency");
+
+        spec().getAsJsonArray("modifiers").forEach(modifier -> modifier.getAsJsonObject()
+                .getAsJsonArray("attributes")
+                .forEach(effectElement -> {
+                    JsonObject effect = effectElement.getAsJsonObject();
+                    if (zeroBasePercentAttributes.contains(effect.get("attribute").getAsString())) {
+                        assertTrue(effect.has("show_in_tooltip"),
+                                "零基值百分比属性必须显式隐藏原始小数行");
+                        assertFalse(effect.get("show_in_tooltip").getAsBoolean(),
+                                "零基值百分比属性的原始 ADD_VALUE 行必须隐藏");
+                    }
+                }));
+
+        String source = Files.readString(SCRIPT, StandardCharsets.UTF_8);
+        assertTrue(source.contains("show_in_tooltip: effect.show_in_tooltip !== false"),
+                "发布器必须把单条 effect 的提示开关传给 Super Reforge");
+    }
+
+    @Test
     void definesExactSixStoneLevelWeights() throws IOException {
         JsonArray catalysts = spec().getAsJsonArray("catalysts");
         assertEquals(6, catalysts.size());

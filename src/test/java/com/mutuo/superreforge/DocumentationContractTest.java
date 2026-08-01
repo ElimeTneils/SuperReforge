@@ -37,6 +37,7 @@ final class DocumentationContractTest {
                 "examples/datapack/readable/modifiers/legendary_blade.jsonc",
                 "examples/kubejs/superreforge_definitions.js",
                 "examples/kubejs/superreforge_progression.js",
+                "examples/kubejs/superreforge_percent_tooltips.js",
                 "CHANGELOG.md",
                 "CREDITS.md");
         for (String path : required) {
@@ -130,6 +131,20 @@ final class DocumentationContractTest {
                 "战斗 Attribute 章节必须保留真实 operation");
         assertLocalMarkdownLink(kubeJsPath, "../examples/kubejs/superreforge_combat_attributes.js");
         assertLocalMarkdownLink(kubeJsPath, "../examples/kubejs/superreforge_curio_progression.js");
+        assertLocalMarkdownLink(kubeJsPath, "../examples/kubejs/superreforge_percent_tooltips.js");
+
+        String percentTooltips = Files.readString(
+                ROOT.resolve("examples/kubejs/superreforge_percent_tooltips.js"), StandardCharsets.UTF_8);
+        for (String required : List.of(
+                "ItemEvents.modifyTooltips",
+                "ItemEvents.dynamicTooltips",
+                "minecraft:generic.movement_efficiency",
+                "minecraft:generic.water_movement_efficiency",
+                "minecraft:player.mining_efficiency",
+                "withColor(net.minecraft.network.chat.TextColor)",
+                "* 1000) / 10")) {
+            assertTrue(percentTooltips.contains(required), "百分比提示脚本缺少稳定实现内容：" + required);
+        }
 
         String stages = markdownSection(kubeJs, "## 6. 持久化全服阶段与最高优先级成本");
         assertTrue(stages.contains("SuperReforge.getActiveStage") && stages.contains("event.server"),
