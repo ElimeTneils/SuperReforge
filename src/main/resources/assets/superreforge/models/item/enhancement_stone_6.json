@@ -1,5 +1,0 @@
-{
-  "_comment": "强化石 6级暂用龙息图标；获取配方交由整合包自行定义。",
-  "parent": "minecraft:item/generated",
-  "textures": {"layer0": "minecraft:item/dragon_breath"}
-}

@@ -23,10 +23,7 @@ public final class ModCreativeTabs {
             entry(ModItems.REFORGER),
             entry(ModItems.COMMON_REFORGE_STONE),
             entry(ModItems.REFINED_REFORGE_STONE),
-            entry(ModItems.SUPREME_REFORGE_STONE),
-            entry(ModItems.ENHANCEMENT_STONE_4),
-            entry(ModItems.ENHANCEMENT_STONE_5),
-            entry(ModItems.ENHANCEMENT_STONE_6));
+            entry(ModItems.SUPREME_REFORGE_STONE));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> SUPER_REFORGE =
             TABS.register("super_reforge", () -> CreativeModeTab.builder()

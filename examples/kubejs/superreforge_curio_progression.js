@@ -156,9 +156,9 @@ const SR_CURIO_SPEC = JSON.parse(`
     {"id":"superreforge:common_reforge_stone","item":"superreforge:common_reforge_stone","levels":[[1,15],[2,25],[3,45],[4,10],[5,5]]},
     {"id":"superreforge:refined_reforge_stone","item":"superreforge:refined_reforge_stone","levels":[[3,25],[4,55],[5,15],[6,5]]},
     {"id":"superreforge:supreme_reforge_stone","item":"superreforge:supreme_reforge_stone","levels":[[5,55],[6,35],[7,10]]},
-    {"id":"mutuo:enhancement_stone_4","item":"superreforge:enhancement_stone_4","levels":[[5,27],[6,55],[7,17],[8,1]]},
-    {"id":"mutuo:enhancement_stone_5","item":"superreforge:enhancement_stone_5","levels":[[7,95],[8,5]]},
-    {"id":"mutuo:enhancement_stone_6","item":"superreforge:enhancement_stone_6","levels":[[8,100]]}
+    {"id":"mutuo:enhancement_stone_4","item":"minecraft:netherite_ingot","levels":[[5,27],[6,55],[7,17],[8,1]]},
+    {"id":"mutuo:enhancement_stone_5","item":"minecraft:nether_star","levels":[[7,95],[8,5]]},
+    {"id":"mutuo:enhancement_stone_6","item":"minecraft:dragon_breath","levels":[[8,100]]}
   ]
 }`)
 

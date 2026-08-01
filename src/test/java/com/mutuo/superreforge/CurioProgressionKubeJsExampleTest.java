@@ -27,6 +27,13 @@ final class CurioProgressionKubeJsExampleTest {
     private static final Pattern SPEC = Pattern.compile(
             "const SR_CURIO_SPEC = JSON\\.parse\\(\\s*`(.*?)`\\s*\\)", Pattern.DOTALL);
     private static final List<Integer> MODIFIER_WEIGHTS = List.of(55, 25, 15, 5);
+    private static final List<String> CATALYST_ITEMS = List.of(
+            "superreforge:common_reforge_stone",
+            "superreforge:refined_reforge_stone",
+            "superreforge:supreme_reforge_stone",
+            "minecraft:netherite_ingot",
+            "minecraft:nether_star",
+            "minecraft:dragon_breath");
     private static final Map<Integer, List<List<Integer>>> CATALYST_LEVELS = Map.of(
             1, List.of(List.of(1, 15), List.of(2, 25), List.of(3, 45), List.of(4, 10), List.of(5, 5)),
             2, List.of(List.of(3, 25), List.of(4, 55), List.of(5, 15), List.of(6, 5)),
@@ -104,6 +111,8 @@ final class CurioProgressionKubeJsExampleTest {
         for (int index = 0; index < catalysts.size(); index++) {
             int stone = index + 1;
             JsonObject catalyst = catalysts.get(index).getAsJsonObject();
+            assertEquals(CATALYST_ITEMS.get(index), catalyst.get("item").getAsString(),
+                    "强化石" + stone + "级的实际物品映射错误");
             List<List<Integer>> actual = catalyst.getAsJsonArray("levels").asList().stream()
                     .map(JsonElement::getAsJsonArray)
                     .map(pair -> List.of(pair.get(0).getAsInt(), pair.get(1).getAsInt()))
