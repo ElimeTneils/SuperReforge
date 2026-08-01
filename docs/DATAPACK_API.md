@@ -1,5 +1,7 @@
 # 数据包定义 API
 
+首次制作数据包时，先按 [Datapack 从零到可用教程](DATAPACK_TUTORIAL.md) 完成目录、严格 JSON 和 reload 流程；需要脚本覆盖、谓词或全服阶段时，参阅 [KubeJS 从零到可用教程](KUBEJS_TUTORIAL.md)。
+
 Super Reforge 在服务器资源 reload 时读取四个目录，其中 `<namespace>` 是你的数据包命名空间：
 
 ```text

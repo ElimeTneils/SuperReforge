@@ -23,7 +23,9 @@ final class DocumentationContractTest {
         List<String> required = List.of(
                 "docs/CONFIGURATION.md",
                 "docs/DATAPACK_API.md",
+                "docs/DATAPACK_TUTORIAL.md",
                 "docs/KUBEJS_API.md",
+                "docs/KUBEJS_TUTORIAL.md",
                 "docs/FILE_REFERENCE.md",
                 "schemas/level.schema.json",
                 "schemas/item_type.schema.json",
@@ -50,6 +52,66 @@ final class DocumentationContractTest {
         assertTrue(readme.contains("安装"));
         assertTrue(readme.contains("DATAPACK_API.md"));
         assertFalse(readme.contains("当前仓库正在"), "发布 README 不应继续声称项目仍在占位开发中");
+    }
+
+    @Test
+    void shipsSeparateDatapackAndKubeJsTutorialsWithSupportedWorkflows() throws IOException {
+        Path datapackPath = ROOT.resolve("docs/DATAPACK_TUTORIAL.md");
+        Path kubeJsPath = ROOT.resolve("docs/KUBEJS_TUTORIAL.md");
+        assertTrue(Files.isRegularFile(datapackPath), "缺少独立 Datapack 教程");
+        assertTrue(Files.isRegularFile(kubeJsPath), "缺少独立 KubeJS 教程");
+
+        String datapack = Files.readString(datapackPath, StandardCharsets.UTF_8);
+        for (String required : List.of(
+                "pack.mcmeta",
+                "superreforge/levels",
+                "superreforge/item_types",
+                "superreforge/modifiers",
+                "superreforge/catalysts",
+                "/reload",
+                "严格 JSON",
+                "JSONC",
+                "curios:any",
+                "## 常见问题与排错")) {
+            assertTrue(datapack.contains(required), "Datapack 教程缺少工作流内容：" + required);
+        }
+
+        String kubeJs = Files.readString(kubeJsPath, StandardCharsets.UTF_8);
+        for (String required : List.of(
+                "server_scripts",
+                "SuperReforge.addLevel",
+                "SuperReforge.addItemType",
+                "SuperReforge.addModifier",
+                "SuperReforge.addCatalyst",
+                "SuperReforge.addPredicate",
+                "SuperReforge.addStage",
+                "kubejs_predicate",
+                "SuperReforge.setStageActive",
+                "event.server",
+                "持久化",
+                "同 ID",
+                "KubeJS",
+                "datapack",
+                "superreforge:worn",
+                "superreforge:divine",
+                "critical_strike:chance",
+                "critical_strike:damage",
+                "ranged_weapon:damage",
+                "ranged_weapon:haste",
+                "ranged_weapon:velocity",
+                "ranged_weapon:pull_time",
+                "## 常见问题与排错")) {
+            assertTrue(kubeJs.contains(required), "KubeJS 教程缺少已支持内容：" + required);
+        }
+
+        String readme = Files.readString(ROOT.resolve("README.md"), StandardCharsets.UTF_8);
+        String datapackApi = Files.readString(ROOT.resolve("docs/DATAPACK_API.md"), StandardCharsets.UTF_8);
+        String kubeJsApi = Files.readString(ROOT.resolve("docs/KUBEJS_API.md"), StandardCharsets.UTF_8);
+        for (String guide : List.of("DATAPACK_TUTORIAL.md", "KUBEJS_TUTORIAL.md")) {
+            assertTrue(readme.contains(guide), "README 缺少教程链接：" + guide);
+            assertTrue(datapackApi.contains(guide), "Datapack API 缺少教程链接：" + guide);
+            assertTrue(kubeJsApi.contains(guide), "KubeJS API 缺少教程链接：" + guide);
+        }
     }
 
     private static Path findProjectRoot() {

@@ -23,6 +23,8 @@
 ## 自定义入口
 
 - [全局配置说明](docs/CONFIGURATION.md)
+- [Datapack 从零到可用教程](docs/DATAPACK_TUTORIAL.md)
+- [KubeJS 从零到可用教程](docs/KUBEJS_TUTORIAL.md)
 - [Datapack API 与全部字段](docs/DATAPACK_API.md)
 - [KubeJS API 与可复制脚本](docs/KUBEJS_API.md)
 - [逐文件用途与修改影响](docs/FILE_REFERENCE.md)

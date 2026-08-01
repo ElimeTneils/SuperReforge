@@ -1,5 +1,7 @@
 # KubeJS API
 
+首次使用时，先按 [KubeJS 从零到可用教程](KUBEJS_TUTORIAL.md) 完成文件位置、六种 `add*` 方法、覆盖和阶段流程；需要核对定义目录或严格 JSON 时，参阅 [Datapack 从零到可用教程](DATAPACK_TUTORIAL.md)。
+
 安装 KubeJS 后，Super Reforge 只在 `server_scripts` 中提供顶层全局对象 `SuperReforge`。不要使用 `startup_scripts` 或 `client_scripts`；定义直接在服务器脚本加载期调用下列方法。
 
 四种定义方法接收的对象与数据包 JSON 完全相同，字段见 [DATAPACK_API.md](DATAPACK_API.md)。KubeJS 层与数据包层分开收集；同一种定义使用相同资源 ID 时，脚本层覆盖数据包层。单次 `server_scripts` reload 内同类别的重复 ID 会报错。
