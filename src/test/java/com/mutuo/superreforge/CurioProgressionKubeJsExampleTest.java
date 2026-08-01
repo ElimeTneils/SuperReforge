@@ -88,7 +88,7 @@ final class CurioProgressionKubeJsExampleTest {
                 "critical_strike:chance",
                 "critical_strike:damage",
                 "ranged_weapon:damage",
-                "scguns:additional_bullet_damage",
+                "scguns:bullet_damage_multiplier",
                 "minecraft:generic.movement_efficiency",
                 "minecraft:player.mining_efficiency",
                 "neoforge:creative_flight")) {
@@ -102,6 +102,26 @@ final class CurioProgressionKubeJsExampleTest {
                         .equals(effect.get("attribute").getAsString()))
                 .count();
         assertEquals(1, blockRangeCount, "重复输入的方块交互距离必须去重，避免意外叠加为 +4");
+    }
+
+    @Test
+    void usesOperationsThatActuallyProduceTheRequestedPercentages() throws IOException {
+        JsonObject spec = spec();
+
+        assertEffect(spec, "mutuo:curio_8_3", "critical_chance",
+                "critical_strike:chance", 0.025, "add_multiplied_base");
+        assertEffect(spec, "mutuo:curio_8_3", "critical_damage",
+                "critical_strike:damage", 0.05, "add_multiplied_base");
+        assertEffect(spec, "mutuo:curio_8_3", "ranged_damage",
+                "ranged_weapon:damage", 0.05, "add_multiplied_total");
+        assertEffect(spec, "mutuo:curio_8_3", "attack_damage",
+                "minecraft:generic.attack_damage", 0.05, "add_multiplied_total");
+        assertEffect(spec, "mutuo:curio_8_3", "bullet_damage",
+                "scguns:bullet_damage_multiplier", 0.05, "add_multiplied_base");
+        assertEffect(spec, "mutuo:curio_8_1", "submerged_mining_speed",
+                "minecraft:player.submerged_mining_speed", 0.25, "add_multiplied_base");
+        assertEffect(spec, "mutuo:curio_6_1", "movement_efficiency",
+                "minecraft:generic.movement_efficiency", 0.15, "add_value");
     }
 
     @Test
@@ -144,6 +164,23 @@ final class CurioProgressionKubeJsExampleTest {
                 .filter(modifier -> id.equals(modifier.get("id").getAsString()))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("缺少词条：" + id));
+    }
+
+    private static void assertEffect(
+            JsonObject spec,
+            String modifierId,
+            String effectId,
+            String attribute,
+            double amount,
+            String operation) {
+        JsonObject effect = modifier(spec, modifierId).getAsJsonArray("attributes").asList().stream()
+                .map(JsonElement::getAsJsonObject)
+                .filter(candidate -> effectId.equals(candidate.get("id").getAsString()))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("缺少属性效果：" + modifierId + "/" + effectId));
+        assertEquals(attribute, effect.get("attribute").getAsString());
+        assertEquals(amount, effect.get("amount").getAsDouble());
+        assertEquals(operation, effect.get("operation").getAsString());
     }
 
     private static JsonObject spec() throws IOException {

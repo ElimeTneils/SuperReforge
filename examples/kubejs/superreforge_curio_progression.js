@@ -2,6 +2,12 @@
 // 文件位置：kubejs/server_scripts/superreforge_curio_progression.js。
 // 本脚本会覆盖内置等级显示、停用 24 条内置词条，并让六级强化石只服务于 Curios 饰品。
 
+// 百分比操作必须按 Attribute 的真实基值选择：
+// - 暴击率/暴击伤害的基值是 100，0.025 + add_multiplied_base 才是真正的 2.5%。
+// - 近战与远程伤害需要缩放装备提供的最终值，所以使用 add_multiplied_total。
+// - SCGuns 的 additional_bullet_damage 是固定伤害；百分比伤害应使用基值为 1 的 bullet_damage_multiplier。
+// - 移动效率等原版属性基值为 0，只能用 add_value；0.15 在游戏公式中就是 15%。
+
 // 把数据放入严格 JSON 字符串，便于测试、Excel 转换以及避免 KubeJS 2101 Rhino 的语法差异。
 const SR_CURIO_SPEC = JSON.parse(`
 {
@@ -29,7 +35,7 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":-0.15,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_1_4","rank":1,"name":"贪婪","weight":5,"attributes":[
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":-0.03,"operation":"add_multiplied_base"},
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":-0.03,"operation":"add_multiplied_total"},
       {"id":"max_health","attribute":"minecraft:generic.max_health","amount":-1.0,"operation":"add_value"}
     ]},
 
@@ -43,7 +49,7 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"armor","attribute":"minecraft:generic.armor","amount":-0.5,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_2_4","rank":2,"name":"还行","weight":5,"attributes":[
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":-0.01,"operation":"add_multiplied_base"}
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":-0.01,"operation":"add_multiplied_total"}
     ]},
 
     {"id":"mutuo:curio_3_1","rank":3,"name":"稀有","weight":55,"attributes":[
@@ -56,7 +62,7 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"luck","attribute":"minecraft:generic.luck","amount":4.0,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_3_4","rank":3,"name":"优秀","weight":5,"attributes":[
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.005,"operation":"add_multiplied_base"}
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.005,"operation":"add_multiplied_total"}
     ]},
 
     {"id":"mutuo:curio_4_1","rank":4,"name":"史诗","weight":55,"attributes":[
@@ -66,15 +72,15 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"armor","attribute":"minecraft:generic.armor","amount":1.0,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_4_3","rank":4,"name":"精卓","weight":15,"attributes":[
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.01,"operation":"add_multiplied_base"}
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.01,"operation":"add_multiplied_total"}
     ]},
     {"id":"mutuo:curio_4_4","rank":4,"name":"非凡","weight":5,"attributes":[
-      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.01,"operation":"add_value"}
+      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.01,"operation":"add_multiplied_base"}
     ]},
 
     {"id":"mutuo:curio_5_1","rank":5,"name":"传说","weight":55,"attributes":[
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.01,"operation":"add_multiplied_base"},
-      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.01,"operation":"add_multiplied_base"}
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.01,"operation":"add_multiplied_total"},
+      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.01,"operation":"add_multiplied_total"}
     ]},
     {"id":"mutuo:curio_5_2","rank":5,"name":"永恒","weight":25,"attributes":[
       {"id":"max_health","attribute":"minecraft:generic.max_health","amount":0.5,"operation":"add_value"},
@@ -85,8 +91,8 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.125,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_5_4","rank":5,"name":"神话","weight":5,"attributes":[
-      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.015,"operation":"add_value"},
-      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.03,"operation":"add_value"}
+      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.015,"operation":"add_multiplied_base"},
+      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.03,"operation":"add_multiplied_base"}
     ]},
 
     {"id":"mutuo:curio_6_1","rank":6,"name":"运动员","weight":55,"attributes":[
@@ -98,13 +104,13 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"armor_toughness","attribute":"minecraft:generic.armor_toughness","amount":0.5,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_6_3","rank":6,"name":"缔造师","weight":15,"attributes":[
-      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.015,"operation":"add_multiplied_base"},
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.015,"operation":"add_multiplied_base"},
-      {"id":"bullet_damage","attribute":"scguns:additional_bullet_damage","amount":0.015,"operation":"add_value"}
+      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.015,"operation":"add_multiplied_total"},
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.015,"operation":"add_multiplied_total"},
+      {"id":"bullet_damage","attribute":"scguns:bullet_damage_multiplier","amount":0.015,"operation":"add_multiplied_base"}
     ]},
     {"id":"mutuo:curio_6_4","rank":6,"name":"审判者","weight":5,"attributes":[
-      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.025,"operation":"add_value"},
-      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.04,"operation":"add_value"}
+      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.025,"operation":"add_multiplied_base"},
+      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.04,"operation":"add_multiplied_base"}
     ]},
 
     {"id":"mutuo:curio_7_1","rank":7,"name":"才华横溢","weight":55,"attributes":[
@@ -117,13 +123,13 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"armor","attribute":"minecraft:generic.armor","amount":1.0,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_7_3","rank":7,"name":"勇往直前","weight":15,"attributes":[
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.025,"operation":"add_multiplied_base"},
-      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.025,"operation":"add_multiplied_base"},
-      {"id":"bullet_damage","attribute":"scguns:additional_bullet_damage","amount":0.025,"operation":"add_value"}
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.025,"operation":"add_multiplied_total"},
+      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.025,"operation":"add_multiplied_total"},
+      {"id":"bullet_damage","attribute":"scguns:bullet_damage_multiplier","amount":0.025,"operation":"add_multiplied_base"}
     ]},
     {"id":"mutuo:curio_7_4","rank":7,"name":"致命一击","weight":5,"attributes":[
-      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.025,"operation":"add_value"},
-      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.05,"operation":"add_value"}
+      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.025,"operation":"add_multiplied_base"},
+      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.05,"operation":"add_multiplied_base"}
     ]},
 
     {"id":"mutuo:curio_8_1","rank":8,"name":"不朽的训练家","weight":55,"attributes":[
@@ -131,7 +137,7 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"luck","attribute":"minecraft:generic.luck","amount":4.0,"operation":"add_value"},
       {"id":"mining_efficiency","attribute":"minecraft:player.mining_efficiency","amount":0.25,"operation":"add_value"},
       {"id":"step_height","attribute":"minecraft:generic.step_height","amount":1.0,"operation":"add_value"},
-      {"id":"submerged_mining_speed","attribute":"minecraft:player.submerged_mining_speed","amount":0.25,"operation":"add_value"},
+      {"id":"submerged_mining_speed","attribute":"minecraft:player.submerged_mining_speed","amount":0.25,"operation":"add_multiplied_base"},
       {"id":"water_movement_efficiency","attribute":"minecraft:generic.water_movement_efficiency","amount":0.25,"operation":"add_value"},
       {"id":"movement_efficiency","attribute":"minecraft:generic.movement_efficiency","amount":0.25,"operation":"add_value"}
     ]},
@@ -142,11 +148,11 @@ const SR_CURIO_SPEC = JSON.parse(`
       {"id":"max_health","attribute":"minecraft:generic.max_health","amount":2.0,"operation":"add_value"}
     ]},
     {"id":"mutuo:curio_8_3","rank":8,"name":"绝世的战斗家","weight":15,"attributes":[
-      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.025,"operation":"add_value"},
-      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.05,"operation":"add_value"},
-      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.05,"operation":"add_multiplied_base"},
-      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.05,"operation":"add_multiplied_base"},
-      {"id":"bullet_damage","attribute":"scguns:additional_bullet_damage","amount":0.05,"operation":"add_value"}
+      {"id":"critical_chance","attribute":"critical_strike:chance","amount":0.025,"operation":"add_multiplied_base"},
+      {"id":"critical_damage","attribute":"critical_strike:damage","amount":0.05,"operation":"add_multiplied_base"},
+      {"id":"ranged_damage","attribute":"ranged_weapon:damage","amount":0.05,"operation":"add_multiplied_total"},
+      {"id":"attack_damage","attribute":"minecraft:generic.attack_damage","amount":0.05,"operation":"add_multiplied_total"},
+      {"id":"bullet_damage","attribute":"scguns:bullet_damage_multiplier","amount":0.05,"operation":"add_multiplied_base"}
     ]},
     {"id":"mutuo:curio_8_4","rank":8,"name":"规则的缔造者","weight":5,"attributes":[
       {"id":"creative_flight","attribute":"neoforge:creative_flight","amount":1.0,"operation":"add_value"}
@@ -191,6 +197,7 @@ SR_BUILTIN_GROUPS.forEach(group => SR_CURIO_SPEC.levels.forEach(level => {
 }))
 
 // 每条新词条都只作用于当前实际佩戴它的 Curios 栏位；所有 amount 都是固定数值。
+// operation 决定固定数值如何进入属性公式，不代表词条会在范围内随机取值。
 SR_CURIO_SPEC.modifiers.forEach(modifier => {
   const level = SR_CURIO_SPEC.levels[modifier.rank - 1]
   SuperReforge.addModifier(modifier.id, {

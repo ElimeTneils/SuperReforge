@@ -75,6 +75,8 @@ SR_LEVELS.forEach(([id, rank, text, color]) => {
 
 只复制 [`examples/kubejs/superreforge_curio_progression.js`](../examples/kubejs/superreforge_curio_progression.js) 到 `kubejs/server_scripts/`。它会用不可匹配类型与零权重覆盖内置 24 条词条，只注册 Curios 任意栏位的 32 条固定词条，并用六种强化媒介定义指定的等级权重。1–3 级使用现有三种重铸石，4–6 级分别使用下界合金锭、下界之星和龙息，无需新增模组物品或重新打包 JAR。该脚本已包含等级、物品类型、词条和媒介定义，因此不要同时启用方案 A、方案 B 或旧的 `superreforge_definitions.js`；`superreforge_progression.js` 仍可按需共存。
 
+百分比不能只看 `amount`：Critical Strike 的暴击率/伤害基值为 `100`，必须用 `add_multiplied_base`；近战、弓伤害需要缩放装备提供的最终值，必须用 `add_multiplied_total`。SCGuns 的 `additional_bullet_damage` 是固定伤害，百分比应改用 `bullet_damage_multiplier`。移动效率和水中移动效率的基值为 `0`，因此必须保留 `add_value`，其中 `0.15` 在游戏公式中表示 15%。KubeJS 2101 的独立服务端脚本重载命令是 `/kubejs reload server-scripts`（连字符），不是 `server_scripts`。
+
 ## 3. 物品类型、选择器、KubeJS 组与谓词
 
 Super Reforge 的 selector 对象只接受 `item`、`items`、`tag`、`curios` 和 `kubejs_predicate`。同一 selector 内多条规则是“或”；`include` 任意命中即包含，`exclude` 任意命中优先否决。
