@@ -52,7 +52,7 @@
 - `CatalystDefinition.java`：媒介定义与 Codec，描述匹配选择器、消耗量、经验、可否重复词条、等级权重和类型限制。修改会直接改变报价、候选池和 JSON 结构。
 - `DefinitionLayer.java`：脚本层四类定义的不可变覆盖层及 builder。改其复制/构建逻辑会影响 KubeJS 重载的原子替换。
 - `DefinitionManager.java`：维护 datapack、脚本和合并后的活动快照；校验成功后原子发布，脚本同 ID 覆盖数据包。改合并优先级或发布顺序会改变 reload 可见性与失败时保留旧状态的保证。
-- `DefinitionReloadListener.java`：资源重载监听器，从 `superreforge/levels`、`item_types`、`modifiers`、`catalysts` 读取 JSON，经 Codec 解析后发布。改目录、ID 转换或错误聚合会影响数据包布局和 reload 失败条件。
+- `DefinitionReloadListener.java`：资源重载监听器，从 `superreforge/levels`、`item_types`、`modifiers`、`catalysts` 读取 JSON，经 Codec 解析后发布；传给 1.21.1 资源管理器的目录不含末尾斜杠。改目录、ID 转换或错误聚合会影响数据包布局和 reload 失败条件。
 - `DefinitionSnapshot.java`：等级、类型、词条、媒介四张不可变映射组成的活动快照。改字段会波及所有解析、报价和预览消费者。
 - `DefinitionValidationException.java`：定义加载/解析错误的专用非法参数异常。改异常类型会影响重载报错路径及测试断言。
 - `DefinitionValidator.java`：补充 Codec 无法表示的约束：空选择器、权重、等级/类型引用、效果 ID、数值范围、媒介数量与经验。减少校验会让坏数据进入运行时；加约束会改变旧数据包的可加载性。
@@ -186,6 +186,7 @@
 
 - `DefaultResourcesTest.java`：读取默认数据包并用生产 Codec 检查等级、类型、词条、媒介引用，同时验证 3D 模型元素和四向 blockstate。
 - `DefinitionCodecTest.java`：验证定义 JSON Codec 的编码/解码。
+- `DefinitionReloadListenerTest.java`：使用原版 `MultiPackResourceManager` 回归验证 reload 目录参数合法，防止真实服务器在 datapack 阶段中止。
 - `DefinitionManagerTest.java`：验证 datapack/脚本层的原子发布、覆盖和失败保留旧快照。
 - `DefinitionValidatorTest.java`：验证不合法权重、引用、效果与媒介被拒绝。
 

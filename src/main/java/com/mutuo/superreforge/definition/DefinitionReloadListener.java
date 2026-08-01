@@ -51,13 +51,16 @@ public final class DefinitionReloadListener extends SimplePreparableReloadListen
 
     private static <T> Map<ResourceLocation, T> readDirectory(
             ResourceManager manager, String directory, Codec<T> codec, List<String> errors) {
-        String prefix = "superreforge/" + directory + "/";
+        // 1.21.1 的 ResourceManager 明确拒绝带末尾斜杠的 listResources 目录参数。
+        String resourceDirectory = "superreforge/" + directory;
+        // 解析相对定义 ID 时仍需要斜杠边界，避免把相似目录名前缀一起截入。
+        String relativePrefix = resourceDirectory + "/";
         Map<ResourceLocation, T> decoded = new LinkedHashMap<>();
         Map<ResourceLocation, Resource> resources =
-                manager.listResources(prefix, id -> id.getPath().endsWith(".json"));
+                manager.listResources(resourceDirectory, id -> id.getPath().endsWith(".json"));
 
         resources.forEach((fileId, resource) -> {
-            ResourceLocation definitionId = toDefinitionId(fileId, prefix);
+            ResourceLocation definitionId = toDefinitionId(fileId, relativePrefix);
             try (Reader reader = resource.openAsReader()) {
                 JsonElement json = JsonParser.parseReader(reader);
                 T value = codec.parse(JsonOps.INSTANCE, json)
