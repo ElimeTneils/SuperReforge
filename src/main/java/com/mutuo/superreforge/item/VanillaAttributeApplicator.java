@@ -2,10 +2,10 @@ package com.mutuo.superreforge.item;
 
 import com.mutuo.superreforge.SuperReforge;
 import com.mutuo.superreforge.definition.AttributeOperation;
-import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.definition.SlotTarget;
 import com.mutuo.superreforge.config.SuperReforgeConfig;
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -25,7 +25,7 @@ public final class VanillaAttributeApplicator {
 
     /** NeoForge 和 Curios 都读取此跳过事件，因此一套逻辑同时控制两类 Attribute 行。 */
     private static void onSkippedAttributeTooltips(GatherSkippedAttributeTooltipsEvent event) {
-        ModifierResolver.resolve(event.getStack(), DefinitionManager.snapshot()).ifPresent(modifier ->
+        ModifierResolver.resolveCurrent(event.getStack()).ifPresent(modifier ->
                 hiddenEffectIds(modifier, SuperReforgeConfig.snapshot().showAttributeLines())
                         .forEach(event::skipId));
     }
@@ -34,12 +34,14 @@ public final class VanillaAttributeApplicator {
     public static List<ResourceLocation> hiddenEffectIds(ResolvedModifier modifier, boolean globalDisplayEnabled) {
         return modifier.effects().stream()
                 .filter(effect -> !globalDisplayEnabled || !effect.showInTooltip())
-                .map(effect -> stableModifierId(modifier.id(), effect.id()))
+                .flatMap(effect -> effect.slots().stream()
+                        .filter(slot -> slot != SlotTarget.CURIOS_ANY)
+                        .map(slot -> stableModifierId(modifier.id(), effect.id(), slot)))
                 .toList();
     }
 
     private static void onItemAttributes(ItemAttributeModifierEvent event) {
-        ModifierResolver.resolve(event.getItemStack(), DefinitionManager.snapshot()).ifPresent(modifier -> {
+        ModifierResolver.resolveCurrent(event.getItemStack()).ifPresent(modifier -> {
             for (ResolvedEffect effect : modifier.effects()) {
                 var attribute = BuiltInRegistries.ATTRIBUTE.getHolder(effect.attribute());
                 if (attribute.isEmpty()) {
@@ -48,11 +50,12 @@ public final class VanillaAttributeApplicator {
                             modifier.id(), effect.attribute(), effect.id());
                     continue;
                 }
-                ResourceLocation effectModifierId = stableModifierId(modifier.id(), effect.id());
-                AttributeModifier vanilla =
-                        new AttributeModifier(effectModifierId, effect.amount(), operation(effect.operation()));
                 for (SlotTarget target : effect.slots()) {
                     if (target != SlotTarget.CURIOS_ANY) {
+                        // 栏位属于 AttributeModifier 身份的一部分；否则主手与副手会彼此覆盖。
+                        ResourceLocation effectModifierId = stableModifierId(modifier.id(), effect.id(), target);
+                        AttributeModifier vanilla = new AttributeModifier(
+                                effectModifierId, effect.amount(), operation(effect.operation()));
                         event.addModifier(attribute.orElseThrow(), vanilla, slot(target));
                     }
                 }
@@ -87,10 +90,27 @@ public final class VanillaAttributeApplicator {
      *
      * <p>公开此纯函数是为了让 Curios 可选兼容层复用完全相同的去重规则；它不会注册 Attribute。
      */
-    public static ResourceLocation stableModifierId(ResourceLocation modifierId, String effectId) {
-        String safeEffect = effectId.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9/._-]", "_");
+    public static ResourceLocation stableModifierId(
+            ResourceLocation modifierId, String effectId, SlotTarget slot) {
+        return scopedModifierId(modifierId, effectId, slot.serializedName());
+    }
+
+    /** Curios 提供的 ID 已包含栏位类型与序号，用它可让两个戒指栏中的相同词条正确叠加。 */
+    public static ResourceLocation curiosModifierId(
+            ResourceLocation modifierId, String effectId, String identifier, int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException("Curios slot index 不能为负数");
+        }
+        return scopedModifierId(
+                modifierId,
+                effectId,
+                "curio/" + identifier + "/" + index);
+    }
+
+    private static ResourceLocation scopedModifierId(
+            ResourceLocation modifierId, String effectId, String slotKey) {
         return ResourceLocation.fromNamespaceAndPath(
                 SuperReforge.MOD_ID,
-                "effect/" + modifierId.getNamespace() + "/" + modifierId.getPath() + "/" + safeEffect);
+                "effect/" + modifierId.getNamespace() + "/" + modifierId.getPath() + "/" + effectId + "/" + slotKey);
     }
 }

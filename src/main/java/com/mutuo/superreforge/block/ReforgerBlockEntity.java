@@ -4,6 +4,7 @@ import com.mutuo.superreforge.config.GlobalSettings;
 import com.mutuo.superreforge.config.SuperReforgeConfig;
 import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.progress.ProgressService;
+import com.mutuo.superreforge.network.DefinitionSyncTracker;
 import com.mutuo.superreforge.reforge.ExperienceService;
 import com.mutuo.superreforge.reforge.PreparedReforge;
 import com.mutuo.superreforge.reforge.ReforgeFailure;
@@ -109,6 +110,10 @@ public final class ReforgerBlockEntity extends BlockEntity implements MenuProvid
     public boolean startReforge(ServerPlayer player) {
         if (pending != null || level == null) {
             lastFailure = ReforgeFailure.BUSY;
+            return false;
+        }
+        if (!DefinitionSyncTracker.canReforge(player, DefinitionManager.generation())) {
+            lastFailure = ReforgeFailure.DEFINITION_SYNC;
             return false;
         }
         GlobalSettings settings = SuperReforgeConfig.snapshot();

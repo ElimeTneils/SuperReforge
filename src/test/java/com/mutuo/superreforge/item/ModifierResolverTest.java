@@ -10,6 +10,7 @@ import com.mutuo.superreforge.definition.ItemSelector;
 import com.mutuo.superreforge.definition.ItemTypeDefinition;
 import com.mutuo.superreforge.definition.LevelDefinition;
 import com.mutuo.superreforge.definition.ModifierDefinition;
+import com.mutuo.superreforge.definition.ModifierDisplayDefinition;
 import com.mutuo.superreforge.definition.SlotTarget;
 import com.mutuo.superreforge.definition.ValueDefinition;
 import com.mutuo.superreforge.registry.ModDataComponents;
@@ -66,6 +67,26 @@ final class ModifierResolverTest {
         stick.set(ModDataComponents.REFORGE_DATA.get(), new ReforgeData(id("missing"), 1L, 1));
 
         assertTrue(ModifierResolver.resolve(stick, DefinitionSnapshot.EMPTY).isEmpty());
+    }
+
+    @Test
+    void clientMirrorTrustsServerActiveFlagWithoutRunningServerOnlyKubePredicate() {
+        ResourceLocation modifierId = id("scripted");
+        ModifierDefinition scripted = new ModifierDefinition(
+                id("tier"), List.of(id("kube_type")), Component.literal("脚本词条"), 1, List.of());
+        ItemStack stack = new ItemStack(Items.STICK);
+        stack.set(ModDataComponents.REFORGE_DATA.get(), new ReforgeData(modifierId, 5L, 2, true));
+
+        assertEquals(
+                "脚本词条",
+                ModifierResolver.resolveMirrored(stack, Map.of(modifierId, ModifierDisplayDefinition.from(scripted)))
+                        .orElseThrow()
+                        .name()
+                        .getString());
+
+        stack.set(ModDataComponents.REFORGE_DATA.get(), new ReforgeData(modifierId, 5L, 2, false));
+        assertTrue(ModifierResolver.resolveMirrored(
+                stack, Map.of(modifierId, ModifierDisplayDefinition.from(scripted))).isEmpty());
     }
 
     private static ResourceLocation id(String path) {

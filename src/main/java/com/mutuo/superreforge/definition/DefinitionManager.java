@@ -4,6 +4,7 @@ import com.mutuo.superreforge.SuperReforge;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -15,6 +16,9 @@ public final class DefinitionManager {
     private static final AtomicReference<DefinitionLayer> SCRIPT = new AtomicReference<>(DefinitionLayer.EMPTY);
     private static final AtomicReference<DefinitionSnapshot> ACTIVE =
             new AtomicReference<>(DefinitionSnapshot.EMPTY);
+    private static final AtomicReference<Map<ResourceLocation, ModifierDisplayDefinition>> CLIENT_MODIFIERS =
+            new AtomicReference<>(Map.of());
+    private static final AtomicLong GENERATION = new AtomicLong();
 
     private DefinitionManager() {}
 
@@ -31,6 +35,28 @@ public final class DefinitionManager {
         return ACTIVE.get();
     }
 
+    /** 每次成功发布完整服务端显示状态都会递增，供分块同步和 ACK 防陈旧。 */
+    public static long generation() {
+        return GENERATION.get();
+    }
+
+    /** 远程客户端只读显示镜像；不含服务端 selector、概率或 KubeJS 谓词。 */
+    public static Map<ResourceLocation, ModifierDisplayDefinition> clientModifiers() {
+        return CLIENT_MODIFIERS.get();
+    }
+
+    public static void installClientModifiers(Map<ResourceLocation, ModifierDisplayDefinition> modifiers) {
+        CLIENT_MODIFIERS.set(Map.copyOf(modifiers));
+    }
+
+    /** 客户端退出世界时清除镜像和可能来自上一单人世界的同进程服务端快照。 */
+    public static synchronized void clearClientSession() {
+        DATAPACK.set(DefinitionSnapshot.EMPTY);
+        SCRIPT.set(DefinitionLayer.EMPTY);
+        ACTIVE.set(DefinitionSnapshot.EMPTY);
+        CLIENT_MODIFIERS.set(Map.of());
+    }
+
     /**
      * 尝试发布新的 datapack 层。
      *
@@ -45,6 +71,7 @@ public final class DefinitionManager {
         }
         DATAPACK.set(candidate);
         ACTIVE.set(merged);
+        GENERATION.incrementAndGet();
         return true;
     }
 
@@ -58,6 +85,7 @@ public final class DefinitionManager {
         }
         SCRIPT.set(candidate);
         ACTIVE.set(merged);
+        GENERATION.incrementAndGet();
         return true;
     }
 
@@ -81,5 +109,7 @@ public final class DefinitionManager {
         DATAPACK.set(DefinitionSnapshot.EMPTY);
         SCRIPT.set(DefinitionLayer.EMPTY);
         ACTIVE.set(DefinitionSnapshot.EMPTY);
+        CLIENT_MODIFIERS.set(Map.of());
+        GENERATION.set(0L);
     }
 }

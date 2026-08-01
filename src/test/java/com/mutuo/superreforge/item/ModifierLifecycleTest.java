@@ -51,8 +51,23 @@ final class ModifierLifecycleTest {
         boolean changed = ModifierLifecycle.reconcile(
                 stack, DefinitionSnapshot.EMPTY, settings(false, MissingDefinitionPolicy.KEEP_INACTIVE), 8L);
 
-        assertFalse(changed);
-        assertEquals(original, stack.get(ModDataComponents.REFORGE_DATA.get()));
+        assertTrue(changed);
+        ReforgeData inactive = stack.get(ModDataComponents.REFORGE_DATA.get());
+        assertEquals(original.modifierId(), inactive.modifierId());
+        assertEquals(original.seed(), inactive.seed());
+        assertFalse(inactive.active(), "保留失效词条时必须同步 inactive 标志，客户端才不会继续应用属性");
+    }
+
+    @Test
+    void inactiveModifierReactivatesWhenTheItemMatchesAgain() {
+        ItemStack stack = new ItemStack(Items.DIAMOND_SWORD);
+        stack.set(ModDataComponents.REFORGE_DATA.get(), new ReforgeData(MODIFIER, 4L, 2, false));
+
+        boolean changed = ModifierLifecycle.reconcile(
+                stack, snapshot(), settings(false, MissingDefinitionPolicy.KEEP_INACTIVE), 8L);
+
+        assertTrue(changed);
+        assertTrue(stack.get(ModDataComponents.REFORGE_DATA.get()).active());
     }
 
     @Test

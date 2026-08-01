@@ -1,6 +1,7 @@
 package com.mutuo.superreforge.item;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonElement;
@@ -31,5 +32,20 @@ final class ReforgeDataCodecTest {
                 JsonOps.INSTANCE, com.google.gson.JsonParser.parseString(invalid));
 
         assertTrue(result.error().isPresent(), "schema 0 必须被拒绝，而不是静默接受");
+    }
+
+    @Test
+    void legacySchemaDefaultsToActiveWhileInactiveStateRoundTrips() {
+        String legacy = "{\"modifier_id\":\"example:legacy\",\"seed\":7,\"schema_version\":1}";
+        ReforgeData oldData = ReforgeData.CODEC.parse(
+                        JsonOps.INSTANCE, com.google.gson.JsonParser.parseString(legacy))
+                .getOrThrow();
+        assertTrue(oldData.active(), "旧存档没有 active 字段时必须保持原来的生效行为");
+
+        ReforgeData inactive = new ReforgeData(
+                ResourceLocation.fromNamespaceAndPath("example", "inactive"), 9L, ReforgeData.CURRENT_SCHEMA, false);
+        JsonElement encoded = ReforgeData.CODEC.encodeStart(JsonOps.INSTANCE, inactive).getOrThrow();
+        ReforgeData decoded = ReforgeData.CODEC.parse(JsonOps.INSTANCE, encoded).getOrThrow();
+        assertFalse(decoded.active(), "KEEP_INACTIVE 状态必须跨存档保留");
     }
 }

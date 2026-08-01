@@ -25,6 +25,7 @@ sourceSets.main.resources {
     exclude("**/*.bbmodel") // BlockBench project files
 
     exclude("src/generated/**/.cache") // datagen cache files
+
 }
 
 repositories {
@@ -219,6 +220,12 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+// 许可证和第三方参考说明属于发布物的一部分，固定放进 JAR 的 META-INF。
+tasks.named('processResources', ProcessResources).configure {
+    from('LICENSE') { into 'META-INF' }
+    from('CREDITS.md') { into 'META-INF' }
 }
 
 // 所有纯逻辑测试统一使用 JUnit 5；GameTest 由 NeoForge 的独立运行配置执行。

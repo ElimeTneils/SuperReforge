@@ -49,4 +49,15 @@ final class BootstrapMetadataTest {
         assertTrue(plugins.contains(
                 "com.mutuo.superreforge.compat.kubejs.SuperReforgeKubeJSPlugin kubejs"));
     }
+
+    @Test
+    void publishedResourcesContainLicenseAndCredits() throws IOException {
+        try (var license = BootstrapMetadataTest.class.getClassLoader().getResourceAsStream("META-INF/LICENSE");
+                var credits = BootstrapMetadataTest.class.getClassLoader().getResourceAsStream("META-INF/CREDITS.md")) {
+            assertTrue(license != null, "发布 JAR 必须包含 META-INF/LICENSE");
+            assertTrue(credits != null, "发布 JAR 必须包含 META-INF/CREDITS.md");
+            assertTrue(new String(license.readAllBytes(), StandardCharsets.UTF_8).contains("MUTUO"));
+            assertTrue(new String(credits.readAllBytes(), StandardCharsets.UTF_8).contains("BountifulBaubles"));
+        }
+    }
 }

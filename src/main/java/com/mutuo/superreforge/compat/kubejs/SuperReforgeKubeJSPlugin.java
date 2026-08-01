@@ -5,10 +5,12 @@ import com.mutuo.superreforge.api.ScriptDefinitionCollector;
 import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.progress.ProgressService;
 import com.mutuo.superreforge.reforge.SelectorHooks;
+import com.mutuo.superreforge.network.ModNetwork;
 import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 import dev.latvian.mods.kubejs.script.BindingRegistry;
 import dev.latvian.mods.kubejs.script.ScriptManager;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 /**
  * KubeJS 2101 插件入口。
@@ -57,6 +59,11 @@ public final class SuperReforgeKubeJSPlugin implements KubeJSPlugin {
             }
             SelectorHooks.replaceScriptPredicates(bundle.predicates());
             ProgressService.replaceStages(bundle.stages().values());
+            // server_scripts 可独立 reload；完整发布后必须主动重发新代次，不能等待下一次 datapack sync。
+            var server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) {
+                server.execute(() -> ModNetwork.synchronizeAll(server));
+            }
             SuperReforge.LOGGER.info(
                     "Published KubeJS layer: {} level(s), {} type(s), {} modifier(s), {} catalyst(s), {} predicate(s), {} stage(s)",
                     bundle.definitions().levels().size(),

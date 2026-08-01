@@ -102,7 +102,7 @@ selector 至少要有一个字段实际提供匹配规则；空 selector 会使�
 
 | 字段 | 类型 | 默认值 | 含义 |
 | --- | --- | --- | --- |
-| `id` | 字符串 | — | effect 标识；同一词条内不能重复且不能为空。它也参与稳定 Attribute modifier ID 和范围值的确定。 |
+| `id` | 字符串 | — | effect 标识；同一词条内唯一，只能使用小写字母、数字、`/._-`。它与装备栏位共同参与稳定 Attribute modifier ID，使主副手和多个 Curios 栏位不会互相覆盖。 |
 | `attribute` | 资源位置 | — | 要修改的已注册 Attribute，例如 `minecraft:generic.attack_damage`。本模组不会注册外部 Attribute；若该 ID 在运行时不存在，只记录警告并让此 effect 失效，不使整条词条失效。 |
 | `amount` | 数字或 `{ "min": 数字, "max": 数字 }` | — | 数字为固定值。范围值按物品保存的种子和 effect `id` 确定，之后稳定不变；`min` 与 `max` 必须有限且 `min <= max`。 |
 | `operation` | 字符串 | — | `add_value`、`add_multiplied_base`、`add_multiplied_total` 三者之一，分别对应 Minecraft 的固定加值、按基础值乘加、按最终值乘加。 |

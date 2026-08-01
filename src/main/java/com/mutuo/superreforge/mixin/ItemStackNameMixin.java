@@ -1,6 +1,5 @@
 package com.mutuo.superreforge.mixin;
 
-import com.mutuo.superreforge.definition.DefinitionManager;
 import com.mutuo.superreforge.item.ModifierNameService;
 import com.mutuo.superreforge.item.ModifierResolver;
 import net.minecraft.network.chat.Component;
@@ -20,7 +19,7 @@ abstract class ItemStackNameMixin {
     @Inject(method = "getHoverName", at = @At("RETURN"), cancellable = true)
     private void superreforge$prefixDisplayName(CallbackInfoReturnable<Component> callback) {
         ItemStack self = (ItemStack) (Object) this;
-        ModifierResolver.resolve(self, DefinitionManager.snapshot()).ifPresent(modifier ->
+        ModifierResolver.resolveCurrent(self).ifPresent(modifier ->
                 callback.setReturnValue(ModifierNameService.prefix(modifier.name(), callback.getReturnValue())));
     }
 }

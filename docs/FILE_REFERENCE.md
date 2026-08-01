@@ -31,7 +31,7 @@
 
 #### `compat/curios`
 
-- `CuriosCompat.java`：Curios 可选桥接，初始化后向选择器钩子注入 Curios 槽位匹配，并把 `curios:any` 效果接入 Curios 属性路径。它只由入口在确认 Curios 已安装后反射加载；直接让核心包引用 Curios 类型会破坏未安装 Curios 的启动隔离。
+- `CuriosCompat.java`：Curios 可选桥接，初始化后注入任意饰品匹配及属性路径；Attribute ID 包含栏位类型与序号，同类多槽可叠加。定义 reload 后它还会清理并重装已穿戴饰品属性。该类只在确认 Curios 已安装后反射加载。
 
 #### `compat/kubejs`
 
@@ -52,6 +52,7 @@
 - `CatalystDefinition.java`：媒介定义与 Codec，描述匹配选择器、消耗量、经验、可否重复词条、等级权重和类型限制。修改会直接改变报价、候选池和 JSON 结构。
 - `DefinitionLayer.java`：脚本层四类定义的不可变覆盖层及 builder。改其复制/构建逻辑会影响 KubeJS 重载的原子替换。
 - `DefinitionManager.java`：维护 datapack、脚本和合并后的活动快照；校验成功后原子发布，脚本同 ID 覆盖数据包。改合并优先级或发布顺序会改变 reload 可见性与失败时保留旧状态的保证。
+- `ModifierDisplayDefinition.java`：只含词条名称和 Attribute 效果的客户端镜像值，不下发权重、类型或脚本谓词。修改字段需要同步网络 Codec；加入服务端抽取规则会扩大不必要的信息暴露面。
 - `DefinitionReloadListener.java`：资源重载监听器，从 `superreforge/levels`、`item_types`、`modifiers`、`catalysts` 读取 JSON，经 Codec 解析后发布；传给 1.21.1 资源管理器的目录不含末尾斜杠。改目录、ID 转换或错误聚合会影响数据包布局和 reload 失败条件。
 - `DefinitionSnapshot.java`：等级、类型、词条、媒介四张不可变映射组成的活动快照。改字段会波及所有解析、报价和预览消费者。
 - `DefinitionValidationException.java`：定义加载/解析错误的专用非法参数异常。改异常类型会影响重载报错路径及测试断言。
@@ -67,11 +68,12 @@
 
 ### `item`
 
+- `AttributeRefreshService.java`：定义成功发布后清理在线玩家身上全部 `superreforge:effect/*` 瞬时 modifier，再按当前定义重装原版装备并调用可选饰品刷新钩子。修改所有权判断或刷新顺序会影响 reload 后旧属性能否可靠移除。
 - `ModifierLifecycle.java`：校正单件物品的词条：缺定义时按策略移除/保留，并可通过配置自动抽取首词条；跳过可堆叠物品。改这里会影响铁砧、升级等改变物品后的一致性和自动赋词条范围。
 - `ModifierLifecycleEvents.java`：每 20 tick 在服务端遍历玩家背包，调用生命周期校正。改间隔/范围会影响性能、词条生效延迟和随机种子消耗。
 - `ModifierNameService.java`：把词条名前缀与当前物品名组合的显示工具。改格式只影响由 mixin 生成的名称表现。
 - `ModifierResolver.java`：从物品 `ReforgeData` 按当前快照解析词条和确定性效果；词条不存在或类型不匹配即失效。改此处会影响属性、名称和 reload 后旧物品的解释。
-- `ReforgeData.java`：存入 ItemStack 数据组件的最小持久状态（词条 ID、seed、schema），含磁盘与网络 Codec。改 schema/字段需兼顾已存档物品和同步兼容。
+- `ReforgeData.java`：存入 ItemStack 数据组件的最小持久状态（词条 ID、seed、schema、是否生效），含磁盘与网络 Codec；旧 schema 缺少 `active` 时按生效迁移。改 schema/字段需兼顾已存档物品和同步兼容。
 - `ResolvedEffect.java`：已解析效果值（属性、实际 amount、运算、槽位、tooltip）的运行时值。改字段会影响属性注入和预览/显示消费者。
 - `ResolvedModifier.java`：已解析词条 ID、名称和效果列表的运行时值。改结构会影响原版/Curios 属性桥和名称显示。
 - `VanillaAttributeApplicator.java`：监听原版属性事件，注入非 Curios 效果；并控制 Attribute tooltip 跳过项，生成稳定效果 ID。改槽映射、稳定 ID 或隐藏规则会影响属性叠加、tooltip 与去重。
@@ -83,7 +85,11 @@
 ### `network`
 
 - `ClientPreviewState.java`：客户端按容器 ID 缓存最新重铸预览。改缓存键/清理规则会影响切换容器后的预览正确性。
-- `ModNetwork.java`：在模组事件总线注册自定义 payload。改注册会影响客户端能否解码服务端预览。
+- `ClientDefinitionSync.java`：客户端按代次与块序号原子组装只读显示快照；缺块、冲突块和陈旧块不会覆盖最后一份完整定义。修改组装规则会影响登录/reload 后的名称与 Attribute 显示一致性。
+- `DefinitionSyncAckPayload.java`：客户端完成或拒绝一次定义同步后发给服务端的确认。修改格式必须同时升级网络协议版本。
+- `DefinitionSyncPayload.java`：带代次、块序号和总块数的词条显示快照载荷，限制每块 128 条、总计 8192 条。修改上限或 Codec 会影响大型数据包同步与内存边界。
+- `DefinitionSyncTracker.java`：服务端按玩家记录期望代次与成功 ACK；未确认、失败或陈旧确认都会禁止该玩家开始重铸。修改判定会影响定义不同步时的安全门。
+- `ModNetwork.java`：注册预览、分块定义同步和 ACK payload；登录/datapack reload 与 KubeJS 独立 reload 都走同一同步入口。同步前刷新已穿戴属性，退出时清理玩家状态。修改时机会影响动态解析、实体数值和重铸安全门。
 - `PreviewLevel.java`：预览中的等级、显示名、概率和词条集合值。改字段需同步 `ReforgePreviewPayload` 编解码与屏幕。
 - `PreviewModifier.java`：预览中的词条 ID、名称、概率值。改字段会影响网络格式及界面展示。
 - `ReforgePreviewPayload.java`：服务端从真实报价和快照构造的重铸预览 payload，并定义 type/stream codec 与客户端处理。改概率构造或 Codec 会影响 GUI 展示和网络兼容；它不是客户端可提交的报价。
@@ -192,6 +198,7 @@
 
 ### `item`
 
+- `AttributeRefreshServiceTest.java`：验证 reload 清理器只识别本模组拥有的 `superreforge:effect/*` Attribute modifier。
 - `ModifierLifecycleTest.java`：验证缺定义策略与自动初始词条生命周期。
 - `ModifierNameServiceTest.java`：验证名称前缀组合。
 - `ModifierResolverTest.java`：验证数据组件按快照解析与类型失配处理。
@@ -209,6 +216,11 @@
 - `ReforgeTransactionTest.java`：验证报价失败码、候选构建、准备结果和媒介消耗。
 - `RollEngineTest.java`：验证种子确定性的两阶段抽取。
 - `WeightNormalizerTest.java`：验证零/非法权重过滤、归一化和概率总和。
+- `SelectorHooksTest.java`：验证 KubeJS 谓词抛出运行时异常时安全返回不匹配，不会中断重铸流程。
+
+### `network`
+
+- `DefinitionSyncPayloadTest.java`：验证大型显示快照分块、乱序原子组装以及成功/失败/陈旧 ACK 的服务端门控。
 
 ## 根构建文件
 

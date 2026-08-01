@@ -21,6 +21,7 @@
   "gui.superreforge.failure.no_item_type": "The target matches no item type",
   "gui.superreforge.failure.no_candidates": "No modifier is available for this catalyst",
   "gui.superreforge.failure.experience": "Not enough experience",
+  "gui.superreforge.failure.definition_sync": "Modifier display data is still synchronizing",
   "gui.superreforge.failure.busy": "The reforger is already working",
   "gui.superreforge.failure.stale_state": "Definitions changed; try again",
   "level.superreforge.worn": "Worn",

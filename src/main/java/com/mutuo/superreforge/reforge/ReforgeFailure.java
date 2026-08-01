@@ -9,6 +9,7 @@ public enum ReforgeFailure {
     NO_ITEM_TYPE,
     NO_CANDIDATES,
     EXPERIENCE,
+    DEFINITION_SYNC,
     BUSY,
     STALE_STATE
 }

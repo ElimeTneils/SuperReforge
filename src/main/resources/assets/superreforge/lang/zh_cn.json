@@ -21,6 +21,7 @@
   "gui.superreforge.failure.no_item_type": "目标未匹配任何物品类型",
   "gui.superreforge.failure.no_candidates": "当前媒介没有可用词条",
   "gui.superreforge.failure.experience": "经验不足",
+  "gui.superreforge.failure.definition_sync": "词条显示数据仍在同步，请稍候",
   "gui.superreforge.failure.busy": "熔核锻台正在工作",
   "gui.superreforge.failure.stale_state": "数据已变化，请重新尝试",
   "level.superreforge.worn": "粗糙",

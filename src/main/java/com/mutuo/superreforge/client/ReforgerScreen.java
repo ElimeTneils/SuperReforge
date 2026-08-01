@@ -3,6 +3,7 @@ package com.mutuo.superreforge.client;
 import com.mutuo.superreforge.block.ReforgerMenu;
 import com.mutuo.superreforge.network.ClientPreviewState;
 import com.mutuo.superreforge.network.ReforgePreviewPayload;
+import com.mutuo.superreforge.network.ClientDefinitionSync;
 import com.mutuo.superreforge.reforge.ReforgeFailure;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -28,6 +29,7 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
     @Override
     protected void init() {
         super.init();
+        ClientPreviewState.clear(menu.containerId);
         reforgeButton = addRenderableWidget(Button.builder(
                         Component.translatable("gui.superreforge.reforge"),
                         button -> {
@@ -44,10 +46,19 @@ public final class ReforgerScreen extends AbstractContainerScreen<ReforgerMenu> 
     protected void containerTick() {
         super.containerTick();
         if (reforgeButton != null) {
-            reforgeButton.active = !menu.pending();
+            ReforgePreviewPayload preview = ClientPreviewState.get(menu.containerId).orElse(null);
+            boolean synchronizedDefinitions = preview != null
+                    && preview.generation() == ClientDefinitionSync.completedGeneration();
+            reforgeButton.active = !menu.pending() && synchronizedDefinitions;
             reforgeButton.setMessage(Component.translatable(
                     menu.pending() ? "gui.superreforge.forging" : "gui.superreforge.reforge"));
         }
+    }
+
+    @Override
+    public void removed() {
+        ClientPreviewState.clear(menu.containerId);
+        super.removed();
     }
 
     @Override

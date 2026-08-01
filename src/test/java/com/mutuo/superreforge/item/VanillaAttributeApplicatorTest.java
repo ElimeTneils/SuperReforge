@@ -25,13 +25,41 @@ final class VanillaAttributeApplicatorTest {
     }
 
     @Test
-    void buildsTheSameStableEffectIdForVanillaAndCuriosBridges() {
+    void buildsSlotSpecificStableEffectIdsForVanillaAndCuriosBridges() {
         var modifier = ResourceLocation.fromNamespaceAndPath("example", "legendary/blade");
 
         assertEquals(
                 ResourceLocation.fromNamespaceAndPath(
-                        "superreforge", "effect/example/legendary/blade/attack_speed_bonus"),
-                VanillaAttributeApplicator.stableModifierId(modifier, "Attack Speed Bonus"));
+                        "superreforge", "effect/example/legendary/blade/attack_speed/mainhand"),
+                VanillaAttributeApplicator.stableModifierId(modifier, "attack_speed", SlotTarget.MAINHAND));
+        assertEquals(
+                ResourceLocation.fromNamespaceAndPath(
+                        "superreforge", "effect/example/legendary/blade/attack_speed/curio/charm/2"),
+                VanillaAttributeApplicator.curiosModifierId(
+                        modifier,
+                        "attack_speed",
+                        "charm",
+                        2));
+    }
+
+    @Test
+    void twoCuriosOfTheSameTypeUseDifferentModifierIds() {
+        var modifier = ResourceLocation.fromNamespaceAndPath("example", "legendary/ring");
+
+        var first = VanillaAttributeApplicator.curiosModifierId(modifier, "health", "ring", 0);
+        var second = VanillaAttributeApplicator.curiosModifierId(modifier, "health", "ring", 1);
+
+        org.junit.jupiter.api.Assertions.assertNotEquals(first, second);
+
+        // 使用真实 AttributeInstance 证明两个同类栏位不会仅停留在“ID 看起来不同”，而是会同时计入数值。
+        var instance = new net.minecraft.world.entity.ai.attributes.AttributeInstance(
+                net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH, ignored -> {});
+        instance.setBaseValue(10.0);
+        instance.addOrUpdateTransientModifier(new AttributeModifier(
+                first, 2.0, AttributeModifier.Operation.ADD_VALUE));
+        instance.addOrUpdateTransientModifier(new AttributeModifier(
+                second, 3.0, AttributeModifier.Operation.ADD_VALUE));
+        assertEquals(15.0, instance.getValue());
     }
 
     @Test
@@ -46,7 +74,8 @@ final class VanillaAttributeApplicatorTest {
         var modifier = new ResolvedModifier(modifierId, Component.literal("混合"), List.of(visible, hidden));
 
         assertEquals(
-                List.of(VanillaAttributeApplicator.stableModifierId(modifierId, "hidden")),
+                List.of(VanillaAttributeApplicator.stableModifierId(
+                        modifierId, "hidden", SlotTarget.MAINHAND)),
                 VanillaAttributeApplicator.hiddenEffectIds(modifier, true));
         assertEquals(2, VanillaAttributeApplicator.hiddenEffectIds(modifier, false).size());
     }

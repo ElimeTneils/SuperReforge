@@ -63,4 +63,31 @@ final class DefinitionManagerTest {
         assertThrows(IllegalArgumentException.class, () ->
                 builder.level(TIER, new LevelDefinition(2, Component.literal("重复"))));
     }
+
+    @Test
+    void clientModifierMirrorCanBeInstalledAndClearedIndependently() {
+        ResourceLocation modifierId = ResourceLocation.fromNamespaceAndPath("example", "client_visible");
+        ModifierDefinition modifier = new ModifierDefinition(
+                TIER, List.of(ResourceLocation.fromNamespaceAndPath("example", "type")),
+                Component.literal("客户端可见"), 1.0, List.of());
+
+        ModifierDisplayDefinition display = ModifierDisplayDefinition.from(modifier);
+        DefinitionManager.installClientModifiers(Map.of(modifierId, display));
+        assertEquals(display, DefinitionManager.clientModifiers().get(modifierId));
+
+        DefinitionManager.clearClientSession();
+        assertTrue(DefinitionManager.clientModifiers().isEmpty());
+        assertTrue(DefinitionManager.snapshot().modifiers().isEmpty());
+    }
+
+    @Test
+    void successfulServerPublicationsAdvanceSnapshotGeneration() {
+        long before = DefinitionManager.generation();
+        DefinitionSnapshot datapack = new DefinitionSnapshot(
+                Map.of(TIER, new LevelDefinition(1, Component.literal("版本"))),
+                Map.of(), Map.of(), Map.of());
+
+        assertTrue(DefinitionManager.publishDatapack(datapack));
+        assertEquals(before + 1, DefinitionManager.generation());
+    }
 }

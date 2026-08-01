@@ -27,10 +27,18 @@ public final class ModifierLifecycle {
         boolean changed = false;
         ReforgeData saved = stack.get(ModDataComponents.REFORGE_DATA.get());
         if (saved != null) {
-            if (ModifierResolver.resolve(stack, snapshot).isPresent()) {
+            if (ModifierResolver.definitionMatches(stack, snapshot, saved)) {
+                if (!saved.active()) {
+                    stack.set(ModDataComponents.REFORGE_DATA.get(), saved.withActive(true));
+                    return true;
+                }
                 return false;
             }
             if (settings.missingDefinitionPolicy() == MissingDefinitionPolicy.KEEP_INACTIVE) {
+                if (saved.active()) {
+                    stack.set(ModDataComponents.REFORGE_DATA.get(), saved.withActive(false));
+                    return true;
+                }
                 return false;
             }
             stack.remove(ModDataComponents.REFORGE_DATA.get());

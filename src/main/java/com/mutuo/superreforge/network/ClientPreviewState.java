@@ -17,4 +17,12 @@ public final class ClientPreviewState {
     public static Optional<ReforgePreviewPayload> get(int containerId) {
         return Optional.ofNullable(PREVIEWS.get(containerId));
     }
+
+    public static void clear(int containerId) {
+        PREVIEWS.remove(containerId);
+    }
+
+    public static void clearAll() {
+        PREVIEWS.clear();
+    }
 }
