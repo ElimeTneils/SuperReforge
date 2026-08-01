@@ -51,8 +51,10 @@ public final class ReforgerMenu extends AbstractContainerMenu {
         this.data = blockEntity == null ? new SimpleContainerData(4) : blockEntity.menuData();
         ItemStackHandler handler = blockEntity == null ? new ItemStackHandler(2) : blockEntity.inventory();
 
-        addSlot(new SlotItemHandler(handler, ReforgerBlockEntity.TARGET_SLOT, 35, 44));
-        addSlot(new SlotItemHandler(handler, ReforgerBlockEntity.CATALYST_SLOT, 35, 80));
+        addSlot(new SlotItemHandler(
+                handler, ReforgerBlockEntity.TARGET_SLOT, ReforgerLayout.TARGET_X, ReforgerLayout.TARGET_Y));
+        addSlot(new SlotItemHandler(
+                handler, ReforgerBlockEntity.CATALYST_SLOT, ReforgerLayout.CATALYST_X, ReforgerLayout.CATALYST_Y));
         addPlayerInventory(playerInventory);
         addDataSlots(data);
     }
@@ -84,11 +86,19 @@ public final class ReforgerMenu extends AbstractContainerMenu {
     private void addPlayerInventory(Inventory inventory) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 116 + row * 18));
+                addSlot(new Slot(
+                        inventory,
+                        column + row * 9 + 9,
+                        ReforgerLayout.playerSlotX(column),
+                        ReforgerLayout.PLAYER_INVENTORY_Y + row * 18));
             }
         }
         for (int column = 0; column < 9; column++) {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 174));
+            addSlot(new Slot(
+                    inventory,
+                    column,
+                    ReforgerLayout.playerSlotX(column),
+                    ReforgerLayout.PLAYER_HOTBAR_Y));
         }
     }
 
